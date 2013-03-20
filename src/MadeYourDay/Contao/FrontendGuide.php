@@ -28,6 +28,11 @@ class FrontendGuide
 			return $content;
 		}
 
+		if (substr($template, 0, 3) === 'fe_') {
+			$GLOBALS['TL_JAVASCRIPT'][] = 'system/modules/rocksolid-frontend-guide/assets/js/main.js';
+			$GLOBALS['TL_CSS'][] = 'system/modules/rocksolid-frontend-guide/assets/css/main.css';
+		}
+
 		return static::insertData($content, array(
 			'template' => $template,
 		));
