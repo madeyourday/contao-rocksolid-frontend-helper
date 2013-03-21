@@ -13,4 +13,4 @@
  */
 
 $GLOBALS['TL_HOOKS']['parseFrontendTemplate'][] = array('MadeYourDay\\Contao\\FrontendGuide', 'parseFrontendTemplate');
-$GLOBALS['TL_HOOKS']['getContentElement'][] = array('MadeYourDay\\Contao\\FrontendGuide', 'getContentElement');
+$GLOBALS['TL_HOOKS']['getContentElement'][] = array('MadeYourDay\\Contao\\FrontendGuide', 'getContentElementHook');

@@ -5,3 +5,78 @@
  * file that was distributed with this source code.
  */
 
+.rsfg-toolbar {
+	position: absolute;
+	z-index: 999999;
+	padding: 3px;
+	font: 12px/14px Arial, Verdana, sans-serif;
+	background: white;
+	background: rgba(255, 255, 255, .8);
+	opacity: .5;
+	box-shadow: 0 0 2px rgba(0, 0, 0, .3);
+}
+.rsfg-toolbar:hover {
+	opacity: 1;
+}
+.rsfg-overlay {
+	position: absolute;
+	z-index: 999998;
+	border-radius: 3px;
+	background: #26ade4;
+	opacity: .1;
+}
+a.rsfg-edit, a.rsfg-article, a.rsfg-be-module, a.rsfg-fe-module {
+	position: relative;
+	float: left;
+	width: 16px;
+	height: 16px;
+	overflow: hidden;
+	margin-right: 3px;
+	text-indent: -999px;
+	background: url("../../../../themes/default/images/edit.gif") 50% 50% no-repeat;
+}
+a.rsfg-article {
+	background-image: url("../../../../themes/default/images/articles.gif");
+}
+a.rsfg-fe-module {
+	background-image: url("../../../../themes/default/images/modules.gif");
+}
+a.rsfg-be-module.rsfg-be-module-news {
+	background-image: url("../../../../themes/default/images/news.gif");
+}
+a.rsfg-be-module.rsfg-be-module-calendar {
+	background-image: url("../../../calendar/assets/icon.gif");
+}
+a.rsfg-be-module.rsfg-be-module-newsletter {
+	background-image: url("../../../newsletter/assets/icon.gif");
+}
+a.rsfg-be-module.rsfg-be-module-faq {
+	background-image: url("../../../faq/assets/icon.gif");
+}
+a.rsfg-be-module.rsfg-be-module-form {
+	background-image: url("../../../../themes/default/images/form.gif");
+}
+a.rsfg-be-module.rsfg-be-module-rocksolid_slider {
+	background-image: url("../../../rocksolid-slider/assets/img/icon.png");
+}
+.rsfg-info {
+	position: relative;
+	float: left;
+	width: 16px;
+	height: 16px;
+	background: url("../../../../themes/default/images/show.gif") 50% 50% no-repeat;
+}
+.rsfg-info > div {
+	display: none;
+	position: absolute;
+	top: 100%;
+	left: 0;
+	padding: 5px 10px;
+	white-space: nowrap;
+	background: white;
+	background: rgba(255, 255, 255, .8);
+	box-shadow: 0 0 2px rgba(0, 0, 0, .3);
+}
+.rsfg-info:hover > div {
+	display: block;
+}

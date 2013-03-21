@@ -13,8 +13,71 @@ namespace MadeYourDay\Contao;
  *
  * @author Martin Auswöger <martin@madeyourday.net>
  */
-class FrontendGuide
+class FrontendGuide extends \Controller
 {
+	/**
+	 * @var array backend to frontend modules linking
+	 */
+	protected static $backendModules = array(
+		'news' => array(
+			'table' => 'tl_news',
+			'column' => 'news_archives',
+			'columnType' => 'serialized',
+			'feModules' => array(
+				'newslist',
+				'newsreader',
+				'newsarchive',
+				'newsmenu',
+			),
+		),
+		'calendar' => array(
+			'table' => 'tl_calendar_events',
+			'column' => 'cal_calendar',
+			'columnType' => 'serialized',
+			'feModules' => array(
+				'calendar',
+				'eventreader',
+				'eventlist',
+				'eventmenu',
+			),
+		),
+		'newsletter' => array(
+			'table' => 'tl_newsletter',
+			'column' => 'nl_channels',
+			'columnType' => 'serialized',
+			'feModules' => array(
+				'nl_list',
+				'nl_reader',
+			),
+		),
+		'faq' => array(
+			'table' => 'tl_faq',
+			'column' => 'faq_categories',
+			'columnType' => 'serialized',
+			'feModules' => array(
+				'faqlist',
+				'faqreader',
+				'faqpage',
+			),
+		),
+		'form' => array(
+			'table' => 'tl_form_field',
+			'column' => 'form',
+			'columnType' => 'plain',
+			'feModules' => array(
+				'form',
+			),
+		),
+		'rocksolid_slider' => array(
+			'table' => 'tl_rocksolid_slide',
+			'column' => 'rsts_id',
+			'columnType' => 'plain',
+			'feModules' => array(
+				'rocksolid_slider',
+			),
+		),
+	);
+
 	/**
 	 * parseFrontendTemplate hook
 	 *
@@ -22,45 +85,66 @@ class FrontendGuide
 	 * @param  string $template template name
 	 * @return string           modified $content
 	 */
-	public static function parseFrontendTemplate($content, $template)
-	{
-		if (! static::checkLogin()) {
-			return $content;
-		}
-
-		if (substr($template, 0, 3) === 'fe_') {
-			$GLOBALS['TL_JAVASCRIPT'][] = 'system/modules/rocksolid-frontend-guide/assets/js/main.js';
-			$GLOBALS['TL_CSS'][] = 'system/modules/rocksolid-frontend-guide/assets/css/main.css';
-		}
-
-		return static::insertData($content, array(
-			'template' => $template,
-		));
-	}
-
-	/**
-	 * generateFrontendModule hook
-	 *
-	 * @param  string $content      html content
-	 * @param  string $templatePath template path
-	 * @param  Object $model        model object
-	 * @return string               modified $content
-	 */
-	public static function generateFrontendModule($content, $templatePath, $model)
+	public function parseFrontendTemplate($content, $template)
 	{
 		if (! static::checkLogin()) {
 			return $content;
 		}
 
 		$data = array(
-			'templatePath' => substr($templatePath, strlen(TL_ROOT) + 1),
+			'template' => $template,
+			'templatePath' => substr($this->getTemplate($template), strlen(TL_ROOT) + 1),
 		);
+
+		if (substr($template, 0, 3) === 'fe_') {
+			$GLOBALS['TL_JAVASCRIPT'][] = 'system/modules/rocksolid-frontend-guide/assets/js/main.js';
+			$GLOBALS['TL_CSS'][] = 'system/modules/rocksolid-frontend-guide/assets/css/main.css';
+			$content = explode('<body', $content, 2);
+			return $content[0] . static::insertData('<body' . $content[1], $data);
+		}
+
+		return static::insertData($content, $data);
+	}
+
+	/**
+	 * generateFrontendModule hook
+	 *
+	 * @param  string $content      html content
+	 * @param  Object $model        model object
+	 * @return string               modified $content
+	 */
+	public static function generateFrontendModule($content, $model)
+	{
+		if (! static::checkLogin()) {
+			return $content;
+		}
 
 		if ($model instanceof \ArticleModel) {
 			$data['articleURL'] = static::getEditURL('article', 'tl_article', $model->id);
+			\System::loadLanguageFile('tl_article');
+			$data['articleLabel'] = $GLOBALS['TL_LANG']['tl_article']['editheader'][0];
 		}
 		else {
-			$data['editURL'] = static::getEditURL('themes', 'tl_module', $model->id);
+			$data['feModuleURL'] = static::getEditURL('themes', 'tl_module', $model->id);
+			\System::loadLanguageFile('tl_module');
+			$data['feModuleLabel'] = $GLOBALS['TL_LANG']['tl_module']['edit'][0];
+		}
+
+		foreach (static::$backendModules as $do => $config) {
+			if (in_array($model->type, $config['feModules'])) {
+				$id = $model->{$config['column']};
+				if ($config['columnType'] === 'serialized') {
+					$id = deserialize($id, true);
+					$id = $id[0];
+				}
+				if ($id) {
+					$data['beModuleURL'] = static::getEditURL($do, $config['table'], $id, false);
+					\System::loadLanguageFile($config['table']);
+					$data['beModuleLabel'] = $GLOBALS['TL_LANG'][$config['table']]['editheader'][0];
+					$data['beModuleType'] = $do;
+				}
+			}
+
 		}
 
 		return static::insertData($content, $data);
@@ -73,7 +157,7 @@ class FrontendGuide
 	 * @param  string $content html content
 	 * @return string          modified $content
 	 */
-	public static function getContentElement($element, $content)
+	public static function getContentElementHook($element, $content)
 	{
 		if (! static::checkLogin()) {
 			return $content;
@@ -95,9 +179,24 @@ class FrontendGuide
 			}
 		}
 
+		\System::loadLanguageFile('tl_content');
 		$data = array(
 			'editURL' => static::getEditURL($do, 'tl_content', $element->id),
+			'editLabel' => $GLOBALS['TL_LANG']['tl_content']['edit'][0],
 		);
+
+		if ($element->type === 'module' && $element->module) {
+			$data['feModuleURL'] = static::getEditURL('themes', 'tl_module', $element->module);
+			\System::loadLanguageFile('tl_module');
+			$data['feModuleLabel'] = $GLOBALS['TL_LANG']['tl_module']['edit'][0];
+		}
+
+		if ($element->type === 'form' && $element->form) {
+			$data['beModuleURL'] = static::getEditURL('form', 'tl_form_field', $element->form, false);
+			\System::loadLanguageFile('tl_form_field');
+			$data['beModuleLabel'] = $GLOBALS['TL_LANG']['tl_form_field']['editheader'][0];
+			$data['beModuleType'] = 'form';
+		}
 
 		return static::insertData($content, $data);
 	}
@@ -136,9 +235,9 @@ class FrontendGuide
 	 * @param  string $id
 	 * @return string
 	 */
-	protected static function getEditURL($do, $table, $id)
+	protected static function getEditURL($do, $table, $id, $act = 'edit')
 	{
-		return 'contao/main.php?do=' . $do . '&table=' . $table . '&act=edit&id=' .  $id . '&rt=' . REQUEST_TOKEN;
+		return 'contao/main.php?do=' . $do . '&table=' . $table . ($act ? '&act=' . $act : '') . '&id=' .  $id . '&rt=' . REQUEST_TOKEN;
 	}
 
 	/**
