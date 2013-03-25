@@ -109,30 +109,30 @@ class FrontendGuide extends \Controller
 	/**
 	 * generateFrontendModule hook
 	 *
-	 * @param  string $content      html content
-	 * @param  Object $model        model object
-	 * @return string               modified $content
+	 * @param  string  $content html content
+	 * @param  \Module $module  module object
+	 * @return string           modified $content
 	 */
-	public static function generateFrontendModule($content, $model)
+	public static function generateFrontendModule($content, $module)
 	{
 		if (! static::checkLogin()) {
 			return $content;
 		}
 
-		if ($model instanceof \ArticleModel) {
-			$data['articleURL'] = static::getBackendURL('article', 'tl_article', $model->id);
+		if ($module->type === 'article') {
+			$data['articleURL'] = static::getBackendURL('article', 'tl_article', $module->id);
 			\System::loadLanguageFile('tl_article');
 			$data['articleLabel'] = $GLOBALS['TL_LANG']['tl_article']['editheader'][0];
 		}
 		else {
-			$data['feModuleURL'] = static::getBackendURL('themes', 'tl_module', $model->id);
+			$data['feModuleURL'] = static::getBackendURL('themes', 'tl_module', $module->id);
 			\System::loadLanguageFile('tl_module');
 			$data['feModuleLabel'] = $GLOBALS['TL_LANG']['tl_module']['edit'][0];
 		}
 
 		foreach (static::$backendModules as $do => $config) {
-			if (in_array($model->type, $config['feModules'])) {
-				$id = $model->{$config['column']};
+			if (in_array($module->type, $config['feModules'])) {
+				$id = $module->{$config['column']};
 				if ($config['columnType'] === 'serialized') {
 					$id = deserialize($id, true);
 					$id = $id[0];

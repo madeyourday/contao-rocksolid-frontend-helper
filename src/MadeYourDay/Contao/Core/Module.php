@@ -24,7 +24,7 @@ abstract class Module extends \Contao\Module
 	{
 		return \MadeYourDay\Contao\FrontendGuide::generateFrontendModule(
 			parent::generate(),
-			$this->objModel
+			$this
 		);
 	}
 }
