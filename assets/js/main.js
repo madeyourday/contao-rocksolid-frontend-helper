@@ -27,6 +27,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		if (data.editURL) {
 			var editLink = document.createElement('a');
 			editLink.href = data.editURL;
+			editLink.target = '_top';
 			editLink.className = 'rsfg-edit';
 			editLink.innerHTML = editLink.title = data.editLabel;
 			toolbar.appendChild(editLink);
@@ -35,6 +36,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		if (data.articleURL) {
 			var articleLink = document.createElement('a');
 			articleLink.href = data.articleURL;
+			articleLink.target = '_top';
 			articleLink.className = 'rsfg-article';
 			articleLink.innerHTML = articleLink.title = data.articleLabel;
 			toolbar.appendChild(articleLink);
@@ -43,6 +45,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		if (data.feModuleURL) {
 			var feModuleLink = document.createElement('a');
 			feModuleLink.href = data.feModuleURL;
+			feModuleLink.target = '_top';
 			feModuleLink.className = 'rsfg-fe-module';
 			feModuleLink.innerHTML = feModuleLink.title = data.feModuleLabel;
 			toolbar.appendChild(feModuleLink);
@@ -51,6 +54,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		if (data.beModuleURL) {
 			var beModuleLink = document.createElement('a');
 			beModuleLink.href = data.beModuleURL;
+			beModuleLink.target = '_top';
 			beModuleLink.className = 'rsfg-be-module rsfg-be-module-' + data.beModuleType;
 			beModuleLink.innerHTML = beModuleLink.title = data.beModuleLabel;
 			toolbar.appendChild(beModuleLink);
@@ -90,16 +94,27 @@ document.addEventListener('DOMContentLoaded', function() {
 					width: boundingClientRect.width,
 					height: boundingClientRect.height
 				};
-				event.currentToolbars = event.currentToolbars || {};
-				if (event.currentToolbars[boundingClientRect.top + 'x' + boundingClientRect.left]) {
-					event.currentToolbars[boundingClientRect.top + 'x' + boundingClientRect.left].forEach(function(tb) {
-						tb.style.left = parseFloat(tb.style.left) + toolbar.offsetWidth + 5 + 'px';
+				event.currentToolbars = event.currentToolbars || [];
+				event.currentToolbars.reverse();
+				event.currentToolbars.push(toolbar);
+				event.currentToolbars.reverse();
+				event.currentToolbars.forEach(function(toolbar1, index1) {
+					var bounding1 = toolbar1.getBoundingClientRect();
+					event.currentToolbars.forEach(function(toolbar2, index2) {
+						var bounding2 = toolbar2.getBoundingClientRect();
+						if (
+							index2 > index1 &&
+							bounding2.left < bounding1.right &&
+							bounding2.right > bounding1.left &&
+							bounding2.top < bounding1.bottom &&
+							bounding2.bottom > bounding1.top
+						) {
+							toolbar2.style.left = bounding1.right + 15 + 'px';
+							toolbar2.className += ' rsfg-toolbar-minor';
+						}
 					});
-				}
-				else {
-					event.currentToolbars[boundingClientRect.top + 'x' + boundingClientRect.left] = [];
-				}
-				event.currentToolbars[boundingClientRect.top + 'x' + boundingClientRect.left].push(toolbar);
+				});
+				toolbar.className = toolbar.className.split('rsfg-toolbar-minor').join('');
 				overlay.style.top = toolbar.style.top = boundingClientRect.top + window.pageYOffset + 'px';
 				overlay.style.left = toolbar.style.left = boundingClientRect.left + window.pageXOffset + 'px';
 				overlay.style.width = boundingClientRect.width + 'px';

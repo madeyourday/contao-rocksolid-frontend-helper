@@ -18,5 +18,6 @@ ClassLoader::addNamespaces(array(
 
 ClassLoader::addClasses(array(
 	'MadeYourDay\\Contao\\FrontendGuide' => 'system/modules/rocksolid-frontend-guide/src/MadeYourDay/Contao/FrontendGuide.php',
+	'MadeYourDay\\Contao\\FrontendGuideUser' => 'system/modules/rocksolid-frontend-guide/src/MadeYourDay/Contao/FrontendGuideUser.php',
 	'MadeYourDay\\Contao\\Core\\Module' => 'system/modules/rocksolid-frontend-guide/src/MadeYourDay/Contao/Core/Module.php',
 ));

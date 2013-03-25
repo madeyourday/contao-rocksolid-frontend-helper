@@ -18,6 +18,18 @@
 .rsfg-toolbar:hover {
 	opacity: 1;
 }
+.rsfg-toolbar.rsfg-toolbar-minor:before {
+	content: "»";
+	position: absolute;
+	top: 0;
+	left: -13px;
+	width: 13px;
+	text-align: center;
+	font-size: 19px;
+	color: black;
+	line-height: 19px;
+	text-shadow: 0 0 2px white, 0 0 1px white;
+}
 .rsfg-overlay {
 	position: absolute;
 	z-index: 999998;

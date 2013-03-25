@@ -120,12 +120,12 @@ class FrontendGuide extends \Controller
 		}
 
 		if ($model instanceof \ArticleModel) {
-			$data['articleURL'] = static::getEditURL('article', 'tl_article', $model->id);
+			$data['articleURL'] = static::getBackendURL('article', 'tl_article', $model->id);
 			\System::loadLanguageFile('tl_article');
 			$data['articleLabel'] = $GLOBALS['TL_LANG']['tl_article']['editheader'][0];
 		}
 		else {
-			$data['feModuleURL'] = static::getEditURL('themes', 'tl_module', $model->id);
+			$data['feModuleURL'] = static::getBackendURL('themes', 'tl_module', $model->id);
 			\System::loadLanguageFile('tl_module');
 			$data['feModuleLabel'] = $GLOBALS['TL_LANG']['tl_module']['edit'][0];
 		}
@@ -138,7 +138,7 @@ class FrontendGuide extends \Controller
 					$id = $id[0];
 				}
 				if ($id) {
-					$data['beModuleURL'] = static::getEditURL($do, $config['table'], $id, false);
+					$data['beModuleURL'] = static::getBackendURL($do, $config['table'], $id, false);
 					\System::loadLanguageFile($config['table']);
 					$data['beModuleLabel'] = $GLOBALS['TL_LANG'][$config['table']]['editheader'][0];
 					$data['beModuleType'] = $do;
@@ -181,18 +181,18 @@ class FrontendGuide extends \Controller
 
 		\System::loadLanguageFile('tl_content');
 		$data = array(
-			'editURL' => static::getEditURL($do, 'tl_content', $element->id),
+			'editURL' => static::getBackendURL($do, 'tl_content', $element->id),
 			'editLabel' => $GLOBALS['TL_LANG']['tl_content']['edit'][0],
 		);
 
 		if ($element->type === 'module' && $element->module) {
-			$data['feModuleURL'] = static::getEditURL('themes', 'tl_module', $element->module);
+			$data['feModuleURL'] = static::getBackendURL('themes', 'tl_module', $element->module);
 			\System::loadLanguageFile('tl_module');
 			$data['feModuleLabel'] = $GLOBALS['TL_LANG']['tl_module']['edit'][0];
 		}
 
 		if ($element->type === 'form' && $element->form) {
-			$data['beModuleURL'] = static::getEditURL('form', 'tl_form_field', $element->form, false);
+			$data['beModuleURL'] = static::getBackendURL('form', 'tl_form_field', $element->form, false);
 			\System::loadLanguageFile('tl_form_field');
 			$data['beModuleLabel'] = $GLOBALS['TL_LANG']['tl_form_field']['editheader'][0];
 			$data['beModuleType'] = 'form';
@@ -208,23 +208,9 @@ class FrontendGuide extends \Controller
 	 */
 	public static function checkLogin()
 	{
-		if (! \Input::cookie('BE_USER_AUTH')) {
-			return false;
-		}
+		$User = FrontendGuideUser::getInstance();
 
-		$hash = sha1(session_id() . (!$GLOBALS['TL_CONFIG']['disableIpCheck'] ? \Environment::get('ip') : '') . 'BE_USER_AUTH');
-		if (
-			\Input::cookie('BE_USER_AUTH') == $hash &&
-			($objSession = \SessionModel::findByHashAndName($hash, 'BE_USER_AUTH')) &&
-			$objSession->sessionID == session_id() &&
-			($GLOBALS['TL_CONFIG']['disableIpCheck'] || $objSession->ip == \Environment::get('ip')) &&
-			($objSession->tstamp + $GLOBALS['TL_CONFIG']['sessionTimeout']) > time()
-		)
-		{
-			return true;
-		}
-
-		return false;
+		return $User->authenticate();
 	}
 
 	/**
@@ -235,7 +221,7 @@ class FrontendGuide extends \Controller
 	 * @param  string $id
 	 * @return string
 	 */
-	protected static function getEditURL($do, $table, $id, $act = 'edit')
+	protected static function getBackendURL($do, $table, $id, $act = 'edit')
 	{
 		return 'contao/main.php?do=' . $do . '&table=' . $table . ($act ? '&act=' . $act : '') . '&id=' .  $id . '&rt=' . REQUEST_TOKEN;
 	}
@@ -254,9 +240,9 @@ class FrontendGuide extends \Controller
 
 			$content = substr($content, strlen($matches[0]));
 
-			if (preg_match('(\\sdata-frontend-guide="([^"]*)"$)is', $matches[0], $matches2)) {
-				$matches[0] = substr($matches[0], 0, - strlen($matches2[0]));
+			if (preg_match('(\\sdata-frontend-guide="([^"]*)")is', $matches[0], $matches2)) {
 				$data = array_merge(json_decode(html_entity_decode($matches2[1]), true), $data);
+				$matches[0] = preg_replace('(\\sdata-frontend-guide="([^"]*)")is', '', $matches[0]);
 			}
 
 			return $matches[0] . ' data-frontend-guide="' . htmlspecialchars(json_encode($data)) . '"' . $content;
