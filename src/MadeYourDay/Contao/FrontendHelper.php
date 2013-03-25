@@ -9,11 +9,11 @@
 namespace MadeYourDay\Contao;
 
 /**
- * RockSolid Frontend Guide
+ * RockSolid Frontend Helper
  *
  * @author Martin Auswöger <martin@madeyourday.net>
  */
-class FrontendGuide extends \Controller
+class FrontendHelper extends \Controller
 {
 	/**
 	 * @var array backend to frontend modules linking
@@ -97,8 +97,8 @@ class FrontendGuide extends \Controller
 		);
 
 		if (substr($template, 0, 3) === 'fe_') {
-			$GLOBALS['TL_JAVASCRIPT'][] = 'system/modules/rocksolid-frontend-guide/assets/js/main.js';
-			$GLOBALS['TL_CSS'][] = 'system/modules/rocksolid-frontend-guide/assets/css/main.css';
+			$GLOBALS['TL_JAVASCRIPT'][] = 'system/modules/rocksolid-frontend-helper/assets/js/main.js';
+			$GLOBALS['TL_CSS'][] = 'system/modules/rocksolid-frontend-helper/assets/css/main.css';
 			$content = explode('<body', $content, 2);
 			return $content[0] . static::insertData('<body' . $content[1], $data);
 		}
@@ -208,7 +208,7 @@ class FrontendGuide extends \Controller
 	 */
 	public static function checkLogin()
 	{
-		$User = FrontendGuideUser::getInstance();
+		$User = FrontendHelperUser::getInstance();
 
 		return $User->authenticate();
 	}
@@ -227,7 +227,7 @@ class FrontendGuide extends \Controller
 	}
 
 	/**
-	 * inserts data into the first tag in $content as data-frontend-guide
+	 * inserts data into the first tag in $content as data-frontend-helper
 	 * attribute in json format and merges existing data
 	 *
 	 * @param  string $content
@@ -240,12 +240,12 @@ class FrontendGuide extends \Controller
 
 			$content = substr($content, strlen($matches[0]));
 
-			if (preg_match('(\\sdata-frontend-guide="([^"]*)")is', $matches[0], $matches2)) {
+			if (preg_match('(\\sdata-frontend-helper="([^"]*)")is', $matches[0], $matches2)) {
 				$data = array_merge(json_decode(html_entity_decode($matches2[1]), true), $data);
-				$matches[0] = preg_replace('(\\sdata-frontend-guide="([^"]*)")is', '', $matches[0]);
+				$matches[0] = preg_replace('(\\sdata-frontend-helper="([^"]*)")is', '', $matches[0]);
 			}
 
-			return $matches[0] . ' data-frontend-guide="' . htmlspecialchars(json_encode($data)) . '"' . $content;
+			return $matches[0] . ' data-frontend-helper="' . htmlspecialchars(json_encode($data)) . '"' . $content;
 		}
 
 		return $content;

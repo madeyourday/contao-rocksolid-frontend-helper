@@ -7,7 +7,7 @@
  */
 
 /**
- * RockSolid Frontend Guide autload configuration
+ * RockSolid Frontend Helper autload configuration
  *
  * @author Martin Auswöger <martin@madeyourday.net>
  */
@@ -17,7 +17,7 @@ ClassLoader::addNamespaces(array(
 ));
 
 ClassLoader::addClasses(array(
-	'MadeYourDay\\Contao\\FrontendGuide' => 'system/modules/rocksolid-frontend-guide/src/MadeYourDay/Contao/FrontendGuide.php',
-	'MadeYourDay\\Contao\\FrontendGuideUser' => 'system/modules/rocksolid-frontend-guide/src/MadeYourDay/Contao/FrontendGuideUser.php',
-	'MadeYourDay\\Contao\\Core\\Module' => 'system/modules/rocksolid-frontend-guide/src/MadeYourDay/Contao/Core/Module.php',
+	'MadeYourDay\\Contao\\FrontendHelper' => 'system/modules/rocksolid-frontend-helper/src/MadeYourDay/Contao/FrontendHelper.php',
+	'MadeYourDay\\Contao\\FrontendHelperUser' => 'system/modules/rocksolid-frontend-helper/src/MadeYourDay/Contao/FrontendHelperUser.php',
+	'MadeYourDay\\Contao\\Core\\Module' => 'system/modules/rocksolid-frontend-helper/src/MadeYourDay/Contao/Core/Module.php',
 ));

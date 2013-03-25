@@ -1,1 +1,1 @@
-# RockSolid Frontend Guide Contao Extension
+# RockSolid Frontend Helper Contao Extension

@@ -10,25 +10,25 @@ document.addEventListener('DOMContentLoaded', function() {
 
 	var init = function(element) {
 
-		element.frontendGuideEnabled = true;
+		element.frontendHelperEnabled = true;
 
 		var timeout, isOver;
-		var data = JSON.parse(element.getAttribute('data-frontend-guide'));
+		var data = JSON.parse(element.getAttribute('data-frontend-helper'));
 
 		if (! data.editURL && ! data.articleURL && ! data.beModuleURL && ! data.feModuleURL && element !== document.body) {
 			return;
 		}
 
 		var toolbar = document.createElement('div');
-		toolbar.className = 'rsfg-toolbar' + (data.type ? ' rsfg-type-' + data.type : '');
+		toolbar.className = 'rsfh-toolbar' + (data.type ? ' rsfh-type-' + data.type : '');
 		var overlay = document.createElement('div');
-		overlay.className = 'rsfg-overlay';
+		overlay.className = 'rsfh-overlay';
 
 		if (data.editURL) {
 			var editLink = document.createElement('a');
 			editLink.href = data.editURL;
 			editLink.target = '_top';
-			editLink.className = 'rsfg-edit';
+			editLink.className = 'rsfh-edit';
 			editLink.innerHTML = editLink.title = data.editLabel;
 			toolbar.appendChild(editLink);
 		}
@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			var articleLink = document.createElement('a');
 			articleLink.href = data.articleURL;
 			articleLink.target = '_top';
-			articleLink.className = 'rsfg-article';
+			articleLink.className = 'rsfh-article';
 			articleLink.innerHTML = articleLink.title = data.articleLabel;
 			toolbar.appendChild(articleLink);
 		}
@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			var feModuleLink = document.createElement('a');
 			feModuleLink.href = data.feModuleURL;
 			feModuleLink.target = '_top';
-			feModuleLink.className = 'rsfg-fe-module';
+			feModuleLink.className = 'rsfh-fe-module';
 			feModuleLink.innerHTML = feModuleLink.title = data.feModuleLabel;
 			toolbar.appendChild(feModuleLink);
 		}
@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			var beModuleLink = document.createElement('a');
 			beModuleLink.href = data.beModuleURL;
 			beModuleLink.target = '_top';
-			beModuleLink.className = 'rsfg-be-module rsfg-be-module-' + data.beModuleType;
+			beModuleLink.className = 'rsfh-be-module rsfh-be-module-' + data.beModuleType;
 			beModuleLink.innerHTML = beModuleLink.title = data.beModuleLabel;
 			toolbar.appendChild(beModuleLink);
 		}
@@ -63,8 +63,8 @@ document.addEventListener('DOMContentLoaded', function() {
 		var infoHtml = '<div>';
 		var infoTemplates = {};
 		infoTemplates[data.template] = data.templatePath;
-		Array.prototype.forEach.call(element.querySelectorAll('*[data-frontend-guide]'), function(element) {
-			var data = JSON.parse(element.getAttribute('data-frontend-guide'));
+		Array.prototype.forEach.call(element.querySelectorAll('*[data-frontend-helper]'), function(element) {
+			var data = JSON.parse(element.getAttribute('data-frontend-helper'));
 			infoTemplates[data.template] = data.templatePath;
 		});
 		for (var template in infoTemplates) {
@@ -73,7 +73,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		infoHtml += '</div>';
 
 		var info = document.createElement('div');
-		info.className = 'rsfg-info';
+		info.className = 'rsfh-info';
 		info.innerHTML = infoHtml;
 		toolbar.appendChild(info);
 
@@ -110,11 +110,11 @@ document.addEventListener('DOMContentLoaded', function() {
 							bounding2.bottom > bounding1.top
 						) {
 							toolbar2.style.left = bounding1.right + 15 + 'px';
-							toolbar2.className += ' rsfg-toolbar-minor';
+							toolbar2.className += ' rsfh-toolbar-minor';
 						}
 					});
 				});
-				toolbar.className = toolbar.className.split('rsfg-toolbar-minor').join('');
+				toolbar.className = toolbar.className.split('rsfh-toolbar-minor').join('');
 				overlay.style.top = toolbar.style.top = boundingClientRect.top + window.pageYOffset + 'px';
 				overlay.style.left = toolbar.style.left = boundingClientRect.left + window.pageXOffset + 'px';
 				overlay.style.width = boundingClientRect.width + 'px';
@@ -150,13 +150,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
 	};
 
-	Array.prototype.forEach.call(document.querySelectorAll('*[data-frontend-guide]'), function(element) {
+	Array.prototype.forEach.call(document.querySelectorAll('*[data-frontend-helper]'), function(element) {
 		init(element);
 	});
 
 	window.addEventListener('mouseover', function(event) {
 		for (var node = event.target; node && node.getAttribute; node = node.parentNode) {
-			if (! node.frontendGuideEnabled && node.getAttribute('data-frontend-guide')) {
+			if (! node.frontendHelperEnabled && node.getAttribute('data-frontend-helper')) {
 				console.debug(node);
 				init(node, true);
 			}

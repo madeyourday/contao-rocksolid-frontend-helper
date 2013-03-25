@@ -9,17 +9,17 @@
 namespace MadeYourDay\Contao;
 
 /**
- * RockSolid Frontend Guide User
+ * RockSolid Frontend Helper User
  *
  * This User object is used to check if a backend user is logged in while
  * accessing the frontend
  *
  * @author Martin Auswöger <martin@madeyourday.net>
  */
-class FrontendGuideUser extends \Contao\User
+class FrontendHelperUser extends \Contao\User
 {
 	/**
-	 * @var FrontendGuideUser Singelton instance
+	 * @var FrontendHelperUser Singelton instance
 	 */
 	protected static $objInstance;
 

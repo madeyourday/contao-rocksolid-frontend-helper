@@ -7,10 +7,10 @@
  */
 
 /**
- * RockSolid Frontend Guide configuration
+ * RockSolid Frontend Helper configuration
  *
  * @author Martin Auswöger <martin@madeyourday.net>
  */
 
-$GLOBALS['TL_HOOKS']['parseFrontendTemplate'][] = array('MadeYourDay\\Contao\\FrontendGuide', 'parseFrontendTemplate');
-$GLOBALS['TL_HOOKS']['getContentElement'][] = array('MadeYourDay\\Contao\\FrontendGuide', 'getContentElementHook');
+$GLOBALS['TL_HOOKS']['parseFrontendTemplate'][] = array('MadeYourDay\\Contao\\FrontendHelper', 'parseFrontendTemplate');
+$GLOBALS['TL_HOOKS']['getContentElement'][] = array('MadeYourDay\\Contao\\FrontendHelper', 'getContentElementHook');

@@ -22,7 +22,7 @@ abstract class Module extends \Contao\Module
 	 */
 	public function generate()
 	{
-		return \MadeYourDay\Contao\FrontendGuide::generateFrontendModule(
+		return \MadeYourDay\Contao\FrontendHelper::generateFrontendModule(
 			parent::generate(),
 			$this
 		);
