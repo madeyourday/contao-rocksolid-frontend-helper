@@ -8,6 +8,21 @@
 (function(window, document) {
 document.addEventListener('DOMContentLoaded', function() {
 
+	var setCookie = function(key, value){
+		if (value === null) {
+			document.cookie = key+'=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT';
+		}
+		else {
+			document.cookie = key+'='+encodeURIComponent(value ? value : '')+'; path=/';
+		}
+	};
+	var getCookie = function(key){
+		var value = document.cookie.match('(?:^|;)\\s*' + key + '=([^;]*)');
+		return (value) ? decodeURIComponent(value[1]) : null;
+	};
+
+	var active = !!getCookie('rsfh-active');
+
 	var init = function(element) {
 
 		element.frontendHelperEnabled = true;
@@ -15,7 +30,14 @@ document.addEventListener('DOMContentLoaded', function() {
 		var timeout, isOver;
 		var data = JSON.parse(element.getAttribute('data-frontend-helper'));
 
-		if (! data.editURL && ! data.articleURL && ! data.beModuleURL && ! data.feModuleURL && element !== document.body) {
+		if (! data.toolbar || (
+			! data.editURL &&
+			! data.articleURL &&
+			! data.beModuleURL &&
+			! data.feModuleURL &&
+			! data.template &&
+			! data.activateLabel
+		)) {
 			return;
 		}
 
@@ -23,6 +45,24 @@ document.addEventListener('DOMContentLoaded', function() {
 		toolbar.className = 'rsfh-toolbar' + (data.type ? ' rsfh-type-' + data.type : '');
 		var overlay = document.createElement('div');
 		overlay.className = 'rsfh-overlay';
+
+		if (data.pageURL) {
+			var pageLink = document.createElement('a');
+			pageLink.href = data.pageURL;
+			pageLink.target = '_top';
+			pageLink.className = 'rsfh-page';
+			pageLink.innerHTML = pageLink.title = data.pageLabel;
+			toolbar.appendChild(pageLink);
+		}
+
+		if (data.layoutURL) {
+			var layoutLink = document.createElement('a');
+			layoutLink.href = data.layoutURL;
+			layoutLink.target = '_top';
+			layoutLink.className = 'rsfh-layout';
+			layoutLink.innerHTML = layoutLink.title = data.layoutLabel;
+			toolbar.appendChild(layoutLink);
+		}
 
 		if (data.editURL) {
 			var editLink = document.createElement('a');
@@ -55,30 +95,83 @@ document.addEventListener('DOMContentLoaded', function() {
 			var beModuleLink = document.createElement('a');
 			beModuleLink.href = data.beModuleURL;
 			beModuleLink.target = '_top';
-			beModuleLink.className = 'rsfh-be-module rsfh-be-module-' + data.beModuleType;
+			beModuleLink.className = 'rsfh-be-module';
+			if (data.beModuleIcon) {
+				beModuleLink.style.backgroundImage = 'url("' + data.beModuleIcon + '")';
+			}
 			beModuleLink.innerHTML = beModuleLink.title = data.beModuleLabel;
 			toolbar.appendChild(beModuleLink);
 		}
 
-		var infoHtml = '<div>';
-		var infoTemplates = {};
-		infoTemplates[data.template] = data.templatePath;
-		Array.prototype.forEach.call(element.querySelectorAll('*[data-frontend-helper]'), function(element) {
-			var data = JSON.parse(element.getAttribute('data-frontend-helper'));
-			infoTemplates[data.template] = data.templatePath;
-		});
-		for (var template in infoTemplates) {
-			infoHtml += '<div><b>' + template + ':</b> ' + infoTemplates[template] + '</div>';
-		}
-		infoHtml += '</div>';
+		if (data.template) {
 
-		var info = document.createElement('div');
-		info.className = 'rsfh-info';
-		info.innerHTML = infoHtml;
-		toolbar.appendChild(info);
+			var infoHtml = '<div>';
+			var infoTemplates = {};
+			infoTemplates[data.template] = data.templatePath;
+			Array.prototype.forEach.call(element.querySelectorAll('*[data-frontend-helper]'), function(element) {
+				var data = JSON.parse(element.getAttribute('data-frontend-helper'));
+				infoTemplates[data.template] = data.templatePath;
+			});
+			for (var template in infoTemplates) {
+				infoHtml += '<div><b>' + template + ':</b> ' + infoTemplates[template] + '</div>';
+			}
+			infoHtml += '</div>';
+
+			var info = document.createElement('div');
+			info.className = 'rsfh-info';
+			info.innerHTML = infoHtml;
+			toolbar.appendChild(info);
+
+		}
+
+		if (element === document.body) {
+
+			var previewLink = document.createElement('a');
+			previewLink.href = document.location.href;
+			previewLink.className = 'rsfh-preview';
+			if (getCookie('FE_PREVIEW')) {
+				previewLink.className += ' rsfh-preview-active';
+			}
+			previewLink.innerHTML = previewLink.title = getCookie('FE_PREVIEW') ?
+				data.previewHideLabel :
+				data.previewShowLabel;
+			previewLink.addEventListener('click', function () {
+				setCookie('FE_PREVIEW', getCookie('FE_PREVIEW') ? null : '1');
+			}, false);
+			toolbar.appendChild(previewLink);
+
+			var activateLink = document.createElement('a');
+			activateLink.href = document.location.href;
+			activateLink.className = 'rsfh-activate';
+			if (getCookie('rsfh-active')) {
+				activateLink.className += ' rsfh-activate-active';
+			}
+			activateLink.innerHTML = activateLink.title = active ?
+				data.deactivateLabel :
+				data.activateLabel;
+			activateLink.addEventListener('click', function (event) {
+				setCookie('rsfh-active', active ? null : '1');
+				active = !active;
+				this.innerHTML = this.title = active ?
+					data.deactivateLabel :
+					data.activateLabel;
+				if (active) {
+					activateLink.className += ' rsfh-activate-active';
+				}
+				else {
+					activateLink.className = activateLink.className.split('rsfh-activate-active').join('');
+				}
+				event.preventDefault();
+			}, false);
+			toolbar.appendChild(activateLink);
+
+		}
 
 		var over = function(event, fromToolbar) {
 			clearTimeout(timeout);
+			if (! active && element !== document.body) {
+				return;
+			}
 			if (! isOver) {
 				isOver = true;
 				document.body.appendChild(toolbar);
@@ -109,7 +202,7 @@ document.addEventListener('DOMContentLoaded', function() {
 							bounding2.top < bounding1.bottom &&
 							bounding2.bottom > bounding1.top
 						) {
-							toolbar2.style.left = bounding1.right + 15 + 'px';
+							toolbar2.style.left = bounding1.right + 5 + 'px';
 							toolbar2.className += ' rsfh-toolbar-minor';
 						}
 					});

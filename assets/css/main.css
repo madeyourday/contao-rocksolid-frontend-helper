@@ -8,36 +8,23 @@
 .rsfh-toolbar {
 	position: absolute;
 	z-index: 999999;
-	padding: 3px;
+	padding: 5px 2px 5px 5px;
+	border: 1px solid #ddd;
 	font: 12px/14px Arial, Verdana, sans-serif;
 	background: white;
-	background: rgba(255, 255, 255, .8);
-	opacity: .5;
-	box-shadow: 0 0 2px rgba(0, 0, 0, .3);
 }
 .rsfh-toolbar:hover {
 	opacity: 1;
-}
-.rsfh-toolbar.rsfh-toolbar-minor:before {
-	content: "»";
-	position: absolute;
-	top: 0;
-	left: -13px;
-	width: 13px;
-	text-align: center;
-	font-size: 19px;
-	color: black;
-	line-height: 19px;
-	text-shadow: 0 0 2px white, 0 0 1px white;
 }
 .rsfh-overlay {
 	position: absolute;
 	z-index: 999998;
 	border-radius: 3px;
 	background: #26ade4;
-	opacity: .1;
+	opacity: .2;
+	box-shadow: 0 0 20px rgba(0, 0, 0, 0.75) inset;
 }
-a.rsfh-edit, a.rsfh-article, a.rsfh-be-module, a.rsfh-fe-module {
+a.rsfh-edit, a.rsfh-article, a.rsfh-be-module, a.rsfh-fe-module, a.rsfh-page, a.rsfh-layout, a.rsfh-preview, a.rsfh-activate {
 	position: relative;
 	float: left;
 	width: 16px;
@@ -53,29 +40,30 @@ a.rsfh-article {
 a.rsfh-fe-module {
 	background-image: url("../../../../themes/default/images/modules.gif");
 }
-a.rsfh-be-module.rsfh-be-module-news {
-	background-image: url("../../../../themes/default/images/news.gif");
+a.rsfh-page {
+	background-image: url("../../../../themes/default/images/regular.gif");
 }
-a.rsfh-be-module.rsfh-be-module-calendar {
-	background-image: url("../../../calendar/assets/icon.gif");
+a.rsfh-layout {
+	background-image: url("../../../../themes/default/images/layout.gif");
 }
-a.rsfh-be-module.rsfh-be-module-newsletter {
-	background-image: url("../../../newsletter/assets/icon.gif");
+a.rsfh-preview {
+	background-image: url("../../../../themes/default/images/preview.gif");
 }
-a.rsfh-be-module.rsfh-be-module-faq {
-	background-image: url("../../../faq/assets/icon.gif");
+a.rsfh-preview.rsfh-preview-active {
+	opacity: 0.5;
 }
-a.rsfh-be-module.rsfh-be-module-form {
-	background-image: url("../../../../themes/default/images/form.gif");
+a.rsfh-activate {
+	background-image: url("../../../../themes/default/images/ok.gif");
 }
-a.rsfh-be-module.rsfh-be-module-rocksolid_slider {
-	background-image: url("../../../rocksolid-slider/assets/img/icon.png");
+a.rsfh-activate.rsfh-activate-active {
+	background-image: url("../../../../themes/default/images/delete_.gif");
 }
 .rsfh-info {
 	position: relative;
 	float: left;
 	width: 16px;
 	height: 16px;
+	margin-right: 3px;
 	background: url("../../../../themes/default/images/show.gif") 50% 50% no-repeat;
 }
 .rsfh-info > div {

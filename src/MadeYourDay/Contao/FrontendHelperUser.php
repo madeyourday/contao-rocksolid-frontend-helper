@@ -16,7 +16,7 @@ namespace MadeYourDay\Contao;
  *
  * @author Martin Auswöger <martin@madeyourday.net>
  */
-class FrontendHelperUser extends \Contao\User
+class FrontendHelperUser extends \BackendUser
 {
 	/**
 	 * @var FrontendHelperUser Singelton instance
@@ -24,55 +24,10 @@ class FrontendHelperUser extends \Contao\User
 	protected static $objInstance;
 
 	/**
-	 * @var string table name
+	 * Disable BackendUser authentication redirect
 	 */
-	protected $strTable = 'tl_user';
-
-	/**
-	 * @var string auth cookie name
-	 */
-	protected $strCookie = 'BE_USER_AUTH';
-
-	/**
-	 * constructor
-	 *
-	 * @return static
-	 */
-	protected function __construct()
+	public function authenticate()
 	{
-		parent::__construct();
-		$this->strIp = \Environment::get('ip');
-		$this->strHash = \Input::cookie($this->strCookie);
-	}
-
-	/**
-	 * Set all user properties from a database record
-	 *
-	 * @return void
-	 */
-	protected function setUserFromDb()
-	{
-		$this->intId = $this->id;
-
-		foreach ($this->arrData as $key => $value) {
-			if (! is_numeric($value)) {
-				$this->$key = deserialize($value);
-			}
-		}
-	}
-
-	/**
-	 * magic get method used for isAdmin member variable
-	 *
-	 * @param  string $key member variable name
-	 * @return mixed       returns the member variable if possible
-	 */
-	public function __get($key)
-	{
-		if ($key === 'isAdmin') {
-			return $this->arrData['admin'] ? true : false;
-		}
-
-		return parent::__get($key);
+		return \User::authenticate();
 	}
 }
