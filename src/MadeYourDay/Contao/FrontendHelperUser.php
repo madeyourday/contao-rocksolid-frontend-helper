@@ -30,4 +30,58 @@ class FrontendHelperUser extends \BackendUser
 	{
 		return \User::authenticate();
 	}
+
+	/**
+	 * disable session saving
+	 */
+	public function __destruct(){}
+
+	/**
+	 * set all user properties from a database record
+	 */
+	protected function setUserFromDb()
+	{
+		$this->intId = $this->id;
+
+		foreach ($this->arrData as $key => $value) {
+			if (! is_numeric($value)) {
+				$this->$key = deserialize($value);
+			}
+		}
+
+		$always = array('alexf');
+		$depends = array();
+
+		if (is_array($GLOBALS['TL_PERMISSIONS']) && ! empty($GLOBALS['TL_PERMISSIONS'])) {
+			$depends = array_merge($depends, $GLOBALS['TL_PERMISSIONS']);
+		}
+
+		if ($this->inherit == 'group') {
+			foreach ($depends as $field) {
+				$this->$field = array();
+			}
+		}
+
+		$inherit = in_array($this->inherit, array('group', 'extend')) ? array_merge($always, $depends) : $always;
+		$time = time();
+
+		foreach ((array) $this->groups as $id) {
+
+			$objGroup = $this->Database
+				->prepare("SELECT * FROM tl_user_group WHERE id=? AND disable!=1 AND (start='' OR start<$time) AND (stop='' OR stop>$time)")
+				->limit(1)
+				->execute($id);
+
+			if ($objGroup->numRows > 0) {
+				foreach ($inherit as $field) {
+					$value = deserialize($objGroup->$field, true);
+					if (!empty($value)) {
+						$this->$field = array_merge((is_array($this->$field) ? $this->$field : (($this->$field != '') ? array($this->$field) : array())), $value);
+						$this->$field = array_unique($this->$field);
+					}
+				}
+			}
+
+		}
+	}
 }

@@ -8,6 +8,7 @@
 .rsfh-toolbar {
 	position: absolute;
 	z-index: 999999;
+	margin: -1px 1px 1px -1px;
 	padding: 5px 2px 5px 5px;
 	border: 1px solid #ddd;
 	font: 12px/14px Arial, Verdana, sans-serif;
