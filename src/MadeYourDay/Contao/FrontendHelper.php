@@ -92,7 +92,7 @@ class FrontendHelper extends \Controller
 	/**
 	 * Controller::getArticle hook
 	 *
-	 * @param  \Database_Result $row     module database result
+	 * @param  \Database_Result $row module database result
 	 * @return void
 	 */
 	public static function getArticleHook($row)
@@ -257,7 +257,7 @@ class FrontendHelper extends \Controller
 	/**
 	 * checks if a Backend User is logged in
 	 *
-	 * @return boolean true if user is logged in
+	 * @return array|boolean false if the user isn't logged in otherwise the permissions array
 	 */
 	public static function checkLogin()
 	{
@@ -293,6 +293,7 @@ class FrontendHelper extends \Controller
 	 * @param  string $do
 	 * @param  string $table
 	 * @param  string $id
+	 * @param  string $act
 	 * @return string
 	 */
 	protected static function getBackendURL($do, $table, $id, $act = 'edit')
