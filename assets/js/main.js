@@ -250,7 +250,6 @@ document.addEventListener('DOMContentLoaded', function() {
 	window.addEventListener('mouseover', function(event) {
 		for (var node = event.target; node && node.getAttribute; node = node.parentNode) {
 			if (! node.frontendHelperEnabled && node.getAttribute('data-frontend-helper')) {
-				console.debug(node);
 				init(node, true);
 			}
 		}
