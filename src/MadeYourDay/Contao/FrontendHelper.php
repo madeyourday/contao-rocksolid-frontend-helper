@@ -262,7 +262,7 @@ class FrontendHelper extends \Controller
 	public static function checkLogin()
 	{
 		// Do not create a user instance if there is no authentication cookie
-		if (! \Input::cookie('BE_USER_AUTH')) {
+		if (! \Input::cookie('BE_USER_AUTH') || TL_MODE !== 'FE') {
 			return false;
 		}
 
