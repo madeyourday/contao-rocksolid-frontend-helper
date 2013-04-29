@@ -36,5 +36,5 @@ $GLOBALS['TL_DCA']['tl_user']['fields']['rocksolidFrontendHelper'] = array(
 	'exclude' => true,
 	'inputType' => 'checkbox',
 	'eval' => array('tl_class' => 'w50'),
-	'sql' => "char(1) NOT NULL default ''",
+	'sql' => "char(1) NOT NULL default '1'",
 );
