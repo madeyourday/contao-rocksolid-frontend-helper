@@ -270,7 +270,7 @@ class FrontendHelper extends \Controller
 
 		$base = \Environment::get('path') . '/contao/';
 		$referrer = parse_url(\Environment::get('httpReferer'));
-		$referrer = $referrer['path'];
+		$referrer = $referrer['path'] . ($referrer['query'] ? '?' . $referrer['query'] : '');
 
 		// Stop if the referrer is a backend URL
 		if (substr($referrer, 0, strlen($base)) === $base) {
