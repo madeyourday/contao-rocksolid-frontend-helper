@@ -255,6 +255,35 @@ class FrontendHelper extends \Controller
 	}
 
 	/**
+	 * loadDataContainer hook
+	 *
+	 * Saves the referrer in the session if it is a frontend URL
+	 *
+	 * @param  string $table The data container table name
+	 * @return void
+	 */
+	public function loadDataContainerHook($table)
+	{
+		if (TL_MODE !== 'BE') {
+			return;
+		}
+
+		$base = \Environment::get('path') . '/contao/';
+		$referrer = parse_url(\Environment::get('httpReferer'));
+		$referrer = $referrer['path'];
+
+		// Stop if the referrer is a backend URL
+		if (substr($referrer, 0, strlen($base)) === $base) {
+			return;
+		}
+
+		// set the frontend URL as referrer
+		$referrerSession = \Session::getInstance()->get('referer');
+		$referrerSession['current'] = $referrer;
+		\Session::getInstance()->set('referer', $referrerSession);
+	}
+
+	/**
 	 * checks if a Backend User is logged in
 	 *
 	 * @return array|boolean false if the user isn't logged in otherwise the permissions array

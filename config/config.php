@@ -16,6 +16,7 @@ $GLOBALS['TL_HOOKS']['parseFrontendTemplate'][] = array('MadeYourDay\\Contao\\Fr
 $GLOBALS['TL_HOOKS']['getContentElement'][] = array('MadeYourDay\\Contao\\FrontendHelper', 'getContentElementHook');
 $GLOBALS['TL_HOOKS']['getFrontendModule'][] = array('MadeYourDay\\Contao\\FrontendHelper', 'getFrontendModuleHook');
 $GLOBALS['TL_HOOKS']['getArticle'][] = array('MadeYourDay\\Contao\\FrontendHelper', 'getArticleHook');
+$GLOBALS['TL_HOOKS']['loadDataContainer'][] = array('MadeYourDay\\Contao\\FrontendHelper', 'loadDataContainerHook');
 
 $GLOBALS['TL_PERMISSIONS'][] = 'rocksolidFrontendHelperOperations';
 
