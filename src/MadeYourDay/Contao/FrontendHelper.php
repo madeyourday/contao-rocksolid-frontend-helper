@@ -277,6 +277,11 @@ class FrontendHelper extends \Controller
 			return;
 		}
 
+		// Make homepage possible as referrer
+		if ($referrer === \Environment::get('path') . '/') {
+			$referrer .= '?';
+		}
+
 		// set the frontend URL as referrer
 		$referrerSession = \Session::getInstance()->get('referer');
 		$referrerSession['current'] = $referrer;
