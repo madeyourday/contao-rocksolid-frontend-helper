@@ -284,7 +284,14 @@ class FrontendHelper extends \Controller
 
 		// set the frontend URL as referrer
 		$referrerSession = \Session::getInstance()->get('referer');
-		$referrerSession['current'] = $referrer;
+		if (defined('TL_REFERER_ID')) {
+			$referrer = substr($referrer, strlen(TL_PATH) + 1);
+			$referrerSession[TL_REFERER_ID]['current'] = $referrer;
+		}
+		else {
+			// Backwards compatibility for Contao 3.0
+			$referrerSession['current'] = $referrer;
+		}
 		\Session::getInstance()->set('referer', $referrerSession);
 	}
 
