@@ -176,7 +176,7 @@ document.addEventListener('DOMContentLoaded', function() {
 				isOver = true;
 				document.body.appendChild(toolbar);
 			}
-			if (fromToolbar) {
+			if (fromToolbar && element !== document.body) {
 				document.body.appendChild(overlay);
 			}
 			else {
