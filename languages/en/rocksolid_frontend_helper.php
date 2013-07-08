@@ -12,5 +12,5 @@
  * @author Martin Auswöger <martin@madeyourday.net>
  */
 
-$GLOBALS['TL_LANG']['rocksolid_frontend_helper']['activateLabel'] = 'Frontend Helper aktivieren';
-$GLOBALS['TL_LANG']['rocksolid_frontend_helper']['deactivateLabel'] = 'Frontend Helper deaktivieren';
+$GLOBALS['TL_LANG']['rocksolid_frontend_helper']['activateLabel'] = 'Enable Frontend Helper';
+$GLOBALS['TL_LANG']['rocksolid_frontend_helper']['deactivateLabel'] = 'Disable Frontend Helper';

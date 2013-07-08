@@ -7,10 +7,9 @@
  */
 
 /**
- * RockSolid Frontend Helper translations
+ * RockSolid Frontend Helper configuration
  *
  * @author Martin Auswöger <martin@madeyourday.net>
  */
 
-$GLOBALS['TL_LANG']['rocksolid_frontend_helper']['activateLabel'] = 'Frontend Helper aktivieren';
-$GLOBALS['TL_LANG']['rocksolid_frontend_helper']['deactivateLabel'] = 'Frontend Helper deaktivieren';
+$GLOBALS['TL_LANG']['tl_user_group']['rocksolid_frontend_helper_legend'] = 'RockSolid Frontend Helper';

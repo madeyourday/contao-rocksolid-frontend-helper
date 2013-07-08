@@ -13,13 +13,13 @@
  */
 
 $GLOBALS['TL_LANG']['tl_user']['rocksolidFrontendHelper'][0] = 'RockSolid Frontend Helper aktivieren';
-$GLOBALS['TL_LANG']['tl_user']['rocksolidFrontendHelper'][1] = 'Aktiviert Buttons im Frontend zum editieren von Artikeln, Modulen, Content-Elementen uvm.';
+$GLOBALS['TL_LANG']['tl_user']['rocksolidFrontendHelper'][1] = 'Aktiviert Schaltflächen im Frontend zum Anzeigen von Elementen-Informationen und zum Editieren von Artikeln, Modulen, Content-Elementen uvm.';
 $GLOBALS['TL_LANG']['tl_user']['rocksolid_frontend_helper_legend'] = 'RockSolid Frontend Helper';
 $GLOBALS['TL_LANG']['tl_user']['rocksolidFrontendHelperOperations'][0] = 'Erlaubte Operationen';
-$GLOBALS['TL_LANG']['tl_user']['rocksolidFrontendHelperOperations'][1] = 'Hier können Sie den Zugriff auf bestimmte Frontend Helper Bereiche erlauben.';
+$GLOBALS['TL_LANG']['tl_user']['rocksolidFrontendHelperOperations'][1] = 'Hier können Sie die Zugriffsberechtigungen des Frontend Helper bearbeiten.';
 $GLOBALS['TL_LANG']['tl_user']['rocksolidFrontendHelperOperationsValues']['feModules'] = 'Frontend-Module';
 $GLOBALS['TL_LANG']['tl_user']['rocksolidFrontendHelperOperationsValues']['beModules'] = 'Backend-Module';
 $GLOBALS['TL_LANG']['tl_user']['rocksolidFrontendHelperOperationsValues']['pages'] = 'Seiten';
 $GLOBALS['TL_LANG']['tl_user']['rocksolidFrontendHelperOperationsValues']['articles'] = 'Artikel';
 $GLOBALS['TL_LANG']['tl_user']['rocksolidFrontendHelperOperationsValues']['contents'] = 'Inhalts-Elemente';
-$GLOBALS['TL_LANG']['tl_user']['rocksolidFrontendHelperOperationsValues']['infos'] = 'Template-Informationen';
+$GLOBALS['TL_LANG']['tl_user']['rocksolidFrontendHelperOperationsValues']['infos'] = 'Template-Informationen anzeigen';
