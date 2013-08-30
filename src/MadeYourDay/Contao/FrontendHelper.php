@@ -126,7 +126,7 @@ class FrontendHelper extends \Controller
 		if (in_array('feModules', $permissions)) {
 			\System::loadLanguageFile('tl_module');
 			$data['feModuleURL'] = static::getBackendURL('themes', 'tl_module', $row->id);
-			$data['feModuleLabel'] = sprintf($GLOBALS['TL_LANG']['tl_module']['edit'][1], $row->id);
+			$data['feModuleLabel'] = sprintf($GLOBALS['TL_LANG']['tl_module']['edit'][1], $row->id . ' (' . $row->name . ')');
 		}
 
 		if (in_array('beModules', $permissions)) {
