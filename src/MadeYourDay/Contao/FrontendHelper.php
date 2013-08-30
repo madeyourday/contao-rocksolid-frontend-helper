@@ -284,14 +284,23 @@ class FrontendHelper extends \Controller
 
 		// set the frontend URL as referrer
 		$referrerSession = \Session::getInstance()->get('referer');
-		if (defined('TL_REFERER_ID')) {
+
+		if (defined('TL_REFERER_ID') && !\Input::get('ref')) {
+
 			$referrer = substr($referrer, strlen(TL_PATH) + 1);
-			$referrerSession[TL_REFERER_ID]['current'] = $referrer;
+			$tlRefererId = substr(md5(TL_START - 1), 0, 8);
+			$referrerSession[$tlRefererId]['current'] = $referrer;
+			\Input::setGet('ref', $tlRefererId);
+			$requestUri = \Environment::get('requestUri');
+			$requestUri .= (strpos($requestUri, '?') === false ? '?' : '&') . 'ref=' . $tlRefererId;
+			\Environment::set('requestUri', $requestUri);
+
 		}
-		else {
-			// Backwards compatibility for Contao 3.0
+		// Backwards compatibility for Contao 3.0
+		else if (!defined('TL_REFERER_ID')) {
 			$referrerSession['current'] = $referrer;
 		}
+
 		\Session::getInstance()->set('referer', $referrerSession);
 	}
 
