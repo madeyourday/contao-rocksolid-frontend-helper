@@ -113,7 +113,7 @@ class FrontendHelper extends \Controller
 	 * @param  string           $content html content
 	 * @return string                    modified $content
 	 */
-	public static function getFrontendModuleHook($row, $content)
+	public function getFrontendModuleHook($row, $content)
 	{
 		if (! $permissions = static::checkLogin()) {
 			return $content;
@@ -153,13 +153,9 @@ class FrontendHelper extends \Controller
 						$do,
 						$id ? $config['table'] : null,
 						$id,
-						! empty($config['act']) && $id ? $config['act'] : false
+						!empty($config['act']) && $id ? $config['act'] : false
 					);
-					\System::loadLanguageFile($config['table']);
-					$data['beModuleLabel'] =
-						! empty($GLOBALS['TL_LANG'][$config['table']]['editheader'][0]) ?
-						$GLOBALS['TL_LANG'][$config['table']]['editheader'][0] :
-						$GLOBALS['TL_LANG'][$config['table']]['edit'][0];
+					$data['beModuleLabel'] = $this->getBackendModuleLabel($config, $id, empty($config['act']) || !$id);
 					$data['beModuleIcon'] = ! empty($config['icon']) ? $config['icon'] : '';
 				}
 			}
@@ -175,7 +171,7 @@ class FrontendHelper extends \Controller
 	 * @param  string $content html content
 	 * @return string          modified $content
 	 */
-	public static function getContentElementHook($row, $content, $element)
+	public function getContentElementHook($row, $content, $element)
 	{
 		if (! $permissions = static::checkLogin()) {
 			return $content;
@@ -212,7 +208,7 @@ class FrontendHelper extends \Controller
 		if ($row->type === 'module' && $row->module) {
 			$moduleRow = \ModuleModel::findByPk($row->module);
 			if ($moduleRow) {
-				$content = static::getFrontendModuleHook($moduleRow, $content);
+				$content = $this->getFrontendModuleHook($moduleRow, $content);
 			}
 		}
 		else if (in_array('beModules', $permissions)) {
@@ -241,11 +237,7 @@ class FrontendHelper extends \Controller
 						$id,
 						! empty($config['act']) && $id ? $config['act'] : false
 					);
-					\System::loadLanguageFile($config['table']);
-					$data['beModuleLabel'] =
-						! empty($GLOBALS['TL_LANG'][$config['table']]['editheader'][0]) ?
-						$GLOBALS['TL_LANG'][$config['table']]['editheader'][0] :
-						$GLOBALS['TL_LANG'][$config['table']]['edit'][0];
+					$data['beModuleLabel'] = $this->getBackendModuleLabel($config, $id, empty($config['act']) || !$id);
 					$data['beModuleIcon'] = ! empty($config['icon']) ? $config['icon'] : '';
 				}
 			}
@@ -335,6 +327,48 @@ class FrontendHelper extends \Controller
 		}
 
 		return false;
+	}
+
+	/**
+	 * get the label for a backend module link
+	 *
+	 * @param  array   $config          backend module configuration from $GLOBALS['TL_RSFH']
+	 * @param  int     $id              id of the entry to edit
+	 * @param  boolean $withParentTable use the edit label from the parent table if possible
+	 * @return string                   the label
+	 */
+	public function getBackendModuleLabel($config, $id = null, $withParentTable = false)
+	{
+		if ($withParentTable) {
+			$this->loadDataContainer($config['table']);
+			if (!empty($GLOBALS['TL_DCA'][$config['table']]['config']['ptable'])) {
+				$ptable = $GLOBALS['TL_DCA'][$config['table']]['config']['ptable'];
+				\System::loadLanguageFile($ptable);
+				if ($id && !empty($GLOBALS['TL_LANG'][$ptable]['edit'][1])) {
+					return sprintf($GLOBALS['TL_LANG'][$ptable]['edit'][1], $id);
+				}
+				if (!empty($GLOBALS['TL_LANG'][$ptable]['edit'][0])) {
+					return $GLOBALS['TL_LANG'][$ptable]['edit'][0];
+				}
+				if (!empty($GLOBALS['TL_LANG'][$ptable]['editheader'][0])) {
+					return $GLOBALS['TL_LANG'][$ptable]['editheader'][0];
+				}
+			}
+		}
+		\System::loadLanguageFile($config['table']);
+		if (!empty($GLOBALS['TL_LANG'][$config['table']]['editheader'][0])) {
+			return $GLOBALS['TL_LANG'][$config['table']]['editheader'][0];
+		}
+		if ($id && !empty($GLOBALS['TL_LANG'][$config['table']]['edit'][1])) {
+			return sprintf($GLOBALS['TL_LANG'][$config['table']]['edit'][1], $id);
+		}
+		if (!empty($GLOBALS['TL_LANG'][$config['table']]['edit'][0])) {
+			return $GLOBALS['TL_LANG'][$config['table']]['edit'][0];
+		}
+		if ($id) {
+			return sprintf($GLOBALS['TL_LANG']['MSC']['editRecord'], $id);
+		}
+		return $GLOBALS['TL_LANG']['MSC']['editElement'];
 	}
 
 	/**

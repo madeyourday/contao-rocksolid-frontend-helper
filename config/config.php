@@ -97,11 +97,20 @@ $GLOBALS['TL_RSFH']['backendModules']['form'] = array(
 		'form',
 	),
 );
+$GLOBALS['TL_RSFH']['backendModules']['mgroup'] = array(
+	'table' => 'tl_member_group',
+	'act' => 'edit',
+	'column' => 'ml_groups',
+	'columnType' => 'serialized',
+	'icon' => 'system/themes/default/images/mgroup.gif',
+	'feModules' => array(
+		'memberlist',
+	),
+);
 
 // third party extensions
 $GLOBALS['TL_RSFH']['backendModules']['dlh_googlemaps'] = array(
-	'table' => 'tl_dlh_googlemaps',
-	'act' => 'edit',
+	'table' => 'tl_dlh_googlemaps_elements',
 	'column' => 'dlh_googlemap',
 	'columnType' => 'plain',
 	'ceColumn' => 'dlh_googlemap',
@@ -124,16 +133,6 @@ $GLOBALS['TL_RSFH']['backendModules']['gallery_creator'] = array(
 	),
 	'contentElements' => array(
 		'gallery_creator',
-	),
-);
-$GLOBALS['TL_RSFH']['backendModules']['mgroup'] = array(
-	'table' => 'tl_member_group',
-	'act' => 'edit',
-	'column' => 'ml_groups',
-	'columnType' => 'serialized',
-	'icon' => 'system/themes/default/images/mgroup.gif',
-	'feModules' => array(
-		'memberlist',
 	),
 );
 $GLOBALS['TL_RSFH']['backendModules']['ticker'] = array(
@@ -164,8 +163,7 @@ $GLOBALS['TL_RSFH']['backendModules']['pageimages'] = array(
 	),
 );
 $GLOBALS['TL_RSFH']['backendModules']['rocksolid_slider'] = array(
-	'table' => 'tl_rocksolid_slider',
-	'act' => 'edit',
+	'table' => 'tl_rocksolid_slide',
 	'column' => 'rsts_id',
 	'columnType' => 'plain',
 	'icon' => 'system/modules/rocksolid-slider/assets/img/icon.png',
