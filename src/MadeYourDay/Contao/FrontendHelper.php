@@ -90,6 +90,44 @@ class FrontendHelper extends \Controller
 	}
 
 	/**
+	 * parseWidget hook
+	 *
+	 * @param  string  $content html content
+	 * @param  \Widget $widget  widget object
+	 * @return string           modified $content
+	 */
+	public function parseWidgetHook($content, $widget)
+	{
+		if (!$permissions = static::checkLogin()) {
+			return $content;
+		}
+
+		global $page;
+
+		$data = array(
+			'toolbar' => true,
+		);
+
+		if (in_array('contents', $permissions)) {
+			\System::loadLanguageFile('tl_form_field');
+			$data['editURL'] = static::getBackendURL('form', 'tl_form_field', $widget->id);
+			$data['editLabel'] = sprintf($GLOBALS['TL_LANG']['tl_form_field']['edit'][1], $widget->id);
+		}
+
+		if (in_array('infos', $permissions)) {
+			$data['template'] = $widget->template;
+			$data['templatePath'] = substr($widget->getTemplate(
+				$widget->template,
+				(TL_MODE === 'FE' && $page->outputFormat) ?
+					$page->outputFormat :
+					'html5'
+			), strlen(TL_ROOT) + 1);
+		}
+
+		return static::insertData($content, $data);
+	}
+
+	/**
 	 * Controller::getArticle hook
 	 *
 	 * @param  \Database_Result $row module database result

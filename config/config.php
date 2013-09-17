@@ -13,6 +13,7 @@
  */
 
 $GLOBALS['TL_HOOKS']['parseFrontendTemplate'][] = array('MadeYourDay\\Contao\\FrontendHelper', 'parseFrontendTemplateHook');
+$GLOBALS['TL_HOOKS']['parseWidget'][] = array('MadeYourDay\\Contao\\FrontendHelper', 'parseWidgetHook');
 $GLOBALS['TL_HOOKS']['getContentElement'][] = array('MadeYourDay\\Contao\\FrontendHelper', 'getContentElementHook');
 $GLOBALS['TL_HOOKS']['getFrontendModule'][] = array('MadeYourDay\\Contao\\FrontendHelper', 'getFrontendModuleHook');
 $GLOBALS['TL_HOOKS']['getArticle'][] = array('MadeYourDay\\Contao\\FrontendHelper', 'getArticleHook');
