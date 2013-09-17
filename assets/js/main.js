@@ -181,12 +181,62 @@ document.addEventListener('DOMContentLoaded', function() {
 			}
 			else {
 				var boundingClientRect = element.getBoundingClientRect();
-				boundingClientRect = {
-					top: boundingClientRect.top,
-					left: boundingClientRect.left,
-					width: boundingClientRect.width,
-					height: boundingClientRect.height
-				};
+				if (element === document.body) {
+					boundingClientRect = {
+						top: window.pageYOffset * -1,
+						left: window.pageXOffset * -1,
+						width: boundingClientRect.width,
+						height: boundingClientRect.height
+					};
+				}
+				else {
+					boundingClientRect = {
+						top: Math.max(0, boundingClientRect.top),
+						left: Math.max(0, boundingClientRect.left),
+						width: boundingClientRect.width + Math.min(0, boundingClientRect.left),
+						height: boundingClientRect.height + Math.min(0, boundingClientRect.top)
+					};
+				}
+				if (boundingClientRect.height < 2 || boundingClientRect.width < 2) {
+					var tops = [];
+					var rights = [];
+					var bottoms = [];
+					var lefts = [];
+					var currentRect;
+					var i, j;
+					for (i = 0; i < element.childNodes.length; i++) {
+						if (element.childNodes[i].nodeType !== Node.ELEMENT_NODE) {
+							continue;
+						}
+						currentRect = element.childNodes[i].getBoundingClientRect();
+						if (currentRect.width < 2 || currentRect.height < 2) {
+							for (j = 0; j < element.childNodes[i].childNodes.length; j++) {
+								if (element.childNodes[i].childNodes[j].nodeType !== Node.ELEMENT_NODE) {
+									continue;
+								}
+								currentRect = element.childNodes[i].childNodes[j].getBoundingClientRect();
+								if (currentRect.width < 2 || currentRect.height < 2) {
+									continue;
+								}
+								tops.push(currentRect.top);
+								rights.push(currentRect.right);
+								bottoms.push(currentRect.bottom);
+								lefts.push(currentRect.left);
+							}
+							continue;
+						}
+						tops.push(currentRect.top);
+						rights.push(currentRect.right);
+						bottoms.push(currentRect.bottom);
+						lefts.push(currentRect.left);
+					}
+					boundingClientRect = {
+						top: Math.max(0, Math.min.apply(null, tops)),
+						left: Math.max(0, Math.min.apply(null, lefts))
+					};
+					boundingClientRect.width = Math.max.apply(null, rights) - boundingClientRect.left;
+					boundingClientRect.height = Math.max.apply(null, bottoms) - boundingClientRect.top;
+				}
 				event.currentToolbars = event.currentToolbars || [];
 				event.currentToolbars.reverse();
 				event.currentToolbars.push(toolbar);
@@ -222,7 +272,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			timeout = setTimeout(function() {
 				isOver = false;
 				document.body.removeChild(toolbar);
-			}, 300);
+			}, 400);
 			if (fromToolbar) {
 				document.body.removeChild(overlay);
 			}
