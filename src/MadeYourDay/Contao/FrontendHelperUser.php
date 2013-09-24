@@ -24,11 +24,19 @@ class FrontendHelperUser extends \BackendUser
 	protected static $objInstance;
 
 	/**
-	 * Disable BackendUser authentication redirect
+	 * @var boolean|null Caches the result of \User::authenticate()
+	 */
+	protected $frontendHelperUserAuthenticated = null;
+
+	/**
+	 * Disable BackendUser authentication redirect and cache the result
 	 */
 	public function authenticate()
 	{
-		return \User::authenticate();
+		if ($this->frontendHelperUserAuthenticated === null) {
+			$this->frontendHelperUserAuthenticated = \User::authenticate();
+		}
+		return $this->frontendHelperUserAuthenticated;
 	}
 
 	/**
