@@ -112,6 +112,11 @@ document.addEventListener('DOMContentLoaded', function() {
 				var data = JSON.parse(element.getAttribute('data-frontend-helper'));
 				infoTemplates[data.template] = data.templatePath;
 			});
+			if (data.column) {
+				infoHtml += '<div><b>' +
+					data.columnLabel.split('&').join('&amp;').split('<').join('&lt;') + ':</b> ' +
+					data.column.split('&').join('&amp;').split('<').join('&lt;') + '</div>';
+			}
 			for (var template in infoTemplates) {
 				infoHtml += '<div><b>' + template + ':</b> ' + infoTemplates[template] + '</div>';
 			}

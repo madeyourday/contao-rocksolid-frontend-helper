@@ -76,12 +76,19 @@ class FrontendHelper extends \Controller
 		// get the first tag
 		if (preg_match('(<[a-z0-9]+\\s[^>]+)is', $content, $matches)) {
 			// search for an article id incected by getArticleHook
-			if (preg_match('(\\sclass="[^"]*rsfh-article-([0-9]+)[^"]*")is', $matches[0], $matches2)) {
+			if (preg_match('(^(.*\\sclass="[^"]*)rsfh-article-([0-9]+)-([0-9a-f]*)(.*)$)is', $matches[0], $matches2)) {
 				$data['toolbar'] = true;
+				// remove the article id class
+				$content = str_replace($matches2[0], $matches2[1] . $matches2[4], $content);
 				if (in_array('articles', $permissions)) {
-					$data['articleURL'] = static::getBackendURL('article', 'tl_content', $matches2[1], false);
+					$data['articleURL'] = static::getBackendURL('article', 'tl_content', $matches2[2], false);
 					\System::loadLanguageFile('tl_article');
-					$data['articleLabel'] = sprintf($GLOBALS['TL_LANG']['tl_article']['edit'][1], $matches2[1]);
+					$data['articleLabel'] = sprintf($GLOBALS['TL_LANG']['tl_article']['edit'][1], $matches2[2]);
+					$data['columnLabel'] = $GLOBALS['TL_LANG']['MSC']['mw_column'];
+					$data['column'] = pack("H*" , $matches2[3]);
+					if (isset($GLOBALS['TL_LANG']['tl_article'][$data['column']])) {
+						$data['column'] = $GLOBALS['TL_LANG']['tl_article'][$data['column']];
+					}
 				}
 			}
 		}
@@ -140,7 +147,7 @@ class FrontendHelper extends \Controller
 		}
 
 		$cssId = deserialize($row->cssID, true);
-		$cssId[1] = trim($cssId[1] . ' rsfh-article-' . $row->id);
+		$cssId[1] = trim($cssId[1] . ' rsfh-article-' . $row->id . '-' . bin2hex($row->inColumn ?: ''));
 		$row->cssID = serialize($cssId);
 	}
 
@@ -149,9 +156,10 @@ class FrontendHelper extends \Controller
 	 *
 	 * @param  \Database_Result $row     module database result
 	 * @param  string           $content html content
+	 * @param  \Module          $module  module instance
 	 * @return string                    modified $content
 	 */
-	public function getFrontendModuleHook($row, $content)
+	public function getFrontendModuleHook($row, $content, $module = null)
 	{
 		if (! $permissions = static::checkLogin()) {
 			return $content;
@@ -160,6 +168,21 @@ class FrontendHelper extends \Controller
 		$data = array(
 			'toolbar' => true,
 		);
+
+		if (
+			is_object($module) &&
+			isset($module->Template) &&
+			is_object($module->Template) &&
+			isset($module->Template->inColumn) &&
+			$module->Template->inColumn
+		) {
+			$data['columnLabel'] = $GLOBALS['TL_LANG']['MSC']['mw_column'];
+			$data['column'] = $module->Template->inColumn;
+			\System::loadLanguageFile('tl_article');
+			if (isset($GLOBALS['TL_LANG']['tl_article'][$data['column']])) {
+				$data['column'] = $GLOBALS['TL_LANG']['tl_article'][$data['column']];
+			}
+		}
 
 		if (in_array('feModules', $permissions)) {
 			\System::loadLanguageFile('tl_module');
