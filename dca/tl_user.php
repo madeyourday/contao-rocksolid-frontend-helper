@@ -15,12 +15,12 @@
 $GLOBALS['TL_DCA']['tl_user']['palettes']['extend'] = str_replace('formp;', 'formp;{rocksolid_frontend_helper_legend},rocksolidFrontendHelperOperations;', $GLOBALS['TL_DCA']['tl_user']['palettes']['extend']);
 $GLOBALS['TL_DCA']['tl_user']['palettes']['custom'] = str_replace('formp;', 'formp;{rocksolid_frontend_helper_legend},rocksolidFrontendHelperOperations;', $GLOBALS['TL_DCA']['tl_user']['palettes']['custom']);
 
-$GLOBALS['TL_DCA']['tl_user']['palettes']['admin'] = str_replace(';{theme_legend', ',rocksolidFrontendHelper;{theme_legend', $GLOBALS['TL_DCA']['tl_user']['palettes']['admin']);
-$GLOBALS['TL_DCA']['tl_user']['palettes']['default'] = str_replace(';{theme_legend', ',rocksolidFrontendHelper;{theme_legend', $GLOBALS['TL_DCA']['tl_user']['palettes']['default']);
-$GLOBALS['TL_DCA']['tl_user']['palettes']['group'] = str_replace(';{theme_legend', ',rocksolidFrontendHelper;{theme_legend', $GLOBALS['TL_DCA']['tl_user']['palettes']['group']);
-$GLOBALS['TL_DCA']['tl_user']['palettes']['extend'] = str_replace(';{theme_legend', ',rocksolidFrontendHelper;{theme_legend', $GLOBALS['TL_DCA']['tl_user']['palettes']['extend']);
-$GLOBALS['TL_DCA']['tl_user']['palettes']['custom'] = str_replace(';{theme_legend', ',rocksolidFrontendHelper;{theme_legend', $GLOBALS['TL_DCA']['tl_user']['palettes']['custom']);
-$GLOBALS['TL_DCA']['tl_user']['palettes']['login'] = str_replace(';{session_legend', ',rocksolidFrontendHelper;{session_legend', $GLOBALS['TL_DCA']['tl_user']['palettes']['login']);
+$GLOBALS['TL_DCA']['tl_user']['palettes']['admin'] = preg_replace('(([,;}]useCE)([,;{]))i', '$1,rocksolidFrontendHelper$2', $GLOBALS['TL_DCA']['tl_user']['palettes']['admin']);
+$GLOBALS['TL_DCA']['tl_user']['palettes']['default'] = preg_replace('(([,;}]useCE)([,;{]))i', '$1,rocksolidFrontendHelper$2', $GLOBALS['TL_DCA']['tl_user']['palettes']['default']);
+$GLOBALS['TL_DCA']['tl_user']['palettes']['group'] = preg_replace('(([,;}]useCE)([,;{]))i', '$1,rocksolidFrontendHelper$2', $GLOBALS['TL_DCA']['tl_user']['palettes']['group']);
+$GLOBALS['TL_DCA']['tl_user']['palettes']['extend'] = preg_replace('(([,;}]useCE)([,;{]))i', '$1,rocksolidFrontendHelper$2', $GLOBALS['TL_DCA']['tl_user']['palettes']['extend']);
+$GLOBALS['TL_DCA']['tl_user']['palettes']['custom'] = preg_replace('(([,;}]useCE)([,;{]))i', '$1,rocksolidFrontendHelper$2', $GLOBALS['TL_DCA']['tl_user']['palettes']['custom']);
+$GLOBALS['TL_DCA']['tl_user']['palettes']['login'] = preg_replace('(([,;}]useCE)([,;{]))i', '$1,rocksolidFrontendHelper$2', $GLOBALS['TL_DCA']['tl_user']['palettes']['login']);
 
 $GLOBALS['TL_DCA']['tl_user']['fields']['rocksolidFrontendHelperOperations'] = array(
 	'label' => &$GLOBALS['TL_LANG']['tl_user']['rocksolidFrontendHelperOperations'],
