@@ -199,6 +199,31 @@ class FrontendHelper extends \Controller
 			}
 		}
 
+		$blockLevelElements = array(
+			'div',
+			'section',
+			'article',
+			'aside',
+			'figure',
+			'footer',
+			'header',
+			'hgroup',
+			'blockquote',
+			'ul',
+			'ol',
+			'dd',
+			'dl',
+			'p',
+			'pre',
+			'form',
+			'fieldset',
+			'address',
+		);
+		if (preg_match('(^\\s*<(?:' . implode('|', $blockLevelElements) . ')(?:\\s[^>]+|)>\\s*$)is', $content)) {
+			// Disable the toolbar for wrapper modules
+			unset($data['toolbar']);
+		}
+
 		return static::insertData($content, $data);
 	}
 
