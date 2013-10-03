@@ -20,6 +20,84 @@ document.addEventListener('DOMContentLoaded', function() {
 		var value = document.cookie.match('(?:^|;)\\s*' + key + '=([^;]*)');
 		return (value) ? decodeURIComponent(value[1]) : null;
 	};
+	var getBoundingClientRect = function(element) {
+		var boundingClientRect = element.getBoundingClientRect();
+		if (element === document.body) {
+			return {
+				top: window.pageYOffset * -1,
+				left: window.pageXOffset * -1,
+				width: boundingClientRect.width,
+				height: boundingClientRect.height
+			};
+		}
+		var computedStyle = window.getComputedStyle(element);
+		if (
+			computedStyle.borderTopWidth !== '0px' ||
+			computedStyle.borderRightWidth !== '0px' ||
+			computedStyle.borderBottomWidth !== '0px' ||
+			computedStyle.borderLeftWidth !== '0px' ||
+			(
+				computedStyle.backgroundColor !== 'transparent' &&
+				computedStyle.backgroundColor !== 'rgba(0, 0, 0, 0)'
+			) ||
+			(
+				'boxShadow' in computedStyle &&
+				computedStyle.boxShadow !== 'none'
+			) ||
+			computedStyle.backgroundImage !== 'none' ||
+			computedStyle.overflow !== 'visible'
+		) {
+			// the element has a visible box, so the bounding box can be used
+			return {
+				top: Math.max(0, boundingClientRect.top),
+				left: Math.max(0, boundingClientRect.left),
+				width: boundingClientRect.width + Math.min(0, boundingClientRect.left),
+				height: boundingClientRect.height + Math.min(0, boundingClientRect.top)
+			};
+		}
+		var tops = [];
+		var rights = [];
+		var bottoms = [];
+		var lefts = [];
+		var currentRect;
+		var child;
+		var wrapElement;
+		for (var i = 0; i < element.childNodes.length; i++) {
+			child = element.childNodes[i];
+			if (child.nodeType === Node.ELEMENT_NODE) {
+				currentRect = getBoundingClientRect(child);
+			}
+			else if (
+				child.nodeType === Node.TEXT_NODE &&
+				('' + child.nodeValue).trim()
+			) {
+				wrapElement = document.createElement('span');
+				element.insertBefore(wrapElement, child);
+				wrapElement.appendChild(child);
+				currentRect = wrapElement.getBoundingClientRect();
+				element.insertBefore(child, wrapElement);
+				element.removeChild(wrapElement);
+			}
+			else {
+				continue;
+			}
+			if (currentRect.width > 1 && currentRect.height > 1) {
+				tops.push(currentRect.top);
+				rights.push(currentRect.left + currentRect.width);
+				bottoms.push(currentRect.top + currentRect.height);
+				lefts.push(currentRect.left);
+			}
+		}
+		if (tops.length) {
+			boundingClientRect = {
+				top: Math.max(0, Math.min.apply(null, tops)),
+				left: Math.max(0, Math.min.apply(null, lefts))
+			};
+			boundingClientRect.width = Math.max.apply(null, rights) - boundingClientRect.left;
+			boundingClientRect.height = Math.max.apply(null, bottoms) - boundingClientRect.top;
+		}
+		return boundingClientRect;
+	};
 
 	var active = !!getCookie('rsfh-active');
 
@@ -181,67 +259,15 @@ document.addEventListener('DOMContentLoaded', function() {
 				isOver = true;
 				document.body.appendChild(toolbar);
 			}
+			var boundingClientRect = getBoundingClientRect(element);
+			overlay.style.top = boundingClientRect.top + window.pageYOffset + 'px';
+			overlay.style.left = boundingClientRect.left + window.pageXOffset + 'px';
+			overlay.style.width = boundingClientRect.width + 'px';
+			overlay.style.height = boundingClientRect.height + 'px';
 			if (fromToolbar && element !== document.body) {
 				document.body.appendChild(overlay);
 			}
 			else {
-				var boundingClientRect = element.getBoundingClientRect();
-				if (element === document.body) {
-					boundingClientRect = {
-						top: window.pageYOffset * -1,
-						left: window.pageXOffset * -1,
-						width: boundingClientRect.width,
-						height: boundingClientRect.height
-					};
-				}
-				else {
-					boundingClientRect = {
-						top: Math.max(0, boundingClientRect.top),
-						left: Math.max(0, boundingClientRect.left),
-						width: boundingClientRect.width + Math.min(0, boundingClientRect.left),
-						height: boundingClientRect.height + Math.min(0, boundingClientRect.top)
-					};
-				}
-				if (boundingClientRect.height < 2 || boundingClientRect.width < 2) {
-					var tops = [];
-					var rights = [];
-					var bottoms = [];
-					var lefts = [];
-					var currentRect;
-					var i, j;
-					for (i = 0; i < element.childNodes.length; i++) {
-						if (element.childNodes[i].nodeType !== Node.ELEMENT_NODE) {
-							continue;
-						}
-						currentRect = element.childNodes[i].getBoundingClientRect();
-						if (currentRect.width < 2 || currentRect.height < 2) {
-							for (j = 0; j < element.childNodes[i].childNodes.length; j++) {
-								if (element.childNodes[i].childNodes[j].nodeType !== Node.ELEMENT_NODE) {
-									continue;
-								}
-								currentRect = element.childNodes[i].childNodes[j].getBoundingClientRect();
-								if (currentRect.width < 2 || currentRect.height < 2) {
-									continue;
-								}
-								tops.push(currentRect.top);
-								rights.push(currentRect.right);
-								bottoms.push(currentRect.bottom);
-								lefts.push(currentRect.left);
-							}
-							continue;
-						}
-						tops.push(currentRect.top);
-						rights.push(currentRect.right);
-						bottoms.push(currentRect.bottom);
-						lefts.push(currentRect.left);
-					}
-					boundingClientRect = {
-						top: Math.max(0, Math.min.apply(null, tops)),
-						left: Math.max(0, Math.min.apply(null, lefts))
-					};
-					boundingClientRect.width = Math.max.apply(null, rights) - boundingClientRect.left;
-					boundingClientRect.height = Math.max.apply(null, bottoms) - boundingClientRect.top;
-				}
 				event.currentToolbars = event.currentToolbars || [];
 				event.currentToolbars.reverse();
 				event.currentToolbars.push(toolbar);
@@ -263,10 +289,8 @@ document.addEventListener('DOMContentLoaded', function() {
 					});
 				});
 				toolbar.className = toolbar.className.split('rsfh-toolbar-minor').join('');
-				overlay.style.top = toolbar.style.top = boundingClientRect.top + window.pageYOffset + 'px';
-				overlay.style.left = toolbar.style.left = boundingClientRect.left + window.pageXOffset + 'px';
-				overlay.style.width = boundingClientRect.width + 'px';
-				overlay.style.height = boundingClientRect.height + 'px';
+				toolbar.style.top = boundingClientRect.top + window.pageYOffset + 'px';
+				toolbar.style.left = boundingClientRect.left + window.pageXOffset + 'px';
 			}
 		};
 		var out = function(event, fromToolbar) {
@@ -279,7 +303,9 @@ document.addEventListener('DOMContentLoaded', function() {
 				document.body.removeChild(toolbar);
 			}, 400);
 			if (fromToolbar) {
-				document.body.removeChild(overlay);
+				if (overlay.parentNode === document.body) {
+					document.body.removeChild(overlay);
+				}
 			}
 		};
 
