@@ -39,6 +39,8 @@ class FrontendHelper extends \Controller
 
 		if (substr($template, 0, 3) === 'fe_') {
 
+			\System::loadLanguageFile('rocksolid_frontend_helper');
+
 			$data['toolbar'] = true;
 
 			if (in_array('feModules', $permissions)) {
@@ -53,6 +55,11 @@ class FrontendHelper extends \Controller
 				$data['pageLabel'] = sprintf($GLOBALS['TL_LANG']['tl_page']['edit'][1], $GLOBALS['objPage']->id);
 			}
 
+			if (in_array('rstAssistant', $permissions) && $assistantId = static::getThemeAssistantStylesheet()) {
+				$data['assistantURL'] = static::getBackendURL('rocksolid_theme_assistant', null, $assistantId);
+				$data['assistantLabel'] = $GLOBALS['TL_LANG']['rocksolid_frontend_helper']['assistantLabel'];
+			}
+
 			$data['previewHideLabel'] =
 				$GLOBALS['TL_LANG']['MSC']['hiddenElements'] . ' ' .
 				$GLOBALS['TL_LANG']['MSC']['hiddenHide'];
@@ -60,7 +67,6 @@ class FrontendHelper extends \Controller
 				$GLOBALS['TL_LANG']['MSC']['hiddenElements'] . ' ' .
 				$GLOBALS['TL_LANG']['MSC']['hiddenShow'];
 
-			\System::loadLanguageFile('rocksolid_frontend_helper');
 			$data['activateLabel'] = $GLOBALS['TL_LANG']['rocksolid_frontend_helper']['activateLabel'];
 			$data['deactivateLabel'] = $GLOBALS['TL_LANG']['rocksolid_frontend_helper']['deactivateLabel'];
 
@@ -405,11 +411,19 @@ class FrontendHelper extends \Controller
 		}
 
 		if ($User->isAdmin) {
-			return array('feModules', 'beModules', 'pages', 'articles', 'contents', 'infos');
+			return array('feModules', 'beModules', 'pages', 'articles', 'contents', 'infos', 'rstAssistant');
 		}
 
-		if (count($User->rocksolidFrontendHelperOperations)) {
-			return $User->rocksolidFrontendHelperOperations;
+		$permissions = array();
+		if (is_array($User->rocksolidFrontendHelperOperations)) {
+			$permissions = array_merge($permissions, $User->rocksolidFrontendHelperOperations);
+		}
+		if ($User->hasAccess('rocksolid_theme_assistant', 'modules')) {
+			$permissions[] = 'rstAssistant';
+		}
+
+		if (count($permissions)) {
+			return $permissions;
 		}
 
 		return false;
@@ -455,6 +469,36 @@ class FrontendHelper extends \Controller
 			return sprintf($GLOBALS['TL_LANG']['MSC']['editRecord'], $id);
 		}
 		return $GLOBALS['TL_LANG']['MSC']['editElement'];
+	}
+
+	/**
+	 * Get path to the .css.base file of the current layout
+	 *
+	 * @return string|null Path to the .css.base file or null
+	 */
+	protected function getThemeAssistantStylesheet()
+	{
+		if (!$GLOBALS['objPage'] || !$GLOBALS['objPage']->getRelated('layout')) {
+			return null;
+		}
+		if (!$stylesheets = $GLOBALS['objPage']->getRelated('layout')->external) {
+			return null;
+		}
+
+		$stylesheets = deserialize($stylesheets);
+		foreach ($stylesheets as $stylesheet) {
+			if (version_compare(VERSION, '3.2', '<')) {
+				$file = \FilesModel::findByPk($stylesheet);
+			}
+			else {
+				$file = \FilesModel::findByUuid($stylesheet);
+			}
+			if ($file && $file->path && file_exists(TL_ROOT . '/' . $file->path . '.base')) {
+				return $file->path . '.base';
+			}
+		}
+
+		return null;
 	}
 
 	/**

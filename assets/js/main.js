@@ -142,6 +142,15 @@ document.addEventListener('DOMContentLoaded', function() {
 			toolbar.appendChild(layoutLink);
 		}
 
+		if (data.assistantURL) {
+			var assistantLink = document.createElement('a');
+			assistantLink.href = data.assistantURL;
+			assistantLink.target = '_top';
+			assistantLink.className = 'rsfh-assistant';
+			assistantLink.innerHTML = assistantLink.title = data.assistantLabel;
+			toolbar.appendChild(assistantLink);
+		}
+
 		if (data.editURL) {
 			var editLink = document.createElement('a');
 			editLink.href = data.editURL;
