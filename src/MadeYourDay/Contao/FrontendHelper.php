@@ -231,6 +231,7 @@ class FrontendHelper extends \Controller
 		$blockLevelElements = array(
 			'div',
 			'section',
+			'nav',
 			'article',
 			'aside',
 			'figure',
