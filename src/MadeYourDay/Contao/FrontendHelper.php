@@ -35,6 +35,9 @@ class FrontendHelper extends \Controller
 				'template' => $template,
 				'templatePath' => substr($this->getTemplate($template), strlen(TL_ROOT) + 1),
 			);
+			if (in_array('tpl_editor', $permissions)) {
+				$data = static::addTemplateURL($data);
+			}
 		}
 
 		if (substr($template, 0, 3) === 'fe_') {
@@ -135,6 +138,9 @@ class FrontendHelper extends \Controller
 					$page->outputFormat :
 					'html5'
 			), strlen(TL_ROOT) + 1);
+			if (in_array('tpl_editor', $permissions)) {
+				$data = static::addTemplateURL($data);
+			}
 		}
 
 		return static::insertData($content, $data);
@@ -342,7 +348,8 @@ class FrontendHelper extends \Controller
 	/**
 	 * loadDataContainer hook
 	 *
-	 * Saves the referrer in the session if it is a frontend URL
+	 * - Saves the referrer in the session if it is a frontend URL
+	 * - Preselects the original template in the template editor
 	 *
 	 * @param  string $table The data container table name
 	 * @return void
@@ -351,6 +358,16 @@ class FrontendHelper extends \Controller
 	{
 		if (TL_MODE !== 'BE') {
 			return;
+		}
+
+		if (
+			$table === 'tl_templates' &&
+			\Input::get('key') === 'new_tpl' &&
+			\Input::get('original') &&
+			!\Input::post('original')
+		) {
+			// Preselect the original template
+			\Input::setPost('original', \Input::get('original'));
 		}
 
 		$base = \Environment::get('path') . '/contao/';
@@ -412,7 +429,7 @@ class FrontendHelper extends \Controller
 		}
 
 		if ($User->isAdmin) {
-			return array('feModules', 'beModules', 'pages', 'articles', 'contents', 'infos', 'rstAssistant');
+			return array('feModules', 'beModules', 'pages', 'articles', 'contents', 'infos', 'rstAssistant', 'tpl_editor');
 		}
 
 		$permissions = array();
@@ -421,6 +438,9 @@ class FrontendHelper extends \Controller
 		}
 		if ($User->hasAccess('rocksolid_theme_assistant', 'modules')) {
 			$permissions[] = 'rstAssistant';
+		}
+		if ($User->hasAccess('tpl_editor', 'modules')) {
+			$permissions[] = 'tpl_editor';
 		}
 
 		if (count($permissions)) {
@@ -473,6 +493,37 @@ class FrontendHelper extends \Controller
 	}
 
 	/**
+	 * Add templateURL and templateLabel to data array
+	 *
+	 * @param  array $data data array
+	 * @return array       modified data array
+	 */
+	protected static function addTemplateURL($data)
+	{
+		if (substr($data['templatePath'], 0, 10) === 'templates/') {
+
+			$data['templateURL'] = static::getBackendURL('tpl_editor', null, $data['templatePath'], 'source');
+
+			\System::loadLanguageFile('tl_files');
+			$data['templateLabel'] = sprintf($GLOBALS['TL_LANG']['tl_files']['source'][1], basename($data['templatePath']));
+
+		}
+		else {
+
+			$data['templateURL'] = static::getBackendURL('tpl_editor', null, null, null, array(
+				'key' => 'new_tpl',
+				'original' => $data['templatePath'],
+			));
+
+			\System::loadLanguageFile('tl_templates');
+			$data['templateLabel'] = $GLOBALS['TL_LANG']['tl_templates']['new_tpl'][1];
+
+		}
+
+		return $data;
+	}
+
+	/**
 	 * Get path to the .css.base file of the current layout
 	 *
 	 * @return string|null Path to the .css.base file or null
@@ -511,13 +562,14 @@ class FrontendHelper extends \Controller
 	 * @param  string $act
 	 * @return string
 	 */
-	protected static function getBackendURL($do, $table, $id, $act = 'edit')
+	protected static function getBackendURL($do, $table, $id, $act = 'edit', array $params = array())
 	{
 		return 'contao/main.php'
 			. '?do=' . $do
 			. ($table ? '&table=' . $table : '')
 			. ($act ? '&act=' . $act : '')
 			. ($id ? '&id=' .  $id : '')
+			. (count($params) ? '&' . http_build_query($params) : '')
 			. '&rt=' . REQUEST_TOKEN;
 	}
 

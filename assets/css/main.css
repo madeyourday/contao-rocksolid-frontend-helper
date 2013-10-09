@@ -9,7 +9,7 @@
 	position: absolute;
 	z-index: 999999;
 	margin: -1px 1px 1px -1px;
-	padding: 5px 2px 5px 5px;
+	padding: 0 3px;
 	border: 1px solid #ddd;
 	font: 12px/14px Arial, Verdana, sans-serif;
 	color: #000;
@@ -37,10 +37,9 @@ a.rsfh-preview,
 a.rsfh-activate {
 	position: relative;
 	float: left;
-	width: 16px;
-	height: 16px;
+	width: 20px;
+	height: 26px;
 	overflow: hidden;
-	margin-right: 3px;
 	text-indent: -999px;
 	background: url("../../../../themes/default/images/edit.gif") 50% 50% no-repeat;
 }
@@ -74,21 +73,35 @@ a.rsfh-activate.rsfh-activate-active {
 .rsfh-info {
 	position: relative;
 	float: left;
-	width: 16px;
-	height: 16px;
-	margin-right: 3px;
+	width: 20px;
+	height: 26px;
 	background: url("../../../../themes/default/images/show.gif") 50% 50% no-repeat;
+}
+.rsfh-info:hover {
+	width: 30px;
+	margin-right: -5px;
+	margin-left: -5px;
+	z-index: 1;
 }
 .rsfh-info > div {
 	display: none;
 	position: absolute;
 	top: 100%;
-	left: 0;
-	padding: 5px 10px;
+	left: -11px;
+	margin-top: -5px;
+	padding: 10px 15px;
 	white-space: nowrap;
 	background: white;
-	background: rgba(255, 255, 255, .8);
+	background: rgba(255, 255, 255, .95);
 	box-shadow: 0 0 2px rgba(0, 0, 0, .3);
+}
+.rsfh-info > div a {
+	color: inherit;
+	text-decoration: none;
+}
+.rsfh-info > div a:hover,
+.rsfh-info > div a:focus {
+	text-decoration: underline;
 }
 .rsfh-info:hover > div {
 	display: block;

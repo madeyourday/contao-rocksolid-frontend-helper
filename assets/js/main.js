@@ -194,10 +194,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
 			var infoHtml = '<div>';
 			var infoTemplates = {};
-			infoTemplates[data.template] = data.templatePath;
+			infoTemplates[data.template] = {
+				path: data.templatePath,
+				url: data.templateURL,
+				label: data.templateLabel
+			};
 			Array.prototype.forEach.call(element.querySelectorAll('*[data-frontend-helper]'), function(element) {
 				var data = JSON.parse(element.getAttribute('data-frontend-helper'));
-				infoTemplates[data.template] = data.templatePath;
+				infoTemplates[data.template] = {
+					path: data.templatePath,
+					url: data.templateURL,
+					label: data.templateLabel
+				};
 			});
 			if (data.column) {
 				infoHtml += '<div><b>' +
@@ -205,7 +213,15 @@ document.addEventListener('DOMContentLoaded', function() {
 					data.column.split('&').join('&amp;').split('<').join('&lt;') + '</div>';
 			}
 			for (var template in infoTemplates) {
-				infoHtml += '<div><b>' + template + ':</b> ' + infoTemplates[template] + '</div>';
+				infoHtml += '<div><b>' + template + ':</b> ';
+				if (infoTemplates[template].url) {
+					infoHtml += '<a href="' + infoTemplates[template].url + '" title="' + infoTemplates[template].label.split('"').join('&quot;') + '">';
+				}
+				infoHtml += infoTemplates[template].path;
+				if (infoTemplates[template].url) {
+					infoHtml += '</a>';
+				}
+				infoHtml += '</div>';
 			}
 			infoHtml += '</div>';
 
