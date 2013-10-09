@@ -46,21 +46,60 @@ class FrontendHelper extends \Controller
 
 			$data['toolbar'] = true;
 
-			if (in_array('feModules', $permissions)) {
-				$data['layoutURL'] = static::getBackendURL('themes', 'tl_layout', $GLOBALS['objPage']->layout);
-				\System::loadLanguageFile('tl_layout');
-				$data['layoutLabel'] = sprintf($GLOBALS['TL_LANG']['tl_layout']['edit'][1], $GLOBALS['objPage']->layout);
-			}
+			$data['links']['backend'] = array(
+				'url' => 'contao/main.php',
+				'label' => $GLOBALS['TL_LANG']['MSC']['homeTitle'],
+			);
 
 			if (in_array('pages', $permissions)) {
-				$data['pageURL'] = static::getBackendURL('page', null, $GLOBALS['objPage']->id);
 				\System::loadLanguageFile('tl_page');
-				$data['pageLabel'] = sprintf($GLOBALS['TL_LANG']['tl_page']['edit'][1], $GLOBALS['objPage']->id);
+				$data['links']['page'] = array(
+					'url' => static::getBackendURL('page', null, $GLOBALS['objPage']->id),
+					'label' => sprintf($GLOBALS['TL_LANG']['tl_page']['edit'][1], $GLOBALS['objPage']->id),
+				);
+				\System::loadLanguageFile('modules');
+			}
+
+			if (in_array('articles', $permissions)) {
+				\System::loadLanguageFile('tl_page');
+				$data['links']['article'] = array(
+					'url' => static::getBackendURL('article', null, null, null, array(
+						'node' => $GLOBALS['objPage']->id,
+					)),
+					'label' => sprintf($GLOBALS['TL_LANG']['tl_page']['articles'][1], $GLOBALS['objPage']->id),
+				);
+			}
+
+			if (in_array('feModules', $permissions)) {
+				\System::loadLanguageFile('tl_layout');
+				$data['links']['layout'] = array(
+					'url' => static::getBackendURL('themes', 'tl_layout', $GLOBALS['objPage']->layout),
+					'label' => sprintf($GLOBALS['TL_LANG']['tl_layout']['edit'][1], $GLOBALS['objPage']->layout),
+				);
+				if ($GLOBALS['objPage']->getRelated('layout') && $GLOBALS['objPage']->getRelated('layout')->pid) {
+					\System::loadLanguageFile('tl_theme');
+					$data['links']['fe-module'] = array(
+						'url' => static::getBackendURL('themes', 'tl_module', $GLOBALS['objPage']->getRelated('layout')->pid, null),
+						'label' => sprintf($GLOBALS['TL_LANG']['tl_theme']['modules'][1], $GLOBALS['objPage']->getRelated('layout')->pid),
+					);
+					if (
+						$GLOBALS['objPage']->getRelated('layout')->stylesheet &&
+						count(deserialize($GLOBALS['objPage']->getRelated('layout')->stylesheet))
+					) {
+						// Only show a stylesheets link if stylesheets are used
+						$data['links']['stylesheet'] = array(
+							'url' => static::getBackendURL('themes', 'tl_style_sheet', $GLOBALS['objPage']->getRelated('layout')->pid, null),
+							'label' => sprintf($GLOBALS['TL_LANG']['tl_theme']['css'][1], $GLOBALS['objPage']->getRelated('layout')->pid),
+						);
+					}
+				}
 			}
 
 			if (in_array('rstAssistant', $permissions) && $assistantId = static::getThemeAssistantStylesheet()) {
-				$data['assistantURL'] = static::getBackendURL('rocksolid_theme_assistant', null, $assistantId);
-				$data['assistantLabel'] = $GLOBALS['TL_LANG']['rocksolid_frontend_helper']['assistantLabel'];
+				$data['links']['assistant'] = array(
+					'url' => static::getBackendURL('rocksolid_theme_assistant', null, $assistantId),
+					'label' => $GLOBALS['TL_LANG']['rocksolid_frontend_helper']['assistantLabel'],
+				);
 			}
 
 			$data['previewHideLabel'] =
@@ -90,10 +129,13 @@ class FrontendHelper extends \Controller
 				// remove the article id class
 				$content = str_replace($matches2[0], $matches2[1] . $matches2[4], $content);
 				if (in_array('articles', $permissions)) {
-					$data['articleURL'] = static::getBackendURL('article', 'tl_content', $matches2[2], false);
 					\System::loadLanguageFile('tl_article');
-					$data['articleLabel'] = sprintf($GLOBALS['TL_LANG']['tl_article']['edit'][1], $matches2[2]);
-					$data['columnLabel'] = $GLOBALS['TL_LANG']['MSC']['mw_column'];
+					$data['links']['article'] = array(
+						'url' => static::getBackendURL('article', 'tl_content', $matches2[2], false),
+						'label' => sprintf($GLOBALS['TL_LANG']['tl_article']['edit'][1], $matches2[2]),
+					);
+					\System::loadLanguageFile('rocksolid_frontend_helper');
+					$data['columnLabel'] = $GLOBALS['TL_LANG']['rocksolid_frontend_helper']['column'];
 					$data['column'] = pack("H*" , $matches2[3]);
 					if (isset($GLOBALS['TL_LANG']['tl_article'][$data['column']])) {
 						$data['column'] = $GLOBALS['TL_LANG']['tl_article'][$data['column']];
@@ -126,8 +168,10 @@ class FrontendHelper extends \Controller
 
 		if (in_array('contents', $permissions)) {
 			\System::loadLanguageFile('tl_form_field');
-			$data['editURL'] = static::getBackendURL('form', 'tl_form_field', $widget->id);
-			$data['editLabel'] = sprintf($GLOBALS['TL_LANG']['tl_form_field']['edit'][1], $widget->id);
+			$data['links']['edit'] = array(
+				'url' => static::getBackendURL('form', 'tl_form_field', $widget->id),
+				'label' => sprintf($GLOBALS['TL_LANG']['tl_form_field']['edit'][1], $widget->id),
+			);
 		}
 
 		if (in_array('infos', $permissions)) {
@@ -188,7 +232,8 @@ class FrontendHelper extends \Controller
 			isset($module->Template->inColumn) &&
 			$module->Template->inColumn
 		) {
-			$data['columnLabel'] = $GLOBALS['TL_LANG']['MSC']['mw_column'];
+			\System::loadLanguageFile('rocksolid_frontend_helper');
+			$data['columnLabel'] = $GLOBALS['TL_LANG']['rocksolid_frontend_helper']['column'];
 			$data['column'] = $module->Template->inColumn;
 			\System::loadLanguageFile('tl_article');
 			if (isset($GLOBALS['TL_LANG']['tl_article'][$data['column']])) {
@@ -198,8 +243,10 @@ class FrontendHelper extends \Controller
 
 		if (in_array('feModules', $permissions)) {
 			\System::loadLanguageFile('tl_module');
-			$data['feModuleURL'] = static::getBackendURL('themes', 'tl_module', $row->id);
-			$data['feModuleLabel'] = sprintf($GLOBALS['TL_LANG']['tl_module']['edit'][1], $row->id . ' (' . $row->name . ')');
+			$data['links']['fe-module'] = array(
+				'url' => static::getBackendURL('themes', 'tl_module', $row->id),
+				'label' => sprintf($GLOBALS['TL_LANG']['tl_module']['edit'][1], $row->id . ' (' . $row->name . ')'),
+			);
 		}
 
 		if (in_array('beModules', $permissions)) {
@@ -222,14 +269,16 @@ class FrontendHelper extends \Controller
 							}
 						}
 					}
-					$data['beModuleURL'] = static::getBackendURL(
-						$do,
-						$id ? $config['table'] : null,
-						$id,
-						!empty($config['act']) && $id ? $config['act'] : false
+					$data['links']['be-module'] = array(
+						'url' => static::getBackendURL(
+							$do,
+							$id ? $config['table'] : null,
+							$id,
+							!empty($config['act']) && $id ? $config['act'] : false
+						),
+						'label' => $this->getBackendModuleLabel($config, $id, empty($config['act']) || !$id),
+						'icon' => empty($config['icon']) ? '' : $config['icon'],
 					);
-					$data['beModuleLabel'] = $this->getBackendModuleLabel($config, $id, empty($config['act']) || !$id);
-					$data['beModuleIcon'] = ! empty($config['icon']) ? $config['icon'] : '';
 				}
 			}
 		}
@@ -299,8 +348,10 @@ class FrontendHelper extends \Controller
 			}
 
 			\System::loadLanguageFile('tl_content');
-			$data['editURL'] = static::getBackendURL($do, 'tl_content', $row->id);
-			$data['editLabel'] = sprintf($GLOBALS['TL_LANG']['tl_content']['edit'][1], $row->id);
+			$data['links']['edit'] = array(
+				'url' => static::getBackendURL($do, 'tl_content', $row->id),
+				'label' => sprintf($GLOBALS['TL_LANG']['tl_content']['edit'][1], $row->id),
+			);
 
 		}
 
@@ -330,14 +381,16 @@ class FrontendHelper extends \Controller
 							}
 						}
 					}
-					$data['beModuleURL'] = static::getBackendURL(
-						$do,
-						$id ? $config['table'] : null,
-						$id,
-						! empty($config['act']) && $id ? $config['act'] : false
+					$data['links']['be-module'] = array(
+						'url' => static::getBackendURL(
+							$do,
+							$id ? $config['table'] : null,
+							$id,
+							! empty($config['act']) && $id ? $config['act'] : false
+						),
+						'label' => $this->getBackendModuleLabel($config, $id, empty($config['act']) || !$id),
+						'icon' => empty($config['icon']) ? '' : $config['icon'],
 					);
-					$data['beModuleLabel'] = $this->getBackendModuleLabel($config, $id, empty($config['act']) || !$id);
-					$data['beModuleIcon'] = ! empty($config['icon']) ? $config['icon'] : '';
 				}
 			}
 		}
@@ -588,7 +641,11 @@ class FrontendHelper extends \Controller
 			$content = substr($content, strlen($matches[0]));
 
 			if (preg_match('(\\sdata-frontend-helper="([^"]*)")is', $matches[0], $matches2)) {
-				$data = array_merge(json_decode(html_entity_decode($matches2[1]), true), $data);
+				$oldData = json_decode(html_entity_decode($matches2[1]), true);
+				if (isset($oldData['links']) && isset($data['links'])) {
+					$data['links'] = array_merge($oldData['links'], $data['links']);
+				}
+				$data = array_merge($oldData, $data);
 				$matches[0] = preg_replace('(\\sdata-frontend-helper="([^"]*)")is', '', $matches[0]);
 			}
 

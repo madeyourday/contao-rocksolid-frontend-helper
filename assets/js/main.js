@@ -109,10 +109,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		var data = JSON.parse(element.getAttribute('data-frontend-helper'));
 
 		if (! data.toolbar || (
-			! data.editURL &&
-			! data.articleURL &&
-			! data.beModuleURL &&
-			! data.feModuleURL &&
+			! data.links &&
 			! data.template &&
 			! data.activateLabel
 		)) {
@@ -124,70 +121,36 @@ document.addEventListener('DOMContentLoaded', function() {
 		var overlay = document.createElement('div');
 		overlay.className = 'rsfh-overlay';
 
-		if (data.pageURL) {
-			var pageLink = document.createElement('a');
-			pageLink.href = data.pageURL;
-			pageLink.target = '_top';
-			pageLink.className = 'rsfh-page';
-			pageLink.innerHTML = pageLink.title = data.pageLabel;
-			toolbar.appendChild(pageLink);
+		var mainNav, mainNavContents;
+		if (element === document.body) {
+			toolbar.className += ' rsfh-main-toolbar';
+			mainNav = document.createElement('div');
+			mainNav.className = 'rsfh-main-nav';
+			toolbar.appendChild(mainNav);
+			mainNavContents = document.createElement('div');
+			mainNav.appendChild(mainNavContents);
 		}
 
-		if (data.layoutURL) {
-			var layoutLink = document.createElement('a');
-			layoutLink.href = data.layoutURL;
-			layoutLink.target = '_top';
-			layoutLink.className = 'rsfh-layout';
-			layoutLink.innerHTML = layoutLink.title = data.layoutLabel;
-			toolbar.appendChild(layoutLink);
-		}
-
-		if (data.assistantURL) {
-			var assistantLink = document.createElement('a');
-			assistantLink.href = data.assistantURL;
-			assistantLink.target = '_top';
-			assistantLink.className = 'rsfh-assistant';
-			assistantLink.innerHTML = assistantLink.title = data.assistantLabel;
-			toolbar.appendChild(assistantLink);
-		}
-
-		if (data.editURL) {
-			var editLink = document.createElement('a');
-			editLink.href = data.editURL;
-			editLink.target = '_top';
-			editLink.className = 'rsfh-edit';
-			editLink.innerHTML = editLink.title = data.editLabel;
-			toolbar.appendChild(editLink);
-		}
-
-		if (data.articleURL) {
-			var articleLink = document.createElement('a');
-			articleLink.href = data.articleURL;
-			articleLink.target = '_top';
-			articleLink.className = 'rsfh-article';
-			articleLink.innerHTML = articleLink.title = data.articleLabel;
-			toolbar.appendChild(articleLink);
-		}
-
-		if (data.feModuleURL) {
-			var feModuleLink = document.createElement('a');
-			feModuleLink.href = data.feModuleURL;
-			feModuleLink.target = '_top';
-			feModuleLink.className = 'rsfh-fe-module';
-			feModuleLink.innerHTML = feModuleLink.title = data.feModuleLabel;
-			toolbar.appendChild(feModuleLink);
-		}
-
-		if (data.beModuleURL) {
-			var beModuleLink = document.createElement('a');
-			beModuleLink.href = data.beModuleURL;
-			beModuleLink.target = '_top';
-			beModuleLink.className = 'rsfh-be-module';
-			if (data.beModuleIcon) {
-				beModuleLink.style.backgroundImage = 'url("' + data.beModuleIcon + '")';
+		var i, link;
+		data.links = data.links || {};
+		for (key in data.links) {
+			if (!data.links.hasOwnProperty(key)) {
+				continue;
 			}
-			beModuleLink.innerHTML = beModuleLink.title = data.beModuleLabel;
-			toolbar.appendChild(beModuleLink);
+			link = document.createElement('a');
+			link.href = data.links[key].url;
+			link.target = '_top';
+			link.className = 'rsfh-' + key;
+			link.innerHTML = link.title = data.links[key].label;
+			if (data.links[key].icon) {
+				link.style.backgroundImage = 'url("' + data.links[key].icon + '")';
+			}
+			if (element === document.body) {
+				mainNavContents.appendChild(link);
+			}
+			else {
+				toolbar.appendChild(link);
+			}
 		}
 
 		if (data.template) {
@@ -208,10 +171,11 @@ document.addEventListener('DOMContentLoaded', function() {
 				};
 			});
 			if (data.column) {
-				infoHtml += '<div><b>' +
+				infoHtml += '<div class="rsfh-info-column"><b>' +
 					data.columnLabel.split('&').join('&amp;').split('<').join('&lt;') + ':</b> ' +
 					data.column.split('&').join('&amp;').split('<').join('&lt;') + '</div>';
 			}
+			infoHtml += '<div class="rsfh-templates-label">Templates:</div>';
 			for (var template in infoTemplates) {
 				infoHtml += '<div><b>' + template + ':</b> ';
 				if (infoTemplates[template].url) {
@@ -233,20 +197,6 @@ document.addEventListener('DOMContentLoaded', function() {
 		}
 
 		if (element === document.body) {
-
-			var previewLink = document.createElement('a');
-			previewLink.href = document.location.href;
-			previewLink.className = 'rsfh-preview';
-			if (getCookie('FE_PREVIEW')) {
-				previewLink.className += ' rsfh-preview-active';
-			}
-			previewLink.innerHTML = previewLink.title = getCookie('FE_PREVIEW') ?
-				data.previewHideLabel :
-				data.previewShowLabel;
-			previewLink.addEventListener('click', function () {
-				setCookie('FE_PREVIEW', getCookie('FE_PREVIEW') ? null : '1');
-			}, false);
-			toolbar.appendChild(previewLink);
 
 			var activateLink = document.createElement('a');
 			activateLink.href = document.location.href;
@@ -272,6 +222,20 @@ document.addEventListener('DOMContentLoaded', function() {
 				event.preventDefault();
 			}, false);
 			toolbar.appendChild(activateLink);
+
+			var previewLink = document.createElement('a');
+			previewLink.href = document.location.href;
+			previewLink.className = 'rsfh-preview';
+			if (getCookie('FE_PREVIEW')) {
+				previewLink.className += ' rsfh-preview-active';
+			}
+			previewLink.innerHTML = previewLink.title = getCookie('FE_PREVIEW') ?
+				data.previewHideLabel :
+				data.previewShowLabel;
+			previewLink.addEventListener('click', function () {
+				setCookie('FE_PREVIEW', getCookie('FE_PREVIEW') ? null : '1');
+			}, false);
+			mainNavContents.appendChild(previewLink);
 
 		}
 
