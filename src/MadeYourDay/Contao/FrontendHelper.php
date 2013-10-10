@@ -46,18 +46,12 @@ class FrontendHelper extends \Controller
 
 			$data['toolbar'] = true;
 
-			$data['links']['backend'] = array(
-				'url' => 'contao/main.php',
-				'label' => $GLOBALS['TL_LANG']['MSC']['homeTitle'],
-			);
-
 			if (in_array('pages', $permissions)) {
 				\System::loadLanguageFile('tl_page');
 				$data['links']['page'] = array(
 					'url' => static::getBackendURL('page', null, $GLOBALS['objPage']->id),
 					'label' => sprintf($GLOBALS['TL_LANG']['tl_page']['edit'][1], $GLOBALS['objPage']->id),
 				);
-				\System::loadLanguageFile('modules');
 			}
 
 			if (in_array('articles', $permissions)) {
@@ -101,6 +95,11 @@ class FrontendHelper extends \Controller
 					'label' => $GLOBALS['TL_LANG']['rocksolid_frontend_helper']['assistantLabel'],
 				);
 			}
+
+			$data['links']['backend'] = array(
+				'url' => 'contao/main.php',
+				'label' => $GLOBALS['TL_LANG']['MSC']['homeTitle'],
+			);
 
 			$data['previewHideLabel'] =
 				$GLOBALS['TL_LANG']['MSC']['hiddenElements'] . ' ' .
@@ -652,6 +651,6 @@ class FrontendHelper extends \Controller
 			return $matches[0] . ' data-frontend-helper="' . htmlspecialchars(json_encode($data)) . '"' . $content;
 		}
 
-		return $content;
+		return '<span class="rsfh-dummy" data-frontend-helper="' . htmlspecialchars(json_encode($data)) . '"></span>' . $content;
 	}
 }

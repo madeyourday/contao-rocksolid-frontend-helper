@@ -137,6 +137,13 @@ a.rsfh-activate.rsfh-activate-active {
 .rsfh-main-nav:hover > div {
 	display: block;
 }
+.rsfh-main-nav > div > hr {
+	margin: 6px 0;
+	padding: 0;
+	height: 0;
+	border: none;
+	border-top: 1px solid #eee;
+}
 .rsfh-info {
 	position: relative;
 	float: left;

@@ -131,7 +131,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			mainNav.appendChild(mainNavContents);
 		}
 
-		var i, link;
+		var key, link;
 		data.links = data.links || {};
 		for (key in data.links) {
 			if (!data.links.hasOwnProperty(key)) {
@@ -235,7 +235,26 @@ document.addEventListener('DOMContentLoaded', function() {
 			previewLink.addEventListener('click', function () {
 				setCookie('FE_PREVIEW', getCookie('FE_PREVIEW') ? null : '1');
 			}, false);
-			mainNavContents.appendChild(previewLink);
+			mainNavContents.insertBefore(
+				previewLink,
+				(mainNavContents.querySelector('.rsfh-article') && mainNavContents.querySelector('.rsfh-article').nextSibling) ||
+				(mainNavContents.querySelector('.rsfh-page') && mainNavContents.querySelector('.rsfh-page').nextSibling) ||
+				mainNavContents.childNodes[0]
+			);
+
+			mainNavContents.insertBefore(
+				document.createElement('hr'),
+				previewLink.nextSibling
+			);
+			if (
+				mainNavContents.querySelector('.rsfh-backend') &&
+				mainNavContents.querySelector('.rsfh-backend').previousSibling.nodeName.toLowerCase() !== 'hr'
+			) {
+				mainNavContents.insertBefore(
+					document.createElement('hr'),
+					mainNavContents.querySelector('.rsfh-backend')
+				);
+			}
 
 		}
 
@@ -315,6 +334,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
 	Array.prototype.forEach.call(document.querySelectorAll('*[data-frontend-helper]'), function(element) {
 		init(element);
+	});
+
+	Array.prototype.forEach.call(document.querySelectorAll('.rsfh-dummy[data-frontend-helper]'), function(element) {
+		element.parentNode.removeChild(element);
 	});
 
 	window.addEventListener('mouseover', function(event) {
