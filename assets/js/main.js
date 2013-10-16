@@ -22,12 +22,21 @@ document.addEventListener('DOMContentLoaded', function() {
 	};
 	var getBoundingClientRect = function(element) {
 		var boundingClientRect = element.getBoundingClientRect();
+		var nodeName = element.nodeName.toLowerCase();
 		if (element === document.body) {
 			return {
 				top: window.pageYOffset * -1,
 				left: window.pageXOffset * -1,
 				width: boundingClientRect.width,
 				height: boundingClientRect.height
+			};
+		}
+		if (nodeName === 'style' || nodeName === 'script') {
+			return {
+				top: Math.max(0, boundingClientRect.top),
+				left: Math.max(0, boundingClientRect.left),
+				width: 0,
+				height: 0
 			};
 		}
 		var computedStyle = window.getComputedStyle(element);
@@ -105,7 +114,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 		element.frontendHelperEnabled = true;
 
-		var timeout, isOver;
+		var timeout, timeout2, isOver, boundingClientRect;
 		var data = JSON.parse(element.getAttribute('data-frontend-helper'));
 
 		if (! data.toolbar || (
@@ -260,22 +269,26 @@ document.addEventListener('DOMContentLoaded', function() {
 
 		var over = function(event, fromToolbar) {
 			clearTimeout(timeout);
+			if (fromToolbar) {
+				clearTimeout(timeout2);
+			}
 			if (! active && element !== document.body) {
 				return;
+			}
+			if (fromToolbar && element !== document.body && overlay.parentNode !== document.body) {
+				boundingClientRect = getBoundingClientRect(element);
+				overlay.style.top = boundingClientRect.top + window.pageYOffset + 'px';
+				overlay.style.left = boundingClientRect.left + window.pageXOffset + 'px';
+				overlay.style.width = boundingClientRect.width + 'px';
+				overlay.style.height = boundingClientRect.height + 'px';
+				document.body.appendChild(overlay);
 			}
 			if (! isOver) {
 				isOver = true;
 				document.body.appendChild(toolbar);
+				boundingClientRect = getBoundingClientRect(element);
 			}
-			var boundingClientRect = getBoundingClientRect(element);
-			overlay.style.top = boundingClientRect.top + window.pageYOffset + 'px';
-			overlay.style.left = boundingClientRect.left + window.pageXOffset + 'px';
-			overlay.style.width = boundingClientRect.width + 'px';
-			overlay.style.height = boundingClientRect.height + 'px';
-			if (fromToolbar && element !== document.body) {
-				document.body.appendChild(overlay);
-			}
-			else {
+			if (!fromToolbar) {
 				event.currentToolbars = event.currentToolbars || [];
 				event.currentToolbars.reverse();
 				event.currentToolbars.push(toolbar);
@@ -297,8 +310,10 @@ document.addEventListener('DOMContentLoaded', function() {
 					});
 				});
 				toolbar.className = toolbar.className.split('rsfh-toolbar-minor').join('');
-				toolbar.style.top = boundingClientRect.top + window.pageYOffset + 'px';
-				toolbar.style.left = boundingClientRect.left + window.pageXOffset + 'px';
+				if (element !== document.body) {
+					toolbar.style.top = boundingClientRect.top + window.pageYOffset + 'px';
+					toolbar.style.left = boundingClientRect.left + window.pageXOffset + 'px';
+				}
 			}
 		};
 		var out = function(event, fromToolbar) {
@@ -311,9 +326,12 @@ document.addEventListener('DOMContentLoaded', function() {
 				document.body.removeChild(toolbar);
 			}, 400);
 			if (fromToolbar) {
-				if (overlay.parentNode === document.body) {
-					document.body.removeChild(overlay);
-				}
+				clearTimeout(timeout2);
+				timeout2 = setTimeout(function() {
+					if (overlay.parentNode === document.body) {
+						document.body.removeChild(overlay);
+					}
+				}, 10);
 			}
 		};
 

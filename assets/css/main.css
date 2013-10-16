@@ -20,6 +20,8 @@
 }
 .rsfh-main-toolbar {
 	position: fixed;
+	top: 0;
+	left: 0;
 }
 .rsfh-overlay {
 	position: absolute;
