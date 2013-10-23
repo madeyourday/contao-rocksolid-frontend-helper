@@ -303,7 +303,19 @@ class FrontendHelper extends \Controller
 			'fieldset',
 			'address',
 		);
-		if (preg_match('(^\\s*<(?:' . implode('|', $blockLevelElements) . ')(?:\\s[^>]+|)>\\s*$)is', $content)) {
+		if (preg_match('(
+			^  # begin
+			(?:  # any number of closing tags
+				\\s*
+				</[a-z0-9_-]+>
+			)*
+			(?:  # at least one opening block level element tag
+				\\s*
+				<(?:' . implode('|', $blockLevelElements) . ')(?:\\s[^>]+|)>
+			)+
+			\\s*  # trailing whitespace
+			$  # end
+		)isx', $content)) {
 			// Disable the toolbar for wrapper modules
 			unset($data['toolbar']);
 		}
