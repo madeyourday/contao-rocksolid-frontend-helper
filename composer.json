@@ -1,0 +1,38 @@
+{
+	"name":"madeyourday/contao-rocksolid-frontend-helper",
+	"description":"Frontend Editing for Contao. Stop stumbling through the backend and edit the elements you want easily and directly.",
+	"keywords":["contao","frontend-editing"],
+	"type":"contao-module",
+	"homepage":"http://rocksolidthemes.com/de/contao/plugins/frontend-editing",
+	"license":"MIT",
+	"authors":[
+		{
+			"name":"RockSolid Themes",
+			"homepage":"http://rocksolidthemes.com/de/contao-themes",
+			"role":"Developer"
+		}
+	],
+	"support":{
+		"forum":"http://help.rocksolidthemes.com/discussions",
+		"issues":"https://github.com/madeyourday/contao-rocksolid-frontend-helper/issues",
+		"source":"https://github.com/madeyourday/contao-rocksolid-frontend-helper"
+	},
+	"require":{
+		"php":">=5.3",
+		"contao/core":">=3,<4",
+		"contao-community-alliance/composer-installer":"*"
+	},
+	"autoload":{
+		"classmap":["src/"]
+	},
+	"replace":{
+		"contao-legacy/rocksolid-frontend-helper":"*"
+	},
+	"extra":{
+		"contao":{
+			"sources":{
+				"":"system/modules/rocksolid-frontend-helper"
+			}
+		}
+	}
+}
