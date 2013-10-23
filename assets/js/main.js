@@ -33,8 +33,8 @@ document.addEventListener('DOMContentLoaded', function() {
 		}
 		if (nodeName === 'style' || nodeName === 'script') {
 			return {
-				top: Math.max(0, boundingClientRect.top),
-				left: Math.max(0, boundingClientRect.left),
+				top: boundingClientRect.top,
+				left: boundingClientRect.left,
 				width: 0,
 				height: 0
 			};
@@ -58,10 +58,10 @@ document.addEventListener('DOMContentLoaded', function() {
 		) {
 			// the element has a visible box, so the bounding box can be used
 			return {
-				top: Math.max(0, boundingClientRect.top),
-				left: Math.max(0, boundingClientRect.left),
-				width: boundingClientRect.width + Math.min(0, boundingClientRect.left),
-				height: boundingClientRect.height + Math.min(0, boundingClientRect.top)
+				top: boundingClientRect.top,
+				left: boundingClientRect.left,
+				width: boundingClientRect.width,
+				height: boundingClientRect.height
 			};
 		}
 		var tops = [];
@@ -80,12 +80,13 @@ document.addEventListener('DOMContentLoaded', function() {
 				child.nodeType === Node.TEXT_NODE &&
 				('' + child.nodeValue).trim()
 			) {
-				wrapElement = document.createElement('span');
-				element.insertBefore(wrapElement, child);
-				wrapElement.appendChild(child);
-				currentRect = wrapElement.getBoundingClientRect();
-				element.insertBefore(child, wrapElement);
-				element.removeChild(wrapElement);
+				// the element has a text content, so the bounding box can be used
+				return {
+					top: boundingClientRect.top,
+					left: boundingClientRect.left,
+					width: boundingClientRect.width,
+					height: boundingClientRect.height
+				};
 			}
 			else {
 				continue;
@@ -99,13 +100,21 @@ document.addEventListener('DOMContentLoaded', function() {
 		}
 		if (tops.length) {
 			boundingClientRect = {
-				top: Math.max(0, Math.min.apply(null, tops)),
-				left: Math.max(0, Math.min.apply(null, lefts))
+				top: Math.min.apply(null, tops),
+				left: Math.min.apply(null, lefts)
 			};
 			boundingClientRect.width = Math.max.apply(null, rights) - boundingClientRect.left;
 			boundingClientRect.height = Math.max.apply(null, bottoms) - boundingClientRect.top;
 		}
 		return boundingClientRect;
+	};
+	var getNodeDepth = function(element) {
+		var depth = 0;
+		while (element.parentNode) {
+			depth++;
+			element = element.parentNode;
+		}
+		return depth;
 	};
 
 	var active = !!getCookie('rsfh-active');
@@ -127,6 +136,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 		var toolbar = document.createElement('div');
 		toolbar.className = 'rsfh-toolbar' + (data.type ? ' rsfh-type-' + data.type : '');
+		toolbar.linkedElement = element;
 		var overlay = document.createElement('div');
 		overlay.className = 'rsfh-overlay';
 
@@ -269,8 +279,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
 		var over = function(event, fromToolbar) {
 			clearTimeout(timeout);
+			timeout = null;
 			if (fromToolbar) {
 				clearTimeout(timeout2);
+				timeout2 = null;
 			}
 			if (! active && element !== document.body) {
 				return;
@@ -286,13 +298,25 @@ document.addEventListener('DOMContentLoaded', function() {
 			if (! isOver) {
 				isOver = true;
 				document.body.appendChild(toolbar);
-				boundingClientRect = getBoundingClientRect(element);
+				boundingClientRect = null;
 			}
 			if (!fromToolbar) {
+				toolbar.className = toolbar.className.split('rsfh-toolbar-minor').join('');
+				if (element !== document.body) {
+					boundingClientRect = boundingClientRect || getBoundingClientRect(element);
+					toolbar.style.top = Math.max(0, boundingClientRect.top) + window.pageYOffset + 'px';
+					toolbar.style.left = Math.max(0, boundingClientRect.left) + window.pageXOffset + 'px';
+				}
 				event.currentToolbars = event.currentToolbars || [];
-				event.currentToolbars.reverse();
-				event.currentToolbars.push(toolbar);
-				event.currentToolbars.reverse();
+				var insertPos = 0;
+				var elementDepth = getNodeDepth(toolbar.linkedElement);
+				event.currentToolbars.forEach(function(toolbar1, index1) {
+					if (elementDepth < getNodeDepth(toolbar1.linkedElement)) {
+						return false;
+					}
+					insertPos++;
+				});
+				event.currentToolbars.splice(insertPos, 0, toolbar);
 				event.currentToolbars.forEach(function(toolbar1, index1) {
 					var bounding1 = toolbar1.getBoundingClientRect();
 					event.currentToolbars.forEach(function(toolbar2, index2) {
@@ -309,11 +333,6 @@ document.addEventListener('DOMContentLoaded', function() {
 						}
 					});
 				});
-				toolbar.className = toolbar.className.split('rsfh-toolbar-minor').join('');
-				if (element !== document.body) {
-					toolbar.style.top = boundingClientRect.top + window.pageYOffset + 'px';
-					toolbar.style.left = boundingClientRect.left + window.pageXOffset + 'px';
-				}
 			}
 		};
 		var out = function(event, fromToolbar) {
@@ -334,6 +353,14 @@ document.addEventListener('DOMContentLoaded', function() {
 				}, 10);
 			}
 		};
+		var scroll = function(event) {
+			if (element !== document.body) {
+				boundingClientRect = null;
+			}
+			if (isOver && !timeout) {
+				over(event);
+			}
+		};
 
 		toolbar.addEventListener('mouseover', function (event) {
 			over(event, true);
@@ -346,6 +373,9 @@ document.addEventListener('DOMContentLoaded', function() {
 		}, false);
 		element.addEventListener('mouseout', function(event) {
 			out(event);
+		}, false);
+		window.addEventListener('scroll', function(event) {
+			scroll(event);
 		}, false);
 
 	};
