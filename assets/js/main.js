@@ -304,7 +304,7 @@ document.addEventListener('DOMContentLoaded', function() {
 				toolbar.className = toolbar.className.split('rsfh-toolbar-minor').join('');
 				if (element !== document.body) {
 					boundingClientRect = boundingClientRect || getBoundingClientRect(element);
-					toolbar.style.top = Math.max(0, boundingClientRect.top) + window.pageYOffset + 'px';
+					toolbar.style.top = Math.max(0, boundingClientRect.top - toolbar.offsetHeight + 2) + window.pageYOffset + 'px';
 					toolbar.style.left = Math.max(0, boundingClientRect.left) + window.pageXOffset + 'px';
 				}
 				event.currentToolbars = event.currentToolbars || [];
