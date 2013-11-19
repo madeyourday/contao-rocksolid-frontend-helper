@@ -183,11 +183,13 @@ document.addEventListener('DOMContentLoaded', function() {
 			};
 			Array.prototype.forEach.call(element.querySelectorAll('*[data-frontend-helper]'), function(element) {
 				var data = JSON.parse(element.getAttribute('data-frontend-helper'));
-				infoTemplates[data.template] = {
-					path: data.templatePath,
-					url: data.templateURL,
-					label: data.templateLabel
-				};
+				if (data.template) {
+					infoTemplates[data.template] = {
+						path: data.templatePath,
+						url: data.templateURL,
+						label: data.templateLabel
+					};
+				}
 			});
 			if (data.column) {
 				infoHtml += '<div class="rsfh-info-column"><b>' +
