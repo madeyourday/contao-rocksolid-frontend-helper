@@ -167,8 +167,13 @@ $GLOBALS['TL_RSFH']['backendModules']['rocksolid_slider'] = array(
 	'table' => 'tl_rocksolid_slide',
 	'column' => 'rsts_id',
 	'columnType' => 'plain',
+	'ceColumn' => 'rsts_id',
+	'ceColumnType' => 'plain',
 	'icon' => 'system/modules/rocksolid-slider/assets/img/icon.png',
 	'feModules' => array(
+		'rocksolid_slider',
+	),
+	'contentElements' => array(
 		'rocksolid_slider',
 	),
 );
