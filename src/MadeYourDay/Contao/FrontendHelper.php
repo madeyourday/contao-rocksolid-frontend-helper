@@ -282,44 +282,6 @@ class FrontendHelper extends \Controller
 			}
 		}
 
-		$blockLevelElements = array(
-			'div',
-			'section',
-			'nav',
-			'article',
-			'aside',
-			'figure',
-			'footer',
-			'header',
-			'hgroup',
-			'blockquote',
-			'ul',
-			'ol',
-			'dd',
-			'dl',
-			'p',
-			'pre',
-			'form',
-			'fieldset',
-			'address',
-		);
-		if (preg_match('(
-			^  # begin
-			(?:  # any number of closing tags
-				\\s*
-				</[a-z0-9_-]+>
-			)*
-			(?:  # at least one opening block level element tag
-				\\s*
-				<(?:' . implode('|', $blockLevelElements) . ')(?:\\s[^>]+|)>
-			)+
-			\\s*  # trailing whitespace
-			$  # end
-		)isx', $content)) {
-			// Disable the toolbar for wrapper modules
-			unset($data['toolbar']);
-		}
-
 		return static::insertData($content, $data);
 	}
 
