@@ -609,7 +609,7 @@ class FrontendHelper extends \Controller
 	 */
 	protected static function insertData($content, $data)
 	{
-		if (preg_match('(^.*?(?:<div class="rs-column[^"]*">)?.*?<[a-z0-9]+(?:\\s[^>]+|))is', $content, $matches)) {
+		if (preg_match('(^.*?(?:<div class="rs-column\\s[^"]*">)?.*?<[a-z0-9]+(?:\\s[^>]+|))is', $content, $matches)) {
 
 			$content = substr($content, strlen($matches[0]));
 
