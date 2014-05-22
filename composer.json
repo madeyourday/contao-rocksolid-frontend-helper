@@ -26,7 +26,7 @@
 		"classmap":["src/"]
 	},
 	"replace":{
-		"contao-legacy/rocksolid-frontend-helper":"*"
+		"contao-legacy/rocksolid-frontend-helper":"self.version"
 	},
 	"extra":{
 		"contao":{
