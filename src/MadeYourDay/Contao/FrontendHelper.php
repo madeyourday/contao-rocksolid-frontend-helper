@@ -386,14 +386,15 @@ class FrontendHelper extends \Controller
 			return;
 		}
 
-		if (
-			$table === 'tl_templates' &&
-			\Input::get('key') === 'new_tpl' &&
-			\Input::get('original') &&
-			!\Input::post('original')
-		) {
-			// Preselect the original template
-			\Input::setPost('original', \Input::get('original'));
+		if ($table === 'tl_templates' && \Input::get('key') === 'new_tpl') {
+			if (\Input::get('original') && !\Input::post('original')) {
+				// Preselect the original template
+				\Input::setPost('original', \Input::get('original'));
+			}
+			if (\Input::get('target') && !\Input::post('target')) {
+				// Preselect the target template folder
+				\Input::setPost('target', \Input::get('target'));
+			}
 		}
 
 		$base = \Environment::get('path') . '/contao/';
@@ -539,6 +540,7 @@ class FrontendHelper extends \Controller
 			$data['templateURL'] = static::getBackendURL('tpl_editor', null, null, null, array(
 				'key' => 'new_tpl',
 				'original' => $data['templatePath'],
+				'target' => $GLOBALS['objPage']->templateGroup ?: 'templates',
 			));
 
 			\System::loadLanguageFile('tl_templates');
