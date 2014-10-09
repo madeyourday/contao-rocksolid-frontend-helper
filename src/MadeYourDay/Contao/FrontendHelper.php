@@ -76,6 +76,12 @@ class FrontendHelper extends \Controller
 						'url' => static::getBackendURL('themes', 'tl_module', $GLOBALS['objPage']->getRelated('layout')->pid, null),
 						'label' => sprintf($GLOBALS['TL_LANG']['tl_theme']['modules'][1], $GLOBALS['objPage']->getRelated('layout')->pid),
 					);
+					if (version_compare(VERSION, '3.4', '>=')) {
+						$data['links']['image-size'] = array(
+							'url' => static::getBackendURL('themes', 'tl_image_size', $GLOBALS['objPage']->getRelated('layout')->pid, null),
+							'label' => sprintf($GLOBALS['TL_LANG']['tl_theme']['imageSizes'][1], $GLOBALS['objPage']->getRelated('layout')->pid),
+						);
+					}
 					if (
 						$GLOBALS['objPage']->getRelated('layout')->stylesheet &&
 						count(deserialize($GLOBALS['objPage']->getRelated('layout')->stylesheet))

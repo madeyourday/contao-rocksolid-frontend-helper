@@ -62,6 +62,9 @@ a.rsfh-page {
 a.rsfh-layout {
 	background-image: url("../../../../themes/default/images/layout.gif");
 }
+a.rsfh-image-size {
+	background-image: url("../../../../themes/default/images/sizes.gif");
+}
 a.rsfh-stylesheet {
 	background-image: url("../../../../themes/default/images/css.gif");
 }
