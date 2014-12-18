@@ -326,11 +326,24 @@ class FrontendHelper extends \Controller
 				}
 			}
 
+			// Compatibility for ce-access extension
+			$editAllowed = true;
+			if (
+				class_exists('CeAccess')
+				&& !FrontendHelperUser::getInstance()->isAdmin
+				&& !in_array($row->type, (array)FrontendHelperUser::getInstance()->elements)
+			) {
+				$editAllowed = false;
+			}
+
 			\System::loadLanguageFile('tl_content');
-			$data['links']['edit'] = array(
-				'url' => static::getBackendURL($do, 'tl_content', $row->id),
-				'label' => sprintf($GLOBALS['TL_LANG']['tl_content']['edit'][1], $row->id),
-			);
+
+			if ($editAllowed) {
+				$data['links']['edit'] = array(
+					'url' => static::getBackendURL($do, 'tl_content', $row->id),
+					'label' => sprintf($GLOBALS['TL_LANG']['tl_content']['edit'][1], $row->id),
+				);
+			}
 
 		}
 
