@@ -47,6 +47,9 @@
 a.rsfh-edit {
 	background-image: url("../../../../themes/default/images/edit.gif");
 }
+a.rsfh-delete {
+	background-image: url("../../../../themes/default/images/delete.gif");
+}
 a.rsfh-backend {
 	background-image: url("../../../../themes/default/images/home.gif");
 }

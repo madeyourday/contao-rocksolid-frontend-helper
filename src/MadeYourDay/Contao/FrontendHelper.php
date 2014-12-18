@@ -181,6 +181,11 @@ class FrontendHelper extends \Controller
 				'url' => static::getBackendURL('form', 'tl_form_field', $widget->id),
 				'label' => sprintf($GLOBALS['TL_LANG']['tl_form_field']['edit'][1], $widget->id),
 			);
+			$data['links']['delete'] = array(
+				'url' => static::getBackendURL('form', 'tl_form_field', $widget->id, 'delete'),
+				'label' => sprintf($GLOBALS['TL_LANG']['tl_form_field']['delete'][1], $widget->id),
+				'confirm' => sprintf($GLOBALS['TL_LANG']['MSC']['deleteConfirm'], $widget->id),
+			);
 		}
 
 		if (in_array('infos', $permissions)) {
@@ -346,6 +351,11 @@ class FrontendHelper extends \Controller
 				$data['links']['edit'] = array(
 					'url' => static::getBackendURL($do, 'tl_content', $row->id),
 					'label' => sprintf($GLOBALS['TL_LANG']['tl_content']['edit'][1], $row->id),
+				);
+				$data['links']['delete'] = array(
+					'url' => static::getBackendURL($do, 'tl_content', $row->id, 'delete'),
+					'label' => sprintf($GLOBALS['TL_LANG']['tl_content']['delete'][1], $row->id),
+					'confirm' => sprintf($GLOBALS['TL_LANG']['MSC']['deleteConfirm'], $row->id),
 				);
 			}
 

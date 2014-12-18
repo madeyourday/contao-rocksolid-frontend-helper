@@ -171,6 +171,13 @@ document.addEventListener('DOMContentLoaded', function() {
 				return;
 			}
 
+			if (targetLink.getAttribute('data-confirm')) {
+				if (!window.confirm(targetLink.getAttribute('data-confirm'))) {
+					event.preventDefault();
+					return;
+				}
+			}
+
 			if (
 				!config.lightbox
 				|| event.target.className.indexOf('rsfh-activate') !== -1
@@ -247,6 +254,9 @@ document.addEventListener('DOMContentLoaded', function() {
 			link.innerHTML = link.title = data.links[key].label;
 			if (data.links[key].icon) {
 				link.style.backgroundImage = 'url("' + data.links[key].icon + '")';
+			}
+			if (data.links[key].confirm) {
+				link.setAttribute('data-confirm', data.links[key].confirm);
 			}
 			if (element === document.body) {
 				mainNavContents.appendChild(link);
