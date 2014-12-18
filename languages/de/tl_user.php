@@ -14,6 +14,8 @@
 
 $GLOBALS['TL_LANG']['tl_user']['rocksolidFrontendHelper'][0] = 'RockSolid Frontend Helper aktivieren';
 $GLOBALS['TL_LANG']['tl_user']['rocksolidFrontendHelper'][1] = 'Aktiviert Schaltflächen im Frontend zum Anzeigen von Elementen-Informationen und zum Editieren von Artikeln, Modulen, Content-Elementen uvm.';
+$GLOBALS['TL_LANG']['tl_user']['rocksolidFrontendHelperLightbox'][0] = 'Frontend Helper in Lightbox öffnen';
+$GLOBALS['TL_LANG']['tl_user']['rocksolidFrontendHelperLightbox'][1] = 'Öffnet das Contao-Backend in einer Lightbox anstatt im Hauptfenster.';
 $GLOBALS['TL_LANG']['tl_user']['rocksolid_frontend_helper_legend'] = 'RockSolid Frontend Helper';
 $GLOBALS['TL_LANG']['tl_user']['rocksolidFrontendHelperOperations'][0] = 'Erlaubte Operationen';
 $GLOBALS['TL_LANG']['tl_user']['rocksolidFrontendHelperOperations'][1] = 'Hier können Sie die Zugriffsberechtigungen des Frontend Helper bearbeiten.';

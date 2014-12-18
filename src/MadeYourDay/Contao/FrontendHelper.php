@@ -107,16 +107,20 @@ class FrontendHelper extends \Controller
 				'label' => $GLOBALS['TL_LANG']['MSC']['homeTitle'],
 			);
 
-			$data['previewHideLabel'] =
-				$GLOBALS['TL_LANG']['MSC']['hiddenElements'] . ' ' .
-				$GLOBALS['TL_LANG']['MSC']['hiddenHide'];
-			$data['previewShowLabel'] =
-				$GLOBALS['TL_LANG']['MSC']['hiddenElements'] . ' ' .
-				$GLOBALS['TL_LANG']['MSC']['hiddenShow'];
+			$data['labels'] = array(
+				'previewHide' =>
+					$GLOBALS['TL_LANG']['MSC']['hiddenElements'] . ' ' .
+					$GLOBALS['TL_LANG']['MSC']['hiddenHide'],
+				'previewShow' =>
+					$GLOBALS['TL_LANG']['MSC']['hiddenElements'] . ' ' .
+					$GLOBALS['TL_LANG']['MSC']['hiddenShow'],
+				'activate' => $GLOBALS['TL_LANG']['rocksolid_frontend_helper']['activateLabel'],
+				'deactivate' => $GLOBALS['TL_LANG']['rocksolid_frontend_helper']['deactivateLabel'],
+			);
 
-			$data['activateLabel'] = $GLOBALS['TL_LANG']['rocksolid_frontend_helper']['activateLabel'];
-			$data['deactivateLabel'] = $GLOBALS['TL_LANG']['rocksolid_frontend_helper']['deactivateLabel'];
-
+			$data['config'] = array(
+				'lightbox' => (bool)FrontendHelperUser::getInstance()->rocksolidFrontendHelperLightbox,
+			);
 
 			$GLOBALS['TL_JAVASCRIPT'][] = 'system/modules/rocksolid-frontend-helper/assets/js/main.js';
 			$GLOBALS['TL_CSS'][] = 'system/modules/rocksolid-frontend-helper/assets/css/main.css';
@@ -429,6 +433,8 @@ class FrontendHelper extends \Controller
 		if ($referrer === \Environment::get('path') . '/') {
 			$referrer .= '?';
 		}
+
+		$referrer = \Environment::get('path') . '/system/modules/rocksolid-frontend-helper/assets/html/referrer.html?referrer=' . rawurlencode($referrer);
 
 		// set the frontend URL as referrer
 		$referrerSession = \Session::getInstance()->get('referer');

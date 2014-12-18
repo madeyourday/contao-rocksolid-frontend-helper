@@ -7,7 +7,7 @@
 
 .rsfh-toolbar {
 	position: absolute;
-	z-index: 999999;
+	z-index: 999998;
 	margin: -1px 1px 1px -1px;
 	padding: 0 3px;
 	border: 1px solid #ddd;
@@ -25,7 +25,7 @@
 }
 .rsfh-overlay {
 	position: absolute;
-	z-index: 999998;
+	z-index: 999997;
 	border-radius: 3px;
 	background: #26ade4;
 	opacity: .2;
@@ -198,4 +198,52 @@ a.rsfh-activate.rsfh-activate-active {
 }
 .rsfh-info:hover > div {
 	display: block;
+}
+.rsfh-lightbox {
+	position: fixed;
+	z-index: 999999;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	background: #000;
+	background: rgba(0, 0, 0, 0.6);
+	box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.6);
+	/* Fixes iOS scrolling */
+	overflow-y: auto;
+	-webkit-overflow-scrolling: touch;
+}
+.rsfh-lightbox:before {
+	content: "";
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 50px;
+	height: 50px;
+	border-radius: 10px;
+	background: #fff url("../../../../themes/default/images/loading.gif") 11px 50% no-repeat;
+}
+.rsfh-lightbox iframe {
+	box-sizing: border-box;
+	position: relative;
+	width: 100%;
+	height: 100%;
+	border: 20px solid transparent;
+	margin-bottom: -20px;
+}
+.rsfh-lightbox-close {
+	box-sizing: border-box;
+	position: absolute;
+	top: 5px;
+	right: 5px;
+	width: 30px;
+	height: 30px;
+	border: 2px solid #fff;
+	border-radius: 99em;
+	font: 13px/26px Arial, sans-serif;
+	color: #fff;
+	text-align: center;
+	text-decoration: none !important;
+	background: #000;
+	box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
 }

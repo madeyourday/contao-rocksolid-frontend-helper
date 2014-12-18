@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<script>
+	if (window.parent && window.parent.rsfhCloseLightbox) {
+		window.parent.rsfhCloseLightbox();
+	}
+	else if (document.location.search.substr(0, 10) === '?referrer=') {
+		(window.parent || window).document.location.href = decodeURIComponent(document.location.search.substr(10));
+	}
+</script>

@@ -20,6 +20,17 @@ document.addEventListener('DOMContentLoaded', function() {
 		var value = document.cookie.match('(?:^|;)\\s*' + key + '=([^;]*)');
 		return (value) ? decodeURIComponent(value[1]) : null;
 	};
+	var addEvent = function(element, events, func){
+		events = events.split(' ');
+		for (var i = 0; i < events.length; i++) {
+			if (element.addEventListener) {
+				element.addEventListener(events[i], func, false);
+			}
+			else {
+				element.attachEvent('on'+events[i], func);
+			}
+		}
+	};
 	var getBoundingClientRect = function(element) {
 		var boundingClientRect = element.getBoundingClientRect();
 		var nodeName = element.nodeName.toLowerCase();
@@ -118,6 +129,9 @@ document.addEventListener('DOMContentLoaded', function() {
 	};
 
 	var active = !!getCookie('rsfh-active');
+	var lightbox;
+	var lightboxScrollPosition;
+	var config = {};
 
 	var init = function(element) {
 
@@ -129,7 +143,8 @@ document.addEventListener('DOMContentLoaded', function() {
 		if (! data.toolbar || (
 			! data.links &&
 			! data.template &&
-			! data.activateLabel
+			! data.labels &&
+			! data.config
 		)) {
 			return;
 		}
@@ -139,6 +154,74 @@ document.addEventListener('DOMContentLoaded', function() {
 		toolbar.linkedElement = element;
 		var overlay = document.createElement('div');
 		overlay.className = 'rsfh-overlay';
+		addEvent(toolbar, 'click', function (event) {
+
+			for (
+				var targetLink, currentTarget = event.target;
+				currentTarget.parentNode;
+				currentTarget = currentTarget.parentNode
+			) {
+				if (currentTarget.nodeName.toLowerCase() === 'a') {
+					targetLink = currentTarget;
+					break;
+				}
+			}
+
+			if (!targetLink) {
+				return;
+			}
+
+			if (
+				!config.lightbox
+				|| event.target.className.indexOf('rsfh-activate') !== -1
+				|| event.target.className.indexOf('rsfh-preview') !== -1
+			) {
+				return;
+			}
+
+			// Disable lightbox if users try to open links in a new tab
+			if (event.ctrlKey || event.shiftKey || event.metaKey || event.which === 2) {
+				return;
+			}
+
+			lightboxScrollPosition = Math.round(window.pageYOffset || document.documentElement.scrollTop) || 0;
+
+			document.documentElement.style.marginTop = -lightboxScrollPosition + 'px';
+			document.documentElement.style.height = (window.innerHeight || document.documentElement.clientHeight) + 'px';
+			document.documentElement.style.overflow = 'hidden';
+			window.scrollTo(0, 0);
+
+			lightbox = lightbox || document.createElement('div');
+			lightbox.className = 'rsfh-lightbox';
+
+			var firstLoadEvent = true;
+			var iframe = document.createElement('iframe');
+			iframe.id = iframe.name = 'rsfh-lightbox-iframe';
+			addEvent(iframe, 'load', function(event) {
+				if (firstLoadEvent) {
+					firstLoadEvent = false;
+					return;
+				}
+				if (iframe.contentWindow.location.href === 'about:blank') {
+					closeLightbox(true);
+				}
+			});
+			lightbox.appendChild(iframe);
+
+			var lightboxCloseButton = document.createElement('a');
+			lightboxCloseButton.className = 'rsfh-lightbox-close';
+			lightboxCloseButton.innerHTML = 'X';
+			lightboxCloseButton.href = '';
+			addEvent(lightboxCloseButton, 'click', function(event) {
+				closeLightbox();
+				event.preventDefault();
+			});
+			lightbox.appendChild(lightboxCloseButton);
+
+			document.body.appendChild(lightbox);
+			targetLink.target = 'rsfh-lightbox-iframe';
+
+		});
 
 		var mainNav, mainNavContents;
 		if (element === document.body) {
@@ -148,6 +231,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			toolbar.appendChild(mainNav);
 			mainNavContents = document.createElement('div');
 			mainNav.appendChild(mainNavContents);
+			config = data.config || {};
 		}
 
 		var key, link;
@@ -226,14 +310,14 @@ document.addEventListener('DOMContentLoaded', function() {
 				activateLink.className += ' rsfh-activate-active';
 			}
 			activateLink.innerHTML = activateLink.title = active ?
-				data.deactivateLabel :
-				data.activateLabel;
-			activateLink.addEventListener('click', function (event) {
+				data.labels.deactivate :
+				data.labels.activate;
+			addEvent(activateLink, 'click', function (event) {
 				setCookie('rsfh-active', active ? null : '1');
 				active = !active;
 				this.innerHTML = this.title = active ?
-					data.deactivateLabel :
-					data.activateLabel;
+					data.labels.deactivate :
+					data.labels.activate;
 				if (active) {
 					activateLink.className += ' rsfh-activate-active';
 				}
@@ -241,7 +325,7 @@ document.addEventListener('DOMContentLoaded', function() {
 					activateLink.className = activateLink.className.split('rsfh-activate-active').join('');
 				}
 				event.preventDefault();
-			}, false);
+			});
 			toolbar.appendChild(activateLink);
 
 			var previewLink = document.createElement('a');
@@ -251,11 +335,11 @@ document.addEventListener('DOMContentLoaded', function() {
 				previewLink.className += ' rsfh-preview-active';
 			}
 			previewLink.innerHTML = previewLink.title = getCookie('FE_PREVIEW') ?
-				data.previewHideLabel :
-				data.previewShowLabel;
-			previewLink.addEventListener('click', function () {
+				data.labels.previewHide :
+				data.labels.previewShow;
+			addEvent(previewLink, 'click', function () {
 				setCookie('FE_PREVIEW', getCookie('FE_PREVIEW') ? null : '1');
-			}, false);
+			});
 			mainNavContents.insertBefore(
 				previewLink,
 				(mainNavContents.querySelector('.rsfh-article') && mainNavContents.querySelector('.rsfh-article').nextSibling) ||
@@ -364,23 +448,59 @@ document.addEventListener('DOMContentLoaded', function() {
 			}
 		};
 
-		toolbar.addEventListener('mouseover', function (event) {
+		addEvent(toolbar, 'mouseover', function (event) {
 			over(event, true);
-		}, false);
-		toolbar.addEventListener('mouseout', function(event) {
+		});
+		addEvent(toolbar, 'mouseout', function(event) {
 			out(event, true);
-		}, false);
-		element.addEventListener('mouseover', function (event) {
+		});
+		addEvent(element, 'mouseover', function (event) {
 			over(event);
-		}, false);
-		element.addEventListener('mouseout', function(event) {
+		});
+		addEvent(element, 'mouseout', function(event) {
 			out(event);
-		}, false);
-		window.addEventListener('scroll', function(event) {
+		});
+		addEvent(window, 'scroll', function(event) {
 			scroll(event);
-		}, false);
+		});
 
 	};
+
+	var closeLightbox = function(withoutReload) {
+		if (lightbox) {
+			lightbox.innerHTML = '';
+		}
+		document.documentElement.style.marginTop = '';
+		document.documentElement.style.height = '';
+		document.documentElement.style.overflow = '';
+		window.scrollTo(0, lightboxScrollPosition);
+		if (!withoutReload) {
+			setCookie('rsfh-scroll-position', lightboxScrollPosition);
+			document.location.reload();
+		}
+		else {
+			lightbox.parentNode.removeChild(lightbox);
+		}
+	};
+
+	if (getCookie('rsfh-scroll-position')) {
+		(function() {
+			var interval;
+			var scrollPos = parseInt(getCookie('rsfh-scroll-position'), 10);
+			var scroll = function() {
+				window.scrollTo(0, scrollPos);
+			};
+			setCookie('rsfh-scroll-position', null);
+			scroll();
+			interval = setInterval(scroll, 10);
+			addEvent(window, 'load', function() {
+				clearInterval(interval);
+				scroll();
+				setTimeout(scroll, 10);
+				setTimeout(scroll, 100);
+			});
+		})();
+	}
 
 	Array.prototype.forEach.call(document.querySelectorAll('*[data-frontend-helper]'), function(element) {
 		init(element);
@@ -390,13 +510,15 @@ document.addEventListener('DOMContentLoaded', function() {
 		element.parentNode.removeChild(element);
 	});
 
-	window.addEventListener('mouseover', function(event) {
+	addEvent(window, 'mouseover', function(event) {
 		for (var node = event.target; node && node.getAttribute; node = node.parentNode) {
 			if (! node.frontendHelperEnabled && node.getAttribute('data-frontend-helper')) {
 				init(node, true);
 			}
 		}
-	}, false);
+	});
+
+	window.rsfhCloseLightbox = closeLightbox;
 
 }, false);
 })(window, document);
