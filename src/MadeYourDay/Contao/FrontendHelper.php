@@ -132,25 +132,52 @@ class FrontendHelper extends \Controller
 
 		// get the first tag
 		if (preg_match('(<[a-z0-9]+\\s[^>]+)is', $content, $matches)) {
+
 			// search for an article id incected by getArticleHook
 			if (preg_match('(^(.*\\sclass="[^"]*)rsfh-article-([0-9]+)-([0-9a-f]*)(.*)$)is', $matches[0], $matches2)) {
+
 				$data['toolbar'] = true;
 				// remove the article id class
 				$content = str_replace($matches2[0], $matches2[1] . $matches2[4], $content);
+
 				if (in_array('articles', $permissions)) {
 					\System::loadLanguageFile('tl_article');
 					$data['links']['article'] = array(
 						'url' => static::getBackendURL('article', 'tl_content', $matches2[2], false),
 						'label' => sprintf($GLOBALS['TL_LANG']['tl_article']['edit'][1], $matches2[2]),
 					);
+				}
+
+				if (in_array('contents', $permissions)) {
+
+					\System::loadLanguageFile('tl_content');
+					$data['links']['pastenew'] = array(
+						'url' => static::getBackendURL('article', 'tl_content', $matches2[2], 'create', array('mode' => 2, 'pid' => $matches2[2])),
+						'label' => $GLOBALS['TL_LANG']['tl_content']['pastenew'][0],
+					);
+
+					$lastContentElement = \Database::getInstance()
+						->prepare("SELECT id FROM tl_content WHERE pid=? AND (ptable IS NULL OR ptable = '' OR ptable = 'tl_article') ORDER BY sorting DESC")
+						->limit(1)
+						->execute($matches2[2]);
+					if ($lastContentElement && $lastContentElement->id) {
+						$data['links']['pastebottom'] = array(
+							'url' => static::getBackendURL('article', 'tl_content', $matches2[2], 'create', array('mode' => 1, 'pid' => $lastContentElement->id)),
+							'label' => sprintf($GLOBALS['TL_LANG']['tl_content']['pastenew'][1], $lastContentElement->id),
+						);
+					}
+
 					\System::loadLanguageFile('rocksolid_frontend_helper');
 					$data['columnLabel'] = $GLOBALS['TL_LANG']['rocksolid_frontend_helper']['column'];
 					$data['column'] = pack("H*" , $matches2[3]);
 					if (isset($GLOBALS['TL_LANG']['tl_article'][$data['column']])) {
 						$data['column'] = $GLOBALS['TL_LANG']['tl_article'][$data['column']];
 					}
+
 				}
+
 			}
+
 		}
 
 		return static::insertData($content, $data);
@@ -185,6 +212,10 @@ class FrontendHelper extends \Controller
 				'url' => static::getBackendURL('form', 'tl_form_field', $widget->id, 'delete'),
 				'label' => sprintf($GLOBALS['TL_LANG']['tl_form_field']['delete'][1], $widget->id),
 				'confirm' => sprintf($GLOBALS['TL_LANG']['MSC']['deleteConfirm'], $widget->id),
+			);
+			$data['links']['pastenew'] = array(
+				'url' => static::getBackendURL('form', 'tl_form_field', $widget->pid, 'create', array('mode' => 1, 'pid' => $widget->id)),
+				'label' => sprintf($GLOBALS['TL_LANG']['tl_form_field']['pastenew'][1], $widget->id),
 			);
 		}
 
@@ -358,6 +389,11 @@ class FrontendHelper extends \Controller
 					'confirm' => sprintf($GLOBALS['TL_LANG']['MSC']['deleteConfirm'], $row->id),
 				);
 			}
+
+			$data['links']['pastenew'] = array(
+				'url' => static::getBackendURL($do, 'tl_content', $row->pid, 'create', array('mode' => 1, 'pid' => $row->id)),
+				'label' => sprintf($GLOBALS['TL_LANG']['tl_content']['pastenew'][1], $row->id),
+			);
 
 		}
 

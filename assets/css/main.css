@@ -47,6 +47,12 @@
 a.rsfh-edit {
 	background-image: url("../../../../themes/default/images/edit.gif");
 }
+a.rsfh-pastenew {
+	background-image: url("../../../../themes/default/images/new.gif");
+}
+a.rsfh-pastebottom {
+	background-image: url("../img/newbottom.gif");
+}
 a.rsfh-delete {
 	background-image: url("../../../../themes/default/images/delete.gif");
 }
