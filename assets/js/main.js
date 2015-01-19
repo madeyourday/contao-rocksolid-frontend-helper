@@ -31,6 +31,34 @@ document.addEventListener('DOMContentLoaded', function() {
 			}
 		}
 	};
+	var addClass = function(element, className) {
+		if (!hasClass(element, className)) {
+			if (element.classList && element.classList.add) {
+				element.classList.add(className);
+			}
+			else {
+				element.className += ' ' + className;
+			}
+		}
+	};
+	var removeClass = function(element, className) {
+		if (hasClass(element, className)) {
+			if (element.classList && element.classList.remove) {
+				element.classList.remove(className);
+			}
+			else {
+				element.className = element.className.replace(new RegExp('(?:^|\\s+)' + className + '(?:$|\\s+)'), ' ');
+			}
+		}
+	};
+	var hasClass = function(element, className) {
+		if (element.classList && element.classList.contains) {
+			return element.classList.contains(className);
+		}
+		else {
+			return !!element.className.match('(?:^|\\s)' + className + '(?:$|\\s)');
+		}
+	};
 	var getBoundingClientRect = function(element) {
 		var boundingClientRect = element.getBoundingClientRect();
 		var nodeName = element.nodeName.toLowerCase();
@@ -180,8 +208,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
 			if (
 				!config.lightbox
-				|| event.target.className.indexOf('rsfh-activate') !== -1
-				|| event.target.className.indexOf('rsfh-preview') !== -1
+				|| hasClass(event.target, 'rsfh-activate')
+				|| hasClass(event.target, 'rsfh-preview')
 			) {
 				return;
 			}
@@ -232,7 +260,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 		var mainNav, mainNavContents;
 		if (element === document.body) {
-			toolbar.className += ' rsfh-main-toolbar';
+			addClass(toolbar, 'rsfh-main-toolbar');
 			mainNav = document.createElement('div');
 			mainNav.className = 'rsfh-main-nav';
 			toolbar.appendChild(mainNav);
@@ -317,7 +345,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			activateLink.href = document.location.href;
 			activateLink.className = 'rsfh-activate';
 			if (getCookie('rsfh-active')) {
-				activateLink.className += ' rsfh-activate-active';
+				addClass(activateLink, 'rsfh-activate-active');
 			}
 			activateLink.innerHTML = activateLink.title = active ?
 				data.labels.deactivate :
@@ -329,10 +357,10 @@ document.addEventListener('DOMContentLoaded', function() {
 					data.labels.deactivate :
 					data.labels.activate;
 				if (active) {
-					activateLink.className += ' rsfh-activate-active';
+					addClass(activateLink, 'rsfh-activate-active');
 				}
 				else {
-					activateLink.className = activateLink.className.split('rsfh-activate-active').join('');
+					removeClass(activateLink, 'rsfh-activate-active');
 				}
 				event.preventDefault();
 			});
@@ -342,7 +370,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			previewLink.href = document.location.href;
 			previewLink.className = 'rsfh-preview';
 			if (getCookie('FE_PREVIEW')) {
-				previewLink.className += ' rsfh-preview-active';
+				addClass(previewLink, 'rsfh-preview-active');
 			}
 			previewLink.innerHTML = previewLink.title = getCookie('FE_PREVIEW') ?
 				data.labels.previewHide :
@@ -397,7 +425,7 @@ document.addEventListener('DOMContentLoaded', function() {
 				boundingClientRect = null;
 			}
 			if (!fromToolbar) {
-				toolbar.className = toolbar.className.split('rsfh-toolbar-minor').join('');
+				removeClass(toolbar, 'rsfh-toolbar-minor');
 				if (element !== document.body) {
 					boundingClientRect = boundingClientRect || getBoundingClientRect(element);
 					toolbar.style.top = Math.max(0, boundingClientRect.top - toolbar.offsetHeight + 2) + window.pageYOffset + 'px';
@@ -425,7 +453,7 @@ document.addEventListener('DOMContentLoaded', function() {
 							bounding2.bottom > bounding1.top
 						) {
 							toolbar2.style.left = bounding1.right + 5 + 'px';
-							toolbar2.className += ' rsfh-toolbar-minor';
+							addClass(toolbar2, 'rsfh-toolbar-minor');
 						}
 					});
 				});
