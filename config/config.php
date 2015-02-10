@@ -30,7 +30,7 @@ $GLOBALS['TL_RSFH']['backendModules']['myextension'] = array(
 	'columnType' => 'plain',        // 'serialized' or 'plain'
 	'ceColumn' => 'my_extensions',  // the column of tl_content that holds the id of the record to edit
 	'ceColumnType' => 'serialized', // 'serialized' or 'plain'
-	'icon' => 'path/to/icon.gif',   // path to edit icon (e.g. system/modules/dlh_googlemaps/html/icon.gif)
+	'icon' => 'path/to/icon.gif',   // path to edit icon (e.g. system/modules/dlh_googlemaps/assets/icon.gif)
 	'feModules' => array(           // all frontend modules that should be editable
 		'my_extension',
 	),
@@ -116,7 +116,7 @@ $GLOBALS['TL_RSFH']['backendModules']['dlh_googlemaps'] = array(
 	'columnType' => 'plain',
 	'ceColumn' => 'dlh_googlemap',
 	'ceColumnType' => 'plain',
-	'icon' => 'system/modules/dlh_googlemaps/html/icon.gif',
+	'icon' => 'system/modules/dlh_googlemaps/assets/icon.gif',
 	'feModules' => array(
 		'dlh_googlemaps',
 	),

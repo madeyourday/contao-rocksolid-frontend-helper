@@ -125,6 +125,15 @@ class FrontendHelper extends \Controller
 			$GLOBALS['TL_JAVASCRIPT'][] = 'system/modules/rocksolid-frontend-helper/assets/js/main.js';
 			$GLOBALS['TL_CSS'][] = 'system/modules/rocksolid-frontend-helper/assets/css/main.css';
 
+			// Remove dummy elements inside script tags and insert them before the script tags
+			$content = preg_replace_callback('(<script[^>]*>.*?</script>)is', function($matches) {
+				preg_match_all('(<span class="rsfh-dummy[^>]*></span>)is', $matches[0], $dummies);
+				if (!count($dummies[0])) {
+					return $matches[0];
+				}
+				return implode('', $dummies[0]) . str_replace($dummies[0], '', $matches[0]);
+			}, $content);
+
 			$content = explode('<body', $content, 2);
 			return $content[0] . static::insertData('<body' . $content[1], $data);
 
