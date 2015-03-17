@@ -241,6 +241,24 @@ class FrontendHelper extends \Controller
 
 			}
 
+			// search for a mega-menu id incected by parseTemplateHook
+			if (preg_match('(^(.*\\sclass="[^"]*)rsfh-mega-menu-([0-9]+)(.*)$)is', $matches[0], $matches2)) {
+
+				$data['toolbar'] = true;
+				// remove the news id class
+				$content = str_replace($matches2[0], $matches2[1] . $matches2[3], $content);
+
+				if (in_array('beModules', $permissions)) {
+					\System::loadLanguageFile('tl_rocksolid_mega_menu');
+					$data['links']['be-module'] = array(
+						'url' => static::getBackendURL('rocksolid_mega_menu', 'tl_rocksolid_mega_menu_column', $matches2[2], false),
+						'label' => sprintf($GLOBALS['TL_LANG']['tl_rocksolid_mega_menu']['edit'][1], $matches2[2]),
+						'icon' => 'system/modules/rocksolid-mega-menu/assets/img/icon.png',
+					);
+				}
+
+			}
+
 		}
 
 		return static::insertData($content, $data);
@@ -265,6 +283,13 @@ class FrontendHelper extends \Controller
 				&& substr($template->id, 0, 1) === 'c'
 			) {
 				$template->class .= ' rsfh-comment-' . substr($template->id, 1);
+			}
+
+			if (
+				substr($template->getName(), 0, 5) === 'rsmm_'
+				&& !empty($template->id)
+			) {
+				$template->cssClass .= ' rsfh-mega-menu-' . $template->id;
 			}
 
 		}
