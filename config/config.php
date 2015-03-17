@@ -73,6 +73,17 @@ $GLOBALS['TL_RSFH']['backendModules']['newsletter'] = array(
 		'nl_reader',
 	),
 );
+$GLOBALS['TL_RSFH']['backendModules']['newsletter_recipients'] = array(
+	'do' => 'newsletter',
+	'table' => 'tl_newsletter_recipients',
+	'column' => 'nl_channels',
+	'columnType' => 'serialized',
+	'icon' => 'system/themes/default/images/mgroup.gif',
+	'feModules' => array(
+		'subscribe',
+		'unsubscribe',
+	),
+);
 $GLOBALS['TL_RSFH']['backendModules']['faq'] = array(
 	'table' => 'tl_faq',
 	'column' => 'faq_categories',

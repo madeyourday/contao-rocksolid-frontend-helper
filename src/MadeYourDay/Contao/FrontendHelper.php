@@ -305,6 +305,9 @@ class FrontendHelper extends \Controller
 
 		if (in_array('beModules', $permissions)) {
 			foreach ($GLOBALS['TL_RSFH']['backendModules'] as $do => $config) {
+				if (!empty($config['do'])) {
+					$do = $config['do'];
+				}
 				if (
 					isset($config['feModules']) &&
 					is_array($config['feModules']) &&
@@ -414,6 +417,9 @@ class FrontendHelper extends \Controller
 		}
 		else if (in_array('beModules', $permissions)) {
 			foreach ($GLOBALS['TL_RSFH']['backendModules'] as $do => $config) {
+				if (!empty($config['do'])) {
+					$do = $config['do'];
+				}
 				if (
 					isset($config['contentElements']) &&
 					is_array($config['contentElements']) &&
