@@ -223,9 +223,51 @@ class FrontendHelper extends \Controller
 
 			}
 
+			// search for a comment id incected by parseTemplateHook
+			if (preg_match('(^(.*\\sclass="[^"]*)rsfh-comment-([0-9]+)(.*)$)is', $matches[0], $matches2)) {
+
+				$data['toolbar'] = true;
+				// remove the news id class
+				$content = str_replace($matches2[0], $matches2[1] . $matches2[3], $content);
+
+				if (in_array('beModules', $permissions)) {
+					\System::loadLanguageFile('tl_comments');
+					$data['links']['be-module'] = array(
+						'url' => static::getBackendURL('comments', null, $matches2[2]),
+						'label' => sprintf($GLOBALS['TL_LANG']['tl_comments']['edit'][1], $matches2[2]),
+						'icon' => 'system/modules/comments/assets/icon.gif',
+					);
+				}
+
+			}
+
 		}
 
 		return static::insertData($content, $data);
+	}
+
+	/**
+	 * parseTemplate hook
+	 *
+	 * @param  \Template $template
+	 * @return void
+	 */
+	public function parseTemplateHook($template)
+	{
+		if (!$permissions = static::checkLogin()) {
+			return;
+		}
+
+		if (in_array('beModules', $permissions)) {
+
+			if (
+				substr($template->getName(), 0, 4) === 'com_'
+				&& substr($template->id, 0, 1) === 'c'
+			) {
+				$template->class .= ' rsfh-comment-' . substr($template->id, 1);
+			}
+
+		}
 	}
 
 	/**
