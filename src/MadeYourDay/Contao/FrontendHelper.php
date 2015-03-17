@@ -187,6 +187,24 @@ class FrontendHelper extends \Controller
 
 			}
 
+			// search for a news id incected by parseArticlesHook
+			if (preg_match('(^(.*\\sclass="[^"]*)rsfh-news-([0-9]+)(.*)$)is', $matches[0], $matches2)) {
+
+				$data['toolbar'] = true;
+				// remove the news id class
+				$content = str_replace($matches2[0], $matches2[1] . $matches2[3], $content);
+
+				if (in_array('beModules', $permissions)) {
+					\System::loadLanguageFile('tl_news');
+					$data['links']['be-module'] = array(
+						'url' => static::getBackendURL('news', 'tl_content', $matches2[2], false),
+						'label' => sprintf($GLOBALS['TL_LANG']['tl_news']['edit'][1], $matches2[2]),
+						'icon' => 'system/modules/news/assets/icon.gif',
+					);
+				}
+
+			}
+
 		}
 
 		return static::insertData($content, $data);
@@ -242,6 +260,22 @@ class FrontendHelper extends \Controller
 		}
 
 		return static::insertData($content, $data);
+	}
+
+	/**
+	 * parseArticles hook
+	 *
+	 * @param  \FrontendTemplate $template
+	 * @param  \Widget           $row
+	 * @param  \ModuleNews       $module
+	 * @return void
+	 */
+	public function parseArticlesHook($template, $row, $module)
+	{
+		if (!($permissions = static::checkLogin()) || !in_array('beModules', $permissions)) {
+			return;
+		}
+		$template->class .= ' rsfh-news-' . $row['id'];
 	}
 
 	/**
