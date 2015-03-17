@@ -205,6 +205,24 @@ class FrontendHelper extends \Controller
 
 			}
 
+			// search for an event id incected by getAllEventsHook
+			if (preg_match('(^(.*\\sclass="[^"]*)rsfh-event-([0-9]+)(.*)$)is', $matches[0], $matches2)) {
+
+				$data['toolbar'] = true;
+				// remove the news id class
+				$content = str_replace($matches2[0], $matches2[1] . $matches2[3], $content);
+
+				if (in_array('beModules', $permissions)) {
+					\System::loadLanguageFile('tl_calendar');
+					$data['links']['be-module'] = array(
+						'url' => static::getBackendURL('calendar', 'tl_content', $matches2[2], false),
+						'label' => sprintf($GLOBALS['TL_LANG']['tl_calendar']['edit'][1], $matches2[2]),
+						'icon' => 'system/modules/calendar/assets/icon.gif',
+					);
+				}
+
+			}
+
 		}
 
 		return static::insertData($content, $data);
@@ -276,6 +294,35 @@ class FrontendHelper extends \Controller
 			return;
 		}
 		$template->class .= ' rsfh-news-' . $row['id'];
+	}
+
+	/**
+	 * getAllEvents hook
+	 *
+	 * @param  array   $allEvents
+	 * @param  array   $calendars
+	 * @param  int     $start
+	 * @param  int     $end
+	 * @param  \Events $module
+	 * @return array              Modified $allEvents array
+	 */
+	public function getAllEventsHook($allEvents, $calendars, $start, $end, $module)
+	{
+		if (!($permissions = static::checkLogin()) || !in_array('beModules', $permissions)) {
+			return $allEvents;
+		}
+
+		foreach ($allEvents as $key => $days) {
+			foreach ($days as $day => $events) {
+				foreach ($events as $index => $event) {
+					$allEvents[$key][$day][$index]['class'] =
+						(empty($event['class']) ? '' : $event['class'])
+						. ' rsfh-event-' . $event['id'];
+				}
+			}
+		}
+
+		return $allEvents;
 	}
 
 	/**
