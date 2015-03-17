@@ -697,6 +697,9 @@ class FrontendHelper extends \Controller
 
 			if (preg_match('(\\sdata-frontend-helper="([^"]*)")is', $matches[0], $matches2)) {
 				$oldData = json_decode(html_entity_decode($matches2[1]), true);
+				if (!is_array($oldData)) {
+					$oldData = array();
+				}
 				if (isset($oldData['links']) && isset($data['links'])) {
 					$data['links'] = array_merge($oldData['links'], $data['links']);
 				}

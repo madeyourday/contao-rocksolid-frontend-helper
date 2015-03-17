@@ -155,6 +155,14 @@ document.addEventListener('DOMContentLoaded', function() {
 		}
 		return depth;
 	};
+	var getNodeData = function(element) {
+		var data;
+		try {
+			data = JSON.parse(element.getAttribute('data-frontend-helper'));
+		}
+		catch(e) {}
+		return (typeof data === 'object' && data) || {};
+	};
 
 	var active = !!getCookie('rsfh-active');
 	var lightbox;
@@ -166,7 +174,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		element.frontendHelperEnabled = true;
 
 		var timeout, timeout2, isOver, boundingClientRect;
-		var data = JSON.parse(element.getAttribute('data-frontend-helper'));
+		var data = getNodeData(element);
 
 		if (! data.toolbar || (
 			! data.links &&
@@ -304,7 +312,7 @@ document.addEventListener('DOMContentLoaded', function() {
 				label: data.templateLabel
 			};
 			Array.prototype.forEach.call(element.querySelectorAll('*[data-frontend-helper]'), function(element) {
-				var data = JSON.parse(element.getAttribute('data-frontend-helper'));
+				var data = getNodeData(element);
 				if (data.template) {
 					infoTemplates[data.template] = {
 						path: data.templatePath,
