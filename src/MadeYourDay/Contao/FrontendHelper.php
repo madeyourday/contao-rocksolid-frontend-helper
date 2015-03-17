@@ -142,7 +142,7 @@ class FrontendHelper extends \Controller
 		// get the first tag
 		if (preg_match('(<[a-z0-9]+\\s[^>]+)is', $content, $matches)) {
 
-			// search for an article id incected by getArticleHook
+			// search for an article id injected by getArticleHook
 			if (preg_match('(^(.*\\sclass="[^"]*)rsfh-article-([0-9]+)-([0-9a-f]*)(.*)$)is', $matches[0], $matches2)) {
 
 				$data['toolbar'] = true;
@@ -187,7 +187,7 @@ class FrontendHelper extends \Controller
 
 			}
 
-			// search for a news id incected by parseArticlesHook
+			// search for a news id injected by parseArticlesHook
 			if (preg_match('(^(.*\\sclass="[^"]*)rsfh-news-([0-9]+)(.*)$)is', $matches[0], $matches2)) {
 
 				$data['toolbar'] = true;
@@ -205,7 +205,7 @@ class FrontendHelper extends \Controller
 
 			}
 
-			// search for an event id incected by getAllEventsHook
+			// search for an event id injected by getAllEventsHook
 			if (preg_match('(^(.*\\sclass="[^"]*)rsfh-event-([0-9]+)(.*)$)is', $matches[0], $matches2)) {
 
 				$data['toolbar'] = true;
@@ -223,7 +223,7 @@ class FrontendHelper extends \Controller
 
 			}
 
-			// search for a comment id incected by parseTemplateHook
+			// search for a comment id injected by parseTemplateHook
 			if (preg_match('(^(.*\\sclass="[^"]*)rsfh-comment-([0-9]+)(.*)$)is', $matches[0], $matches2)) {
 
 				$data['toolbar'] = true;
@@ -241,7 +241,7 @@ class FrontendHelper extends \Controller
 
 			}
 
-			// search for a mega-menu id incected by parseTemplateHook
+			// search for a mega-menu id injected by parseTemplateHook
 			if (preg_match('(^(.*\\sclass="[^"]*)rsfh-mega-menu-([0-9]+)(.*)$)is', $matches[0], $matches2)) {
 
 				$data['toolbar'] = true;
