@@ -163,6 +163,13 @@ document.addEventListener('DOMContentLoaded', function() {
 		catch(e) {}
 		return (typeof data === 'object' && data) || {};
 	};
+	var getLabel = function(key) {
+		var data = getNodeData(document.body);
+		if (!data || !data.labels || !data.labels[key]) {
+			return;
+		}
+		return data.labels[key];
+	};
 
 	var active = !!getCookie('rsfh-active');
 	var lightbox;
@@ -260,6 +267,16 @@ document.addEventListener('DOMContentLoaded', function() {
 				event.preventDefault();
 			});
 			lightbox.appendChild(lightboxCloseButton);
+
+			var lightboxCancelButton = document.createElement('a');
+			lightboxCancelButton.className = 'rsfh-lightbox-cancel';
+			lightboxCancelButton.innerHTML = getLabel('cancel');
+			lightboxCancelButton.href = '';
+			addEvent(lightboxCancelButton, 'click', function(event) {
+				closeLightbox(true);
+				event.preventDefault();
+			});
+			lightbox.appendChild(lightboxCancelButton);
 
 			document.body.appendChild(lightbox);
 			targetLink.target = 'rsfh-lightbox-iframe';

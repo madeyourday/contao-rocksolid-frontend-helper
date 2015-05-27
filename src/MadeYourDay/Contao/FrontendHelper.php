@@ -116,6 +116,7 @@ class FrontendHelper extends \Controller
 					$GLOBALS['TL_LANG']['MSC']['hiddenShow'],
 				'activate' => $GLOBALS['TL_LANG']['rocksolid_frontend_helper']['activateLabel'],
 				'deactivate' => $GLOBALS['TL_LANG']['rocksolid_frontend_helper']['deactivateLabel'],
+				'cancel' => $GLOBALS['TL_LANG']['MSC']['cancelBT'],
 			);
 
 			$data['config'] = array(
