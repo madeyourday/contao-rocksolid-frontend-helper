@@ -332,7 +332,11 @@ class FrontendHelper extends \Controller
 			);
 		}
 
-		if (in_array('infos', $permissions)) {
+		if (
+			in_array('infos', $permissions)
+			&& $widget->template !== 'form_rsce_plain'
+			&& $widget->template !== 'form_rs_columns_plain'
+		) {
 			$data['template'] = $widget->template;
 			$data['templatePath'] = substr($widget->getTemplate(
 				$widget->template,
