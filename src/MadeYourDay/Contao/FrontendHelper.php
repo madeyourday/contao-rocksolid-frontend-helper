@@ -670,12 +670,7 @@ class FrontendHelper extends \Controller
 
 		// set the frontend URL as referrer
 
-		if (version_compare(VERSION, '4.0', '>=')) {
-			$referrerSession = \System::getContainer()->get('session')->get('referer');
-		}
-		else {
-			$referrerSession = \Session::getInstance()->get('referer');
-		}
+		$referrerSession = \Session::getInstance()->get('referer');
 
 		if (defined('TL_REFERER_ID') && !\Input::get('ref')) {
 
@@ -687,18 +682,17 @@ class FrontendHelper extends \Controller
 			$requestUri .= (strpos($requestUri, '?') === false ? '?' : '&') . 'ref=' . $tlRefererId;
 			\Environment::set('requestUri', $requestUri);
 
+			if (version_compare(VERSION, '4.0', '>=')) {
+				\System::getContainer()->get('request_stack')->getCurrentRequest()->query->set('ref', $tlRefererId);
+			}
+
 		}
 		// Backwards compatibility for Contao 3.0
 		else if (!defined('TL_REFERER_ID')) {
 			$referrerSession['current'] = $referrer;
 		}
 
-		if (version_compare(VERSION, '4.0', '>=')) {
-			\System::getContainer()->get('session')->set('referer', $referrerSession);
-		}
-		else {
-			\Session::getInstance()->set('referer', $referrerSession);
-		}
+		\Session::getInstance()->set('referer', $referrerSession);
 	}
 
 	/**
