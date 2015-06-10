@@ -18,8 +18,7 @@
 		"source":"https://github.com/madeyourday/contao-rocksolid-frontend-helper"
 	},
 	"require":{
-		"php":">=5.3",
-		"contao/contao":"^4.0.0"
+		"php":">=5.3"
 	},
 	"autoload":{
 		"classmap":["src/"]

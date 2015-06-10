@@ -122,12 +122,16 @@ class FrontendHelper extends \Controller
 				'lightbox' => (bool)FrontendHelperUser::getInstance()->rocksolidFrontendHelperLightbox,
 			);
 
-			$GLOBALS['TL_JAVASCRIPT'][] = 'system/modules/rocksolid-frontend-helper/assets/js/main.js';
+			$assetsDir = version_compare(VERSION, '4.0', '>=')
+				? 'bundles/rocksolidfrontendhelper'
+				: 'system/modules/rocksolid-frontend-helper/assets';
+
+			$GLOBALS['TL_JAVASCRIPT'][] = $assetsDir . '/js/main.js';
 			if (version_compare(VERSION, '4.0', '>=')) {
-				$GLOBALS['TL_CSS'][] = 'system/modules/rocksolid-frontend-helper/assets/css/main-v4.css';
+				$GLOBALS['TL_CSS'][] = $assetsDir . '/css/main-v4.css';
 			}
 			else {
-				$GLOBALS['TL_CSS'][] = 'system/modules/rocksolid-frontend-helper/assets/css/main-v3.css';
+				$GLOBALS['TL_CSS'][] = $assetsDir . '/css/main-v3.css';
 			}
 
 			// Remove dummy elements inside script tags and insert them before the script tags
@@ -658,7 +662,11 @@ class FrontendHelper extends \Controller
 			$referrer .= '?';
 		}
 
-		$referrer = \Environment::get('path') . '/system/modules/rocksolid-frontend-helper/assets/html/referrer.html?referrer=' . rawurlencode($referrer);
+		$assetsDir = version_compare(VERSION, '4.0', '>=')
+			? 'bundles/rocksolidfrontendhelper'
+			: 'system/modules/rocksolid-frontend-helper/assets';
+
+		$referrer = \Environment::get('path') . '/' . $assetsDir . '/html/referrer.html?referrer=' . rawurlencode($referrer);
 
 		// set the frontend URL as referrer
 
