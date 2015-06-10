@@ -854,11 +854,16 @@ class FrontendHelper extends \Controller
 	 */
 	protected static function getBackendURL($do, $table, $id, $act = 'edit', array $params = array())
 	{
+		$addParams = array();
 		foreach (array('do', 'table', 'act', 'id') as $key) {
-			if ($$key && !isset($params[$key])) {
-				$params[$key] = $$key;
+			if ($$key) {
+				$addParams[$key] = $$key;
 			}
 		}
+
+		// This is necessary because Contao wants the parameters to be in the right order.
+		// E.g. `?node=2&do=article` doesn’t work while `?do=article&node=2` does.
+		$params = array_merge($addParams, $params);
 
 		$params['rt'] = REQUEST_TOKEN;
 
