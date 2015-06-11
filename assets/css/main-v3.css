@@ -240,12 +240,12 @@ a.rsfh-activate.rsfh-activate-active {
 	border: 20px solid transparent;
 	margin-bottom: -20px;
 }
-.rsfh-lightbox-close {
+.rsfh-lightbox-close,
+.rsfh-lightbox-cancel {
 	box-sizing: border-box;
 	position: absolute;
 	top: 5px;
 	right: 5px;
-	width: 30px;
 	height: 30px;
 	border: 2px solid #fff;
 	border-radius: 99em;
@@ -255,4 +255,18 @@ a.rsfh-activate.rsfh-activate-active {
 	text-decoration: none !important;
 	background: #000;
 	box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+}
+.rsfh-lightbox-close:hover,
+.rsfh-lightbox-close:focus,
+.rsfh-lightbox-cancel:hover,
+.rsfh-lightbox-cancel:focus {
+	background-color: #444;
+}
+.rsfh-lightbox-close {
+	width: 30px;
+}
+.rsfh-lightbox-cancel {
+	right: 45px;
+	padding-right: 1em;
+	padding-left: 1em;
 }

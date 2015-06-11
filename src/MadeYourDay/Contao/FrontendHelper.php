@@ -116,6 +116,7 @@ class FrontendHelper extends \Controller
 					$GLOBALS['TL_LANG']['MSC']['hiddenShow'],
 				'activate' => $GLOBALS['TL_LANG']['rocksolid_frontend_helper']['activateLabel'],
 				'deactivate' => $GLOBALS['TL_LANG']['rocksolid_frontend_helper']['deactivateLabel'],
+				'cancel' => $GLOBALS['TL_LANG']['MSC']['cancelBT'],
 			);
 
 			$data['config'] = array(
@@ -340,7 +341,11 @@ class FrontendHelper extends \Controller
 			);
 		}
 
-		if (in_array('infos', $permissions)) {
+		if (
+			in_array('infos', $permissions)
+			&& $widget->template !== 'form_rsce_plain'
+			&& $widget->template !== 'form_rs_columns_plain'
+		) {
 			$data['template'] = $widget->template;
 			$data['templatePath'] = substr($widget->getTemplate(
 				$widget->template,
