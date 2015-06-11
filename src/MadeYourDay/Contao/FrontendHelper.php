@@ -103,7 +103,7 @@ class FrontendHelper extends \Controller
 			}
 
 			$data['links']['backend'] = array(
-				'url' => 'contao/main.php',
+				'url' => static::getBackendURL(null, null, null, null),
 				'label' => $GLOBALS['TL_LANG']['MSC']['homeTitle'],
 			);
 
@@ -123,8 +123,17 @@ class FrontendHelper extends \Controller
 				'lightbox' => (bool)FrontendHelperUser::getInstance()->rocksolidFrontendHelperLightbox,
 			);
 
-			$GLOBALS['TL_JAVASCRIPT'][] = 'system/modules/rocksolid-frontend-helper/assets/js/main.js';
-			$GLOBALS['TL_CSS'][] = 'system/modules/rocksolid-frontend-helper/assets/css/main.css';
+			$assetsDir = version_compare(VERSION, '4.0', '>=')
+				? 'bundles/rocksolidfrontendhelper'
+				: 'system/modules/rocksolid-frontend-helper/assets';
+
+			$GLOBALS['TL_JAVASCRIPT'][] = $assetsDir . '/js/main.js';
+			if (version_compare(VERSION, '4.0', '>=')) {
+				$GLOBALS['TL_CSS'][] = $assetsDir . '/css/main-v4.css';
+			}
+			else {
+				$GLOBALS['TL_CSS'][] = $assetsDir . '/css/main-v3.css';
+			}
 
 			// Remove dummy elements inside script tags and insert them before the script tags
 			$content = preg_replace_callback('(<script[^>]*>.*?</script>)is', function($matches) {
@@ -200,7 +209,7 @@ class FrontendHelper extends \Controller
 					$data['links']['be-module'] = array(
 						'url' => static::getBackendURL('news', 'tl_content', $matches2[2], false),
 						'label' => sprintf($GLOBALS['TL_LANG']['tl_news']['edit'][1], $matches2[2]),
-						'icon' => 'system/modules/news/assets/icon.gif',
+						'icon' => $GLOBALS['BE_MOD']['content']['news']['icon'],
 					);
 				}
 
@@ -218,7 +227,7 @@ class FrontendHelper extends \Controller
 					$data['links']['be-module'] = array(
 						'url' => static::getBackendURL('calendar', 'tl_content', $matches2[2], false),
 						'label' => sprintf($GLOBALS['TL_LANG']['tl_calendar']['edit'][1], $matches2[2]),
-						'icon' => 'system/modules/calendar/assets/icon.gif',
+						'icon' => $GLOBALS['BE_MOD']['content']['calendar']['icon'],
 					);
 				}
 
@@ -236,7 +245,7 @@ class FrontendHelper extends \Controller
 					$data['links']['be-module'] = array(
 						'url' => static::getBackendURL('comments', null, $matches2[2]),
 						'label' => sprintf($GLOBALS['TL_LANG']['tl_comments']['edit'][1], $matches2[2]),
-						'icon' => 'system/modules/comments/assets/icon.gif',
+						'icon' => $GLOBALS['BE_MOD']['content']['comments']['icon'],
 					);
 				}
 
@@ -254,7 +263,7 @@ class FrontendHelper extends \Controller
 					$data['links']['be-module'] = array(
 						'url' => static::getBackendURL('rocksolid_mega_menu', 'tl_rocksolid_mega_menu_column', $matches2[2], false),
 						'label' => sprintf($GLOBALS['TL_LANG']['tl_rocksolid_mega_menu']['edit'][1], $matches2[2]),
-						'icon' => 'system/modules/rocksolid-mega-menu/assets/img/icon.png',
+						'icon' => $GLOBALS['BE_MOD']['design']['rocksolid_mega_menu']['icon'],
 					);
 				}
 
@@ -634,12 +643,22 @@ class FrontendHelper extends \Controller
 			}
 		}
 
-		$base = \Environment::get('path') . '/contao/';
+		$base = \Environment::get('path');
+		if (version_compare(VERSION, '4.0', '>=')) {
+			$base .= \System::getContainer()->get('router')->generate('contao_backend');
+		}
+		else {
+			$base .= '/contao';
+		}
+
 		$referrer = parse_url(\Environment::get('httpReferer'));
 		$referrer = $referrer['path'] . ($referrer['query'] ? '?' . $referrer['query'] : '');
 
 		// Stop if the referrer is a backend URL
-		if (substr($referrer, 0, strlen($base)) === $base) {
+		if (
+			substr($referrer, 0, strlen($base)) === $base
+			&& in_array(substr($referrer, strlen($base), 1), array(false, '/', '?'), true)
+		) {
 			return;
 		}
 
@@ -648,9 +667,14 @@ class FrontendHelper extends \Controller
 			$referrer .= '?';
 		}
 
-		$referrer = \Environment::get('path') . '/system/modules/rocksolid-frontend-helper/assets/html/referrer.html?referrer=' . rawurlencode($referrer);
+		$assetsDir = version_compare(VERSION, '4.0', '>=')
+			? 'bundles/rocksolidfrontendhelper'
+			: 'system/modules/rocksolid-frontend-helper/assets';
+
+		$referrer = \Environment::get('path') . '/' . $assetsDir . '/html/referrer.html?referrer=' . rawurlencode($referrer);
 
 		// set the frontend URL as referrer
+
 		$referrerSession = \Session::getInstance()->get('referer');
 
 		if (defined('TL_REFERER_ID') && !\Input::get('ref')) {
@@ -662,6 +686,10 @@ class FrontendHelper extends \Controller
 			$requestUri = \Environment::get('requestUri');
 			$requestUri .= (strpos($requestUri, '?') === false ? '?' : '&') . 'ref=' . $tlRefererId;
 			\Environment::set('requestUri', $requestUri);
+
+			if (version_compare(VERSION, '4.0', '>=')) {
+				\System::getContainer()->get('request_stack')->getCurrentRequest()->query->set('ref', $tlRefererId);
+			}
 
 		}
 		// Backwards compatibility for Contao 3.0
@@ -831,13 +859,29 @@ class FrontendHelper extends \Controller
 	 */
 	protected static function getBackendURL($do, $table, $id, $act = 'edit', array $params = array())
 	{
-		return 'contao/main.php'
-			. '?do=' . $do
-			. ($table ? '&table=' . $table : '')
-			. ($act ? '&act=' . $act : '')
-			. ($id ? '&id=' .  $id : '')
-			. (count($params) ? '&' . http_build_query($params) : '')
-			. '&rt=' . REQUEST_TOKEN;
+		$addParams = array();
+		foreach (array('do', 'table', 'act', 'id') as $key) {
+			if ($$key) {
+				$addParams[$key] = $$key;
+			}
+		}
+
+		// This is necessary because Contao wants the parameters to be in the right order.
+		// E.g. `?node=2&do=article` doesn’t work while `?do=article&node=2` does.
+		$params = array_merge($addParams, $params);
+
+		$params['rt'] = REQUEST_TOKEN;
+
+		if (version_compare(VERSION, '4.0', '>=')) {
+			$url = \System::getContainer()->get('router')->generate('contao_backend');
+		}
+		else {
+			$url = 'contao/main.php';
+		}
+
+		$url .= '?' . http_build_query($params);
+
+		return $url;
 	}
 
 	/**

@@ -46,7 +46,7 @@ $GLOBALS['TL_RSFH']['backendModules']['news'] = array(
 	'table' => 'tl_news',
 	'column' => 'news_archives',
 	'columnType' => 'serialized',
-	'icon' => 'system/themes/default/images/news.gif',
+	'icon' => &$GLOBALS['BE_MOD']['content']['news']['icon'],
 	'feModules' => array(
 		'newslist',
 		'newsreader',
@@ -58,7 +58,7 @@ $GLOBALS['TL_RSFH']['backendModules']['calendar'] = array(
 	'table' => 'tl_calendar_events',
 	'column' => 'cal_calendar',
 	'columnType' => 'serialized',
-	'icon' => 'system/modules/calendar/assets/icon.gif',
+	'icon' => &$GLOBALS['BE_MOD']['content']['calendar']['icon'],
 	'feModules' => array(
 		'calendar',
 		'eventreader',
@@ -70,10 +70,12 @@ $GLOBALS['TL_RSFH']['backendModules']['newsletter'] = array(
 	'table' => 'tl_newsletter',
 	'column' => 'nl_channels',
 	'columnType' => 'serialized',
-	'icon' => 'system/modules/newsletter/assets/icon.gif',
+	'icon' => &$GLOBALS['BE_MOD']['content']['newsletter']['icon'],
 	'feModules' => array(
 		'nl_list',
 		'nl_reader',
+		'newsletterlist',
+		'newsletterreader',
 	),
 );
 $GLOBALS['TL_RSFH']['backendModules']['newsletter_recipients'] = array(
@@ -81,7 +83,7 @@ $GLOBALS['TL_RSFH']['backendModules']['newsletter_recipients'] = array(
 	'table' => 'tl_newsletter_recipients',
 	'column' => 'nl_channels',
 	'columnType' => 'serialized',
-	'icon' => 'system/themes/default/images/mgroup.gif',
+	'icon' => version_compare(VERSION, '4.0', '>=') ? 'system/themes/flexible/images/mgroup.gif' : 'system/themes/default/images/mgroup.gif',
 	'feModules' => array(
 		'subscribe',
 		'unsubscribe',
@@ -91,7 +93,7 @@ $GLOBALS['TL_RSFH']['backendModules']['faq'] = array(
 	'table' => 'tl_faq',
 	'column' => 'faq_categories',
 	'columnType' => 'serialized',
-	'icon' => 'system/modules/faq/assets/icon.gif',
+	'icon' => &$GLOBALS['BE_MOD']['content']['faq']['icon'],
 	'feModules' => array(
 		'faqlist',
 		'faqreader',
@@ -104,7 +106,7 @@ $GLOBALS['TL_RSFH']['backendModules']['form'] = array(
 	'columnType' => 'plain',
 	'ceColumn' => 'form',
 	'ceColumnType' => 'plain',
-	'icon' => 'system/themes/default/images/form.gif',
+	'icon' => version_compare(VERSION, '4.0', '>=') ? 'system/themes/flexible/images/form.gif' : 'system/themes/default/images/form.gif',
 	'feModules' => array(
 		'form',
 	),
@@ -117,7 +119,7 @@ $GLOBALS['TL_RSFH']['backendModules']['mgroup'] = array(
 	'act' => 'edit',
 	'column' => 'ml_groups',
 	'columnType' => 'serialized',
-	'icon' => 'system/themes/default/images/mgroup.gif',
+	'icon' => version_compare(VERSION, '4.0', '>=') ? 'system/themes/flexible/images/mgroup.gif' : 'system/themes/default/images/mgroup.gif',
 	'feModules' => array(
 		'memberlist',
 	),
