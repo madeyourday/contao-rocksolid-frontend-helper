@@ -879,7 +879,8 @@ class FrontendHelper extends \Controller
 			$url = 'contao/main.php';
 		}
 
-		$url .= '?' . http_build_query($params);
+		// Third parameter is required because of arg_separator.output
+		$url .= '?' . http_build_query($params, null, '&');
 
 		return $url;
 	}
