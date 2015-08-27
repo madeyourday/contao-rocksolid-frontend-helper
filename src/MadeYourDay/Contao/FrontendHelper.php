@@ -24,7 +24,7 @@ class FrontendHelper extends \Controller
 	 */
 	public function parseFrontendTemplateHook($content, $template)
 	{
-		if (! $permissions = static::checkLogin()) {
+		if (!($permissions = static::checkLogin()) || !$template) {
 			return $content;
 		}
 
