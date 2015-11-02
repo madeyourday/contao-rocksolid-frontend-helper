@@ -324,7 +324,7 @@ class FrontendHelper extends \Controller
 			'toolbar' => true,
 		);
 
-		if (in_array('contents', $permissions)) {
+		if (in_array('contents', $permissions) && is_numeric($widget->id) && is_numeric($widget->pid)) {
 			\System::loadLanguageFile('tl_form_field');
 			$data['links']['edit'] = array(
 				'url' => static::getBackendURL('form', 'tl_form_field', $widget->id),
