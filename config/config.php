@@ -143,14 +143,12 @@ $GLOBALS['TL_RSFH']['backendModules']['dlh_googlemaps'] = array(
 );
 $GLOBALS['TL_RSFH']['backendModules']['gallery_creator'] = array(
 	'table' => 'tl_gallery_creator_pictures',
-	'ceColumn' => 'gc_publish_albums',
-	'ceColumnType' => 'serialized',
-	'icon' => 'system/modules/gallery_creator/assets/images/photo.png',
+	'column' => 'gc_galleries',
+	'columnType' => 'serialized',
+	'icon' => 'system/modules/gallery_creator/assets/images/picture.png',
 	'feModules' => array(
-		'gallery_creator',
-	),
-	'contentElements' => array(
-		'gallery_creator',
+		'gallery_creator_list',
+		'gallery_creator_reader',
 	),
 );
 $GLOBALS['TL_RSFH']['backendModules']['ticker'] = array(
