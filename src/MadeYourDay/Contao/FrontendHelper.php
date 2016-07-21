@@ -662,6 +662,11 @@ class FrontendHelper extends \Controller
 			return;
 		}
 
+		// Ignore empty referrers
+		if (empty($referrer)) {
+			return;
+		}
+
 		// Make homepage possible as referrer
 		if ($referrer === \Environment::get('path') . '/') {
 			$referrer .= '?';
