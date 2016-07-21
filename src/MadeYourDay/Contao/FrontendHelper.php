@@ -58,7 +58,7 @@ class FrontendHelper extends \Controller
 				\System::loadLanguageFile('tl_page');
 				$data['links']['article'] = array(
 					'url' => static::getBackendURL('article', null, null, null, array(
-						'node' => $GLOBALS['objPage']->id,
+						'pn' => $GLOBALS['objPage']->id,
 					)),
 					'label' => sprintf($GLOBALS['TL_LANG']['tl_page']['articles'][1], $GLOBALS['objPage']->id),
 				);
