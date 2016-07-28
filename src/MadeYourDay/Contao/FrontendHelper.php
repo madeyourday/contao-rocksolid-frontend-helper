@@ -16,6 +16,18 @@ namespace MadeYourDay\Contao;
 class FrontendHelper extends \Controller
 {
 	/**
+	 * initializeSystem hook
+	 */
+	public function initializeSystemHook()
+	{
+		if (!\Input::get('rsfhr')) {
+			return;
+		}
+
+		\Environment::set('queryString', preg_replace('(([&?])rsfhr=1(&|$))', '$1', \Environment::get('queryString')));
+	}
+
+	/**
 	 * parseFrontendTemplate hook
 	 *
 	 * @param  string $content  html content
@@ -632,6 +644,19 @@ class FrontendHelper extends \Controller
 			return;
 		}
 
+		if (defined('TL_REFERER_ID') && \Input::get('ref')) {
+			$referrerSession = \Session::getInstance()->get('referer');
+			if (!empty($referrerSession[\Input::get('ref')]['current'])) {
+				$referrerSession[\Input::get('ref')]['current'] = preg_replace('(([&?])rsfhr=1(&|$))', '$1', $referrerSession[\Input::get('ref')]['current']);
+				\Session::getInstance()->set('referer', $referrerSession);
+			}
+		}
+
+		// Only handle requests from the frontend helper
+		if (!\Input::get('rsfhr')) {
+			return;
+		}
+
 		if ($table === 'tl_templates' && \Input::get('key') === 'new_tpl') {
 			if (\Input::get('original') && !\Input::post('original')) {
 				// Preselect the original template
@@ -662,9 +687,9 @@ class FrontendHelper extends \Controller
 			return;
 		}
 
-		// Ignore empty referrers
+		// Fix empty referrers
 		if (empty($referrer)) {
-			return;
+			$referrer = '/';
 		}
 
 		// Make homepage possible as referrer
@@ -876,6 +901,7 @@ class FrontendHelper extends \Controller
 		$params = array_merge($addParams, $params);
 
 		$params['rt'] = REQUEST_TOKEN;
+		$params['rsfhr'] = 1;
 
 		if (version_compare(VERSION, '4.0', '>=')) {
 			$url = \System::getContainer()->get('router')->generate('contao_backend');
