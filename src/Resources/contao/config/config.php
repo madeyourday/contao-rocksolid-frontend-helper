@@ -84,7 +84,7 @@ $GLOBALS['TL_RSFH']['backendModules']['newsletter_recipients'] = array(
 	'table' => 'tl_newsletter_recipients',
 	'column' => 'nl_channels',
 	'columnType' => 'serialized',
-	'icon' => version_compare(VERSION, '4.0', '>=') ? 'system/themes/flexible/images/mgroup.gif' : 'system/themes/default/images/mgroup.gif',
+	'icon' => 'system/themes/flexible/images/mgroup.gif',
 	'feModules' => array(
 		'subscribe',
 		'unsubscribe',
@@ -107,7 +107,7 @@ $GLOBALS['TL_RSFH']['backendModules']['form'] = array(
 	'columnType' => 'plain',
 	'ceColumn' => 'form',
 	'ceColumnType' => 'plain',
-	'icon' => version_compare(VERSION, '4.0', '>=') ? 'system/themes/flexible/images/form.gif' : 'system/themes/default/images/form.gif',
+	'icon' => 'system/themes/flexible/images/form.gif',
 	'feModules' => array(
 		'form',
 	),
@@ -120,7 +120,7 @@ $GLOBALS['TL_RSFH']['backendModules']['mgroup'] = array(
 	'act' => 'edit',
 	'column' => 'ml_groups',
 	'columnType' => 'serialized',
-	'icon' => version_compare(VERSION, '4.0', '>=') ? 'system/themes/flexible/images/mgroup.gif' : 'system/themes/default/images/mgroup.gif',
+	'icon' => 'system/themes/flexible/images/mgroup.gif',
 	'feModules' => array(
 		'memberlist',
 	),
@@ -186,10 +186,7 @@ $GLOBALS['TL_RSFH']['backendModules']['rocksolid_slider'] = array(
 	'columnType' => 'plain',
 	'ceColumn' => 'rsts_id',
 	'ceColumnType' => 'plain',
-	'icon' => (version_compare(VERSION, '4.0', '>=')
-		? 'bundles/rocksolidslider'
-		: 'system/modules/rocksolid-slider/assets'
-	) . '/img/icon.png',
+	'icon' => 'bundles/rocksolidslider/img/icon.png',
 	'feModules' => array(
 		'rocksolid_slider',
 	),
