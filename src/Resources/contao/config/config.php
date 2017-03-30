@@ -12,16 +12,16 @@
  * @author Martin Auswöger <martin@madeyourday.net>
  */
 
-$GLOBALS['TL_HOOKS']['parseFrontendTemplate'][] = array('MadeYourDay\\Contao\\FrontendHelper', 'parseFrontendTemplateHook');
-$GLOBALS['TL_HOOKS']['parseTemplate'][] = array('MadeYourDay\\Contao\\FrontendHelper', 'parseTemplateHook');
-$GLOBALS['TL_HOOKS']['parseWidget'][] = array('MadeYourDay\\Contao\\FrontendHelper', 'parseWidgetHook');
-$GLOBALS['TL_HOOKS']['parseArticles'][] = array('MadeYourDay\\Contao\\FrontendHelper', 'parseArticlesHook');
-$GLOBALS['TL_HOOKS']['getAllEvents'][] = array('MadeYourDay\\Contao\\FrontendHelper', 'getAllEventsHook');
-$GLOBALS['TL_HOOKS']['getContentElement'][] = array('MadeYourDay\\Contao\\FrontendHelper', 'getContentElementHook');
-$GLOBALS['TL_HOOKS']['getFrontendModule'][] = array('MadeYourDay\\Contao\\FrontendHelper', 'getFrontendModuleHook');
-$GLOBALS['TL_HOOKS']['getArticle'][] = array('MadeYourDay\\Contao\\FrontendHelper', 'getArticleHook');
-$GLOBALS['TL_HOOKS']['loadDataContainer'][] = array('MadeYourDay\\Contao\\FrontendHelper', 'loadDataContainerHook');
-$GLOBALS['TL_HOOKS']['initializeSystem'][] = array('MadeYourDay\\Contao\\FrontendHelper', 'initializeSystemHook');
+$GLOBALS['TL_HOOKS']['parseFrontendTemplate'][] = array('MadeYourDay\\RockSolidFrontendHelper\\FrontendHelper', 'parseFrontendTemplateHook');
+$GLOBALS['TL_HOOKS']['parseTemplate'][] = array('MadeYourDay\\RockSolidFrontendHelper\\FrontendHelper', 'parseTemplateHook');
+$GLOBALS['TL_HOOKS']['parseWidget'][] = array('MadeYourDay\\RockSolidFrontendHelper\\FrontendHelper', 'parseWidgetHook');
+$GLOBALS['TL_HOOKS']['parseArticles'][] = array('MadeYourDay\\RockSolidFrontendHelper\\FrontendHelper', 'parseArticlesHook');
+$GLOBALS['TL_HOOKS']['getAllEvents'][] = array('MadeYourDay\\RockSolidFrontendHelper\\FrontendHelper', 'getAllEventsHook');
+$GLOBALS['TL_HOOKS']['getContentElement'][] = array('MadeYourDay\\RockSolidFrontendHelper\\FrontendHelper', 'getContentElementHook');
+$GLOBALS['TL_HOOKS']['getFrontendModule'][] = array('MadeYourDay\\RockSolidFrontendHelper\\FrontendHelper', 'getFrontendModuleHook');
+$GLOBALS['TL_HOOKS']['getArticle'][] = array('MadeYourDay\\RockSolidFrontendHelper\\FrontendHelper', 'getArticleHook');
+$GLOBALS['TL_HOOKS']['loadDataContainer'][] = array('MadeYourDay\\RockSolidFrontendHelper\\FrontendHelper', 'loadDataContainerHook');
+$GLOBALS['TL_HOOKS']['initializeSystem'][] = array('MadeYourDay\\RockSolidFrontendHelper\\FrontendHelper', 'initializeSystemHook');
 
 $GLOBALS['TL_PERMISSIONS'][] = 'rocksolidFrontendHelperOperations';
 

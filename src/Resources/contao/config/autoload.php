@@ -13,6 +13,6 @@
  */
 
 ClassLoader::addClasses(array(
-	'MadeYourDay\\Contao\\FrontendHelper' => 'system/modules/rocksolid-frontend-helper/src/MadeYourDay/Contao/FrontendHelper.php',
-	'MadeYourDay\\Contao\\FrontendHelperUser' => 'system/modules/rocksolid-frontend-helper/src/MadeYourDay/Contao/FrontendHelperUser.php',
+	'MadeYourDay\\RockSolidFrontendHelper\\FrontendHelper' => 'system/modules/rocksolid-frontend-helper/src/MadeYourDay/Contao/FrontendHelper.php',
+	'MadeYourDay\\RockSolidFrontendHelper\\FrontendHelperUser' => 'system/modules/rocksolid-frontend-helper/src/MadeYourDay/Contao/FrontendHelperUser.php',
 ));
