@@ -1,8 +1,12 @@
 # RockSolid Frontend Helper Contao Extension
 
-Install to */system/modules/rocksolid-frontend-helper/*
+## Installation
 
-More information: 
+```sh
+$ composer require madeyourday/contao-rocksolid-frontend-helper
+```
 
-* English: http://rocksolidthemes.com/en/contao/plugins/frontend-editing
-* German: http://rocksolidthemes.com/de/contao/plugins/frontend-editing
+## Documentation:
+
+* English: https://rocksolidthemes.com/en/contao/plugins/frontend-editing
+* German: https://rocksolidthemes.com/de/contao/plugins/frontend-editing
