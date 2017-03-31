@@ -1,0 +1,3 @@
+services:
+    rocksolid_frontend_helper.hooks:
+        class: MadeYourDay\RockSolidFrontendHelper\Hooks

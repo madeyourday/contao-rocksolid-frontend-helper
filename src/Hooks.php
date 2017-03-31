@@ -13,7 +13,7 @@ namespace MadeYourDay\RockSolidFrontendHelper;
  *
  * @author Martin Auswöger <martin@madeyourday.net>
  */
-class FrontendHelper extends \Controller
+class Hooks
 {
 	/**
 	 * initializeSystem hook
@@ -45,7 +45,7 @@ class FrontendHelper extends \Controller
 		if (in_array('infos', $permissions)) {
 			$data = array(
 				'template' => $template,
-				'templatePath' => substr($this->getTemplate($template), strlen(TL_ROOT) + 1),
+				'templatePath' => substr(\Controller::getTemplate($template), strlen(TL_ROOT) + 1),
 			);
 			if (in_array('tpl_editor', $permissions)) {
 				$data = static::addTemplateURL($data);
@@ -764,7 +764,7 @@ class FrontendHelper extends \Controller
 	public function getBackendModuleLabel($config, $id = null, $withParentTable = false)
 	{
 		if ($withParentTable) {
-			$this->loadDataContainer($config['table']);
+			\Controller::loadDataContainer($config['table']);
 			if (!empty($GLOBALS['TL_DCA'][$config['table']]['config']['ptable'])) {
 				$ptable = $GLOBALS['TL_DCA'][$config['table']]['config']['ptable'];
 				\System::loadLanguageFile($ptable);
