@@ -94,7 +94,7 @@ class FrontendHelper extends \Controller
 					);
 					if (
 						$GLOBALS['objPage']->getRelated('layout')->stylesheet &&
-						count(deserialize($GLOBALS['objPage']->getRelated('layout')->stylesheet))
+						count(\StringUtil::deserialize($GLOBALS['objPage']->getRelated('layout')->stylesheet))
 					) {
 						// Only show a stylesheets link if stylesheets are used
 						$data['links']['stylesheet'] = array(
@@ -421,7 +421,7 @@ class FrontendHelper extends \Controller
 			return;
 		}
 
-		$cssId = deserialize($row->cssID, true);
+		$cssId = \StringUtil::deserialize($row->cssID, true);
 		$cssId[1] = trim($cssId[1] . ' rsfh-article-' . $row->id . '-' . bin2hex($row->inColumn ?: ''));
 		$row->cssID = serialize($cssId);
 	}
@@ -482,7 +482,7 @@ class FrontendHelper extends \Controller
 					if (! empty($config['column']) && ! empty($row->{$config['column']})) {
 						$id = $row->{$config['column']};
 						if (isset($config['columnType']) && $config['columnType'] === 'serialized') {
-							$id = deserialize($id, true);
+							$id = \StringUtil::deserialize($id, true);
 							if (empty($id[1])) {
 								$id = $id[0];
 							}
@@ -594,7 +594,7 @@ class FrontendHelper extends \Controller
 					if (! empty($config['ceColumn']) && ! empty($row->{$config['ceColumn']})) {
 						$id = $row->{$config['ceColumn']};
 						if (isset($config['ceColumnType']) && $config['ceColumnType'] === 'serialized') {
-							$id = deserialize($id, true);
+							$id = \StringUtil::deserialize($id, true);
 							if (empty($id[1])) {
 								$id = $id[0];
 							}
@@ -841,7 +841,7 @@ class FrontendHelper extends \Controller
 			return null;
 		}
 
-		$stylesheets = deserialize($stylesheets);
+		$stylesheets = \StringUtil::deserialize($stylesheets);
 		foreach ($stylesheets as $stylesheet) {
 			$file = \FilesModel::findByUuid($stylesheet);
 			if ($file && $file->path && file_exists(TL_ROOT . '/' . $file->path . '.base')) {

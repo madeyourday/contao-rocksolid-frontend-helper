@@ -53,7 +53,7 @@ class FrontendHelperUser extends \BackendUser
 
 		foreach ($this->arrData as $key => $value) {
 			if (! is_numeric($value)) {
-				$this->$key = deserialize($value);
+				$this->$key = \StringUtil::deserialize($value);
 			}
 		}
 
@@ -82,7 +82,7 @@ class FrontendHelperUser extends \BackendUser
 
 			if ($objGroup->numRows > 0) {
 				foreach ($inherit as $field) {
-					$value = deserialize($objGroup->$field, true);
+					$value = \StringUtil::deserialize($objGroup->$field, true);
 					if (!empty($value)) {
 						$this->$field = array_merge((is_array($this->$field) ? $this->$field : (($this->$field != '') ? array($this->$field) : array())), $value);
 						$this->$field = array_unique($this->$field);
