@@ -20,7 +20,7 @@ class BackendHooks
 	 */
 	public function initializeSystemHook()
 	{
-		if (!\Input::get('rsfhr')) {
+		if (TL_MODE !== 'BE' || !\Input::get('rsfhr')) {
 			return;
 		}
 
@@ -33,8 +33,7 @@ class BackendHooks
 	 * - Saves the referrer in the session if it is a frontend URL
 	 * - Preselects the original template in the template editor
 	 *
-	 * @param  string $table The data container table name
-	 * @return void
+	 * @param string $table The data container table name
 	 */
 	public function loadDataContainerHook($table)
 	{
@@ -43,11 +42,7 @@ class BackendHooks
 		}
 
 		if (defined('TL_REFERER_ID') && \Input::get('ref')) {
-			$referrerSession = \Session::getInstance()->get('referer');
-			if (!empty($referrerSession[\Input::get('ref')]['current'])) {
-				$referrerSession[\Input::get('ref')]['current'] = preg_replace('(([&?])rsfhr=1(&|$))', '$1', $referrerSession[\Input::get('ref')]['current']);
-				\Session::getInstance()->set('referer', $referrerSession);
-			}
+			$this->removeRsfhrParam(\Input::get('ref'));
 		}
 
 		// Only handle requests from the frontend helper
@@ -55,17 +50,52 @@ class BackendHooks
 			return;
 		}
 
-		if ($table === 'tl_templates' && \Input::get('key') === 'new_tpl') {
-			if (\Input::get('original') && !\Input::post('original')) {
-				// Preselect the original template
-				\Input::setPost('original', \Input::get('original'));
-			}
-			if (\Input::get('target') && !\Input::post('target')) {
-				// Preselect the target template folder
-				\Input::setPost('target', \Input::get('target'));
-			}
+		if ($table === 'tl_templates') {
+			$this->handleTemplateSelection();
 		}
 
+		$this->storeFrontendReferrer();
+	}
+
+	/**
+	 * Remove the `rsfhr=1` parameter from the session referer
+	 *
+	 * @param string $ref
+	 */
+	private function removeRsfhrParam($ref)
+	{
+		$referrerSession = \System::getContainer()->get('session')->get('referer');
+		if (!empty($referrerSession[$ref]['current'])) {
+			$referrerSession[$ref]['current'] = preg_replace('(([&?])rsfhr=1(&|$))', '$1', $referrerSession[$ref]['current']);
+			\System::getContainer()->get('session')->set('referer', $referrerSession);
+		}
+	}
+
+	/**
+	 * Preselects the original template in the template editor
+	 */
+	private function handleTemplateSelection()
+	{
+		if (\Input::get('key') !== 'new_tpl') {
+			return;
+		}
+
+		if (\Input::get('original') && !\Input::post('original')) {
+			// Preselect the original template
+			\Input::setPost('original', \Input::get('original'));
+		}
+
+		if (\Input::get('target') && !\Input::post('target')) {
+			// Preselect the target template folder
+			\Input::setPost('target', \Input::get('target'));
+		}
+	}
+
+	/**
+	 * Saves the referrer in the session if it is a frontend URL
+	 */
+	private function storeFrontendReferrer()
+	{
 		$base = \Environment::get('path');
 		$base .= \System::getContainer()->get('router')->generate('contao_backend');
 
@@ -94,7 +124,7 @@ class BackendHooks
 
 		// set the frontend URL as referrer
 
-		$referrerSession = \Session::getInstance()->get('referer');
+		$referrerSession = \System::getContainer()->get('session')->get('referer');
 
 		if (defined('TL_REFERER_ID') && !\Input::get('ref')) {
 
@@ -108,11 +138,7 @@ class BackendHooks
 			\System::getContainer()->get('request_stack')->getCurrentRequest()->query->set('ref', $tlRefererId);
 
 		}
-		// Backwards compatibility for Contao 3.0
-		else if (!defined('TL_REFERER_ID')) {
-			$referrerSession['current'] = $referrer;
-		}
 
-		\Session::getInstance()->set('referer', $referrerSession);
+		\System::getContainer()->get('session')->set('referer', $referrerSession);
 	}
 }
