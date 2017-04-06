@@ -37,9 +37,6 @@
 		"contao-legacy/rocksolid-frontend-helper":"self.version"
 	},
 	"extra":{
-		"branch-alias": {
-			"dev-develop": "2.0.x-dev"
-		},
 		"contao-manager-plugin": "MadeYourDay\\RockSolidFrontendHelper\\ContaoManagerPlugin"
 	}
 }
