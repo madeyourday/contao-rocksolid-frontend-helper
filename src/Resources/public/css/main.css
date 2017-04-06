@@ -45,37 +45,37 @@
 	height: 32px;
 }
 a.rsfh-edit {
-	background-image: url("../../../system/themes/flexible/images/edit.gif");
+	background-image: url("../../../system/themes/flexible/icons/edit.svg");
 }
 a.rsfh-pastenew {
-	background-image: url("../../../system/themes/flexible/images/new.gif");
+	background-image: url("../../../system/themes/flexible/icons/new.svg");
 }
 a.rsfh-pastebottom {
 	background-image: url("../img/newbottom.gif");
 }
 a.rsfh-delete {
-	background-image: url("../../../system/themes/flexible/images/delete.gif");
+	background-image: url("../../../system/themes/flexible/icons/delete.svg");
 }
 a.rsfh-backend {
 	background-image: url("../../../system/themes/flexible/images/home.gif");
 }
 a.rsfh-article {
-	background-image: url("../../../system/themes/flexible/images/articles.gif");
+	background-image: url("../../../system/themes/flexible/icons/articles.svg");
 }
 a.rsfh-fe-module {
-	background-image: url("../../../system/themes/flexible/images/modules.gif");
+	background-image: url("../../../system/themes/flexible/icons/modules.svg");
 }
 a.rsfh-page {
-	background-image: url("../../../system/themes/flexible/images/regular.gif");
+	background-image: url("../../../system/themes/flexible/icons/regular.svg");
 }
 a.rsfh-layout {
-	background-image: url("../../../system/themes/flexible/images/layout.gif");
+	background-image: url("../../../system/themes/flexible/icons/layout.svg");
 }
 a.rsfh-image-size {
-	background-image: url("../../../system/themes/flexible/images/sizes.gif");
+	background-image: url("../../../system/themes/flexible/icons/sizes.svg");
 }
 a.rsfh-stylesheet {
-	background-image: url("../../../system/themes/flexible/images/css.gif");
+	background-image: url("../../../system/themes/flexible/icons/css.svg");
 }
 a.rsfh-assistant {
 	background-image: url("../../../bundles/rocksolidthemeassistant/images/icon.png");
@@ -87,10 +87,10 @@ a.rsfh-preview.rsfh-preview-active {
 	opacity: 0.5;
 }
 a.rsfh-activate {
-	background-image: url("../../../system/themes/flexible/images/ok.gif");
+	background-image: url("../../../system/themes/flexible/icons/ok.svg");
 }
 a.rsfh-activate.rsfh-activate-active {
-	background-image: url("../../../system/themes/flexible/images/delete_.gif");
+	background-image: url("../../../system/themes/flexible/icons/delete_.svg");
 }
 .rsfh-main-nav {
 	position: relative;
@@ -163,7 +163,7 @@ a.rsfh-activate.rsfh-activate-active {
 	float: left;
 	width: 20px;
 	height: 26px;
-	background: url("../../../system/themes/flexible/images/show.gif") 50% 50% no-repeat;
+	background: url("../../../system/themes/flexible/icons/show.svg") 50% 50% no-repeat;
 }
 .rsfh-main-toolbar .rsfh-info {
 	width: 26px;
@@ -230,7 +230,7 @@ a.rsfh-activate.rsfh-activate-active {
 	width: 50px;
 	height: 50px;
 	border-radius: 10px;
-	background: #fff url("../../../system/themes/flexible/images/loading.gif") 11px 50% no-repeat;
+	background: #fff url("../../../system/themes/flexible/icons/loading.svg") 11px 50% no-repeat;
 }
 .rsfh-lightbox iframe {
 	box-sizing: border-box;
