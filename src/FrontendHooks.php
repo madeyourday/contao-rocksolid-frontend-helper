@@ -16,6 +16,18 @@ namespace MadeYourDay\RockSolidFrontendHelper;
 class FrontendHooks
 {
 	/**
+	 * @var array
+	 */
+	private $backendModules = [];
+
+	/**
+	 * @param array $backendModules Backend modules configuration array
+	 */
+	public function __construct(array $backendModules = [])
+	{
+		$this->backendModules = $backendModules;
+	}
+	/**
 	 * parseFrontendTemplate hook
 	 *
 	 * @param  string $content  html content
@@ -457,19 +469,19 @@ class FrontendHooks
 		}
 
 		if (in_array('beModules', $permissions)) {
-			foreach ($GLOBALS['TL_RSFH']['backendModules'] as $do => $config) {
+			foreach ($this->backendModules as $do => $config) {
 				if (!empty($config['do'])) {
 					$do = $config['do'];
 				}
 				if (
-					isset($config['feModules']) &&
-					is_array($config['feModules']) &&
-					in_array($row->type, $config['feModules'])
+					isset($config['fe_modules']) &&
+					is_array($config['fe_modules']) &&
+					in_array($row->type, $config['fe_modules'])
 				) {
 					$id = null;
 					if (! empty($config['column']) && ! empty($row->{$config['column']})) {
 						$id = $row->{$config['column']};
-						if (isset($config['columnType']) && $config['columnType'] === 'serialized') {
+						if (isset($config['column_type']) && $config['column_type'] === 'serialized') {
 							$id = \StringUtil::deserialize($id, true);
 							if (empty($id[1])) {
 								$id = $id[0];
@@ -487,7 +499,7 @@ class FrontendHooks
 							!empty($config['act']) && $id ? $config['act'] : false
 						),
 						'label' => $this->getBackendModuleLabel($config, $id, empty($config['act']) || !$id),
-						'icon' => empty($config['icon']) ? '' : $config['icon'],
+						'icon' => empty($config['icon']) ? '' : \Image::getPath($config['icon']),
 					);
 				}
 			}
@@ -569,19 +581,19 @@ class FrontendHooks
 			}
 		}
 		else if (in_array('beModules', $permissions)) {
-			foreach ($GLOBALS['TL_RSFH']['backendModules'] as $do => $config) {
+			foreach ($this->backendModules as $do => $config) {
 				if (!empty($config['do'])) {
 					$do = $config['do'];
 				}
 				if (
-					isset($config['contentElements']) &&
-					is_array($config['contentElements']) &&
-					in_array($row->type, $config['contentElements'])
+					isset($config['content_elements']) &&
+					is_array($config['content_elements']) &&
+					in_array($row->type, $config['content_elements'])
 				) {
 					$id = null;
-					if (! empty($config['ceColumn']) && ! empty($row->{$config['ceColumn']})) {
-						$id = $row->{$config['ceColumn']};
-						if (isset($config['ceColumnType']) && $config['ceColumnType'] === 'serialized') {
+					if (! empty($config['ce_column']) && ! empty($row->{$config['ce_column']})) {
+						$id = $row->{$config['ce_column']};
+						if (isset($config['ce_column_type']) && $config['ce_column_type'] === 'serialized') {
 							$id = \StringUtil::deserialize($id, true);
 							if (empty($id[1])) {
 								$id = $id[0];
@@ -599,7 +611,7 @@ class FrontendHooks
 							! empty($config['act']) && $id ? $config['act'] : false
 						),
 						'label' => $this->getBackendModuleLabel($config, $id, empty($config['act']) || !$id),
-						'icon' => empty($config['icon']) ? '' : $config['icon'],
+						'icon' => empty($config['icon']) ? '' : \Image::getPath($config['icon']),
 					);
 				}
 			}
@@ -655,7 +667,7 @@ class FrontendHooks
 	/**
 	 * get the label for a backend module link
 	 *
-	 * @param  array   $config          backend module configuration from $GLOBALS['TL_RSFH']
+	 * @param  array   $config          backend module configuration
 	 * @param  int     $id              id of the entry to edit
 	 * @param  boolean $withParentTable use the edit label from the parent table if possible
 	 * @return string                   the label

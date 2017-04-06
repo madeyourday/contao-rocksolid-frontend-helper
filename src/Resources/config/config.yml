@@ -1,0 +1,145 @@
+rocksolid_frontend_helper:
+
+    backend_modules:
+
+#        myextension:
+#            do: myextension             # do parameter (defaults to the name)
+#            table: tl_my_extension      # table to edit
+#            act: edit                   # act parameter for backend link
+#            column: my_extension_id     # the column of tl_module that holds the id of the record to edit
+#            column_type: plain          # serialized or plain
+#            ce_column: my_extensions    # the column of tl_content that holds the id of the record to edit
+#            ce_column_type: serialized  # serialized or plain
+#            icon: path/to/icon.gif      # path to edit icon (e.g. system/modules/dlh_googlemaps/assets/icon.gif)
+#            fe_modules:                 # all frontend modules that should be editable
+#                - my_extension
+#            content_elements:           # all content elements that should be editable
+#                - my_extension
+
+        news:
+            table: tl_news
+            column: news_archives
+            column_type: serialized
+            icon: news.svg
+            fe_modules:
+                - newslist
+                - newsreader
+                - newsarchive
+                - newsmenu
+
+        calendar:
+            table: tl_calendar_events
+            column: cal_calendar
+            column_type: serialized
+            icon: settings.svg
+            fe_modules:
+                - calendar
+                - eventreader
+                - eventlist
+                - eventmenu
+
+        newsletter:
+            table: tl_newsletter
+            column: nl_channels
+            column_type: serialized
+            icon: bundles/contaonewsletter/icon.svg
+            fe_modules:
+                - nl_list
+                - nl_reader
+                - newsletterlist
+                - newsletterreader
+
+        newsletter_recipients:
+            do: newsletter
+            table: tl_newsletter_recipients
+            column: nl_channels
+            column_type: serialized
+            icon: mgroup.svg
+            fe_modules:
+                - subscribe
+                - unsubscribe
+
+        faq:
+            table: tl_faq
+            column: faq_categories
+            column_type: serialized
+            icon: settings.svg
+            fe_modules:
+                - faqlist
+                - faqreader
+                - faqpage
+
+        form:
+            table: tl_form_field
+            column: form
+            column_type: plain
+            ce_column: form
+            ce_column_type: plain
+            icon: settings.svg
+            fe_modules:
+                - form
+            content_elements:
+                - form
+
+        mgroup:
+            table: tl_member_group
+            act: edit
+            column: ml_groups
+            column_type: serialized
+            icon: mgroup.svg
+            fe_modules:
+                - memberlist
+
+        #
+        # Third party extensions
+        #
+
+        dlh_googlemaps:
+            table: tl_dlh_googlemaps_elements
+            column: dlh_googlemap
+            column_type: plain
+            ce_column: dlh_googlemap
+            ce_column_type: plain
+            icon: system/modules/dlh_googlemaps/assets/icon.gif
+            fe_modules:
+                - dlh_googlemaps
+            content_elements:
+                - dlh_googlemaps
+
+        gallery_creator:
+            table: tl_gallery_creator_pictures
+            ce_column: gc_publish_albums
+            ce_column_type: serialized
+            icon: system/modules/gallery_creator/assets/images/photo.png
+            fe_modules:
+                - gallery_creator
+            content_elements:
+                - gallery_creator
+
+        ticker:
+            table: tl_ticker
+            column: ticker_categories
+            column_type: serialized
+            icon: system/modules/ticker/icon.gif
+            fe_modules:
+                - ticker
+
+        survey:
+            table: tl_survey_page
+            ce_column: survey
+            ce_column_type: plain
+            icon: system/modules/survey_ce/assets/survey.png
+            content_elements:
+                - survey
+
+        rocksolid_slider:
+            table: tl_rocksolid_slide
+            column: rsts_id
+            column_type: plain
+            ce_column: rsts_id
+            ce_column_type: plain
+            icon: bundles/rocksolidslider/img/icon.png
+            fe_modules:
+                - rocksolid_slider
+            content_elements:
+                - rocksolid_slider

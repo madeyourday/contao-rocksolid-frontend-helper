@@ -8,6 +8,7 @@
 
 namespace MadeYourDay\RockSolidFrontendHelper;
 
+use MadeYourDay\RockSolidFrontendHelper\DependencyInjection\RockSolidFrontendHelperExtension;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
@@ -17,4 +18,11 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
  */
 class RockSolidFrontendHelperBundle extends Bundle
 {
+    /**
+     * {@inheritdoc}
+     */
+    public function getContainerExtension()
+    {
+        return new RockSolidFrontendHelperExtension();
+    }
 }
