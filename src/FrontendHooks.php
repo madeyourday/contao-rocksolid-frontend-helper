@@ -212,7 +212,7 @@ class FrontendHooks
 					$data['links']['be-module'] = array(
 						'url' => static::getBackendURL('news', 'tl_content', $matches2[2], false),
 						'label' => sprintf($GLOBALS['TL_LANG']['tl_news']['edit'][1], $matches2[2]),
-						'icon' => $GLOBALS['BE_MOD']['content']['news']['icon'],
+						'icon' => \Image::getPath('news.svg'),
 					);
 				}
 
@@ -230,7 +230,7 @@ class FrontendHooks
 					$data['links']['be-module'] = array(
 						'url' => static::getBackendURL('calendar', 'tl_content', $matches2[2], false),
 						'label' => sprintf($GLOBALS['TL_LANG']['tl_calendar']['edit'][1], $matches2[2]),
-						'icon' => $GLOBALS['BE_MOD']['content']['calendar']['icon'],
+						'icon' => \Image::getPath('settings.svg'),
 					);
 				}
 
@@ -248,7 +248,7 @@ class FrontendHooks
 					$data['links']['be-module'] = array(
 						'url' => static::getBackendURL('comments', null, $matches2[2]),
 						'label' => sprintf($GLOBALS['TL_LANG']['tl_comments']['edit'][1], $matches2[2]),
-						'icon' => $GLOBALS['BE_MOD']['content']['comments']['icon'],
+						'icon' => \Image::getPath('settings.svg'),
 					);
 				}
 
