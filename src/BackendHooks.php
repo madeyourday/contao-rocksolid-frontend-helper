@@ -124,7 +124,8 @@ class BackendHooks
 
 		// set the frontend URL as referrer
 
-		$referrerSession = \System::getContainer()->get('session')->get('referer');
+		$sessionKey = \Input::get('popup') ? 'popupReferer' : 'referer';
+		$referrerSession = \System::getContainer()->get('session')->get($sessionKey);
 
 		if (defined('TL_REFERER_ID') && !\Input::get('ref')) {
 
@@ -139,6 +140,6 @@ class BackendHooks
 
 		}
 
-		\System::getContainer()->get('session')->set('referer', $referrerSession);
+		\System::getContainer()->get('session')->set($sessionKey, $referrerSession);
 	}
 }

@@ -557,7 +557,7 @@ class FrontendHooks
 
 			if ($editAllowed) {
 				$data['links']['edit'] = array(
-					'url' => static::getBackendURL($do, 'tl_content', $row->id),
+					'url' => static::getBackendURL($do, 'tl_content', $row->id, 'edit', ['popup' => 1]),
 					'label' => sprintf($GLOBALS['TL_LANG']['tl_content']['edit'][1], $row->id),
 				);
 				$data['links']['delete'] = array(

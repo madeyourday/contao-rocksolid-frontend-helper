@@ -173,6 +173,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 	var active = !!getCookie('rsfh-active');
 	var lightbox;
+	var lightboxIsPopup;
 	var lightboxScrollPosition;
 	var config = {};
 
@@ -234,15 +235,24 @@ document.addEventListener('DOMContentLoaded', function() {
 				return;
 			}
 
+			lightboxIsPopup = !!targetLink.href.match(/[&?]popup=1(?:&|$)/);
+
 			lightboxScrollPosition = Math.round(window.pageYOffset || document.documentElement.scrollTop) || 0;
 
-			document.documentElement.style.marginTop = -lightboxScrollPosition + 'px';
-			document.documentElement.style.height = (window.innerHeight || document.documentElement.clientHeight) + 'px';
-			document.documentElement.style.overflow = 'hidden';
-			window.scrollTo(0, 0);
+			if (!lightboxIsPopup) {
+				document.documentElement.style.marginTop = -lightboxScrollPosition + 'px';
+				document.documentElement.style.height = (window.innerHeight || document.documentElement.clientHeight) + 'px';
+				document.documentElement.style.overflow = 'hidden';
+				window.scrollTo(0, 0);
+			}
 
 			lightbox = lightbox || document.createElement('div');
-			lightbox.className = 'rsfh-lightbox';
+			lightbox.innerHTML = '';
+			lightbox.className = 'rsfh-lightbox is-closed';
+
+			if (lightboxIsPopup) {
+				lightbox.className += ' is-popup';
+			}
 
 			var firstLoadEvent = true;
 			var iframe = document.createElement('iframe');
@@ -279,6 +289,11 @@ document.addEventListener('DOMContentLoaded', function() {
 			lightbox.appendChild(lightboxCancelButton);
 
 			document.body.appendChild(lightbox);
+
+			// Trigger reflow to apply the styles
+			lightbox.offsetWidth;
+			lightbox.className = lightbox.className.replace(' is-closed', '');
+
 			targetLink.target = 'rsfh-lightbox-iframe';
 
 		});
@@ -530,19 +545,30 @@ document.addEventListener('DOMContentLoaded', function() {
 	};
 
 	var closeLightbox = function(withoutReload) {
-		if (lightbox) {
-			lightbox.innerHTML = '';
+		if (lightbox && lightboxIsPopup) {
+			lightbox.className += ' is-closed';
+			setTimeout(clean, 300);
 		}
-		document.documentElement.style.marginTop = '';
-		document.documentElement.style.height = '';
-		document.documentElement.style.overflow = '';
-		window.scrollTo(0, lightboxScrollPosition);
+		else {
+			clean();
+		}
 		if (!withoutReload) {
 			setCookie('rsfh-scroll-position', lightboxScrollPosition);
 			document.location.reload();
 		}
-		else {
-			lightbox.parentNode.removeChild(lightbox);
+		function clean() {
+			if (lightbox) {
+				lightbox.innerHTML = '';
+			}
+			if (!lightboxIsPopup) {
+				document.documentElement.style.marginTop = '';
+				document.documentElement.style.height = '';
+				document.documentElement.style.overflow = '';
+				window.scrollTo(0, lightboxScrollPosition);
+			}
+			if (withoutReload) {
+				lightbox.parentNode.removeChild(lightbox);
+			}
 		}
 	};
 
