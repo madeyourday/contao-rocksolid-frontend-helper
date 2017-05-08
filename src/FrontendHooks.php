@@ -523,6 +523,9 @@ class FrontendHooks
 
 		$data = array(
 			'toolbar' => true,
+			'table' => 'ce_content',
+			'id' => $row->id,
+			'parent' => ($row->ptable ?: 'tl_article') . ':' . $row->pid,
 		);
 
 		if (in_array('contents', $permissions)) {
