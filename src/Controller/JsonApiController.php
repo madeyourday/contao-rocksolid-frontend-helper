@@ -36,10 +36,187 @@ class JsonApiController extends Controller
 			throw new NotFoundHttpException();
 		}
 
+		// Only tl_content is supported so far
+		if ($request->get('table') !== 'tl_content') {
+			throw new NotFoundHttpException();
+		}
+
 		$this->get('contao.framework')->initialize();
 
 		return $this->json(
 			$this->get('rocksolid_frontend_helper.element_builder')->getElements($request->get('table'))
 		);
+	}
+
+	/**
+	 * @return Response
+	 *
+	 * @Route("/insert", name="rocksolid_frontend_helper_insert")
+	 * @Method({"POST"})
+	 */
+	public function insertAction(Request $request)
+	{
+		$this->get('contao.framework')->initialize();
+
+		$table = $request->get('table');
+		$act = $request->get('act');
+		$parent = explode(':', $request->get('parent'));
+
+		if (!is_string($table) || !is_string($act) || !is_array($parent)) {
+			throw new \InvalidArgumentException();
+		}
+
+		// Only tl_content is supported so far
+		if ($table !== 'tl_content') {
+			throw new NotFoundHttpException();
+		}
+
+		if ($act !== 'create' && $act !== 'cut') {
+			throw new \InvalidArgumentException('Unknown act "'.$act.'"');
+		}
+
+		$previousId = null;
+
+		if ($request->get('position') === 'before') {
+			$content = $this->get('contao.framework')
+				->getAdapter('ContentModel')
+				->findByPk($request->get('pid'))
+			;
+			$previousId = $this->get('doctrine.dbal.default_connection')
+				->fetchColumn('
+					SELECT id
+					FROM tl_content
+					WHERE pid = :pid
+						AND ptable = :ptable
+						AND sorting < :sorting
+					ORDER BY sorting DESC
+					LIMIT 1
+				', [
+					'pid' => $content->pid,
+					'ptable' => $content->ptable,
+					'sorting' => $content->sorting,
+				])
+			;
+		}
+
+		$this->mockGetParameters($request, $previousId);
+
+		// Create a new element at the specified position
+		if ($act === 'create') {
+			$id = $this->callDcaMethod($act, $table, $parent[0]);
+			if (!$id) {
+				throw new \RuntimeException('Unable to create element.');
+			}
+			$this->updateDefaultValues($id, $table, $request->get('type'));
+		}
+		// Move all passed elements to the new position
+		else {
+			foreach (array_reverse(explode(',', $request->get('ids'))) as $id) {
+				$this->callDcaMethod($act, $table, $parent[0], $id);
+			}
+		}
+
+		return $this->json(
+			['success' => true]
+		);
+	}
+
+	/**
+	 * Mock get parameters for the data container
+	 *
+	 * @param Request  $request
+	 * @param int|null $previousId
+	 */
+	private function mockGetParameters(Request $request, $previousId)
+	{
+		$params = [
+			'act' => $request->get('act'),
+			'rt' => $request->get('REQUEST_TOKEN'),
+			'pid' => $request->get('pid'),
+			'mode' => '1',
+		];
+
+		if (substr($request->get('parent'), 0, 11) === 'tl_article:') {
+			$params['do'] = 'article';
+		}
+
+		if ($request->get('position') === 'before') {
+			if ($previousId) {
+				$params['pid'] = (string) $previousId;
+			}
+			else {
+				$params['pid'] = (string) explode(':', $request->get('parent'))[1];
+				$params['mode'] = '2';
+			}
+		}
+
+		$input = $this->get('contao.framework')->getAdapter('Input');
+
+		foreach ($params as $key => $value) {
+			$input->setGet($key, $value);
+		}
+	}
+
+	/**
+	 * Call a DCA method
+	 *
+	 * @param string $act
+	 * @param string $table
+	 * @param string $ptable
+	 * @param int    $id
+	 *
+	 * @return int|null ID of the created element
+	 */
+	private function callDcaMethod($act, $table, $ptable, $id = null)
+	{
+		$framework = $this->get('contao.framework');
+		$input = $framework->getAdapter('Input');
+		$controller = $framework->getAdapter('Controller');
+
+		if ($id) {
+			$input->setGet('id', $id);
+		}
+
+		$input->setGet('table', $table);
+		$controller->loadDataContainer($table);
+		$GLOBALS['TL_DCA']['tl_content']['config']['ptable'] = $ptable;
+
+		$driver = 'DC_' . $GLOBALS['TL_DCA'][$table]['config']['dataContainer'];
+		$dca = new $driver($table);
+		$newElementId = null;
+
+		try {
+			$dca->$act();
+		}
+		catch (RedirectResponseException $exception) {
+			parse_str(parse_url($exception->getResponse()->headers->get('Location'), PHP_URL_QUERY), $params);
+			if (isset($params['id'])) {
+				$newElementId = (int) $params['id'];
+			}
+		}
+
+		return $newElementId;
+	}
+
+	/**
+	 * Update the database record with the default values from the element providers
+	 *
+	 * @param int    $id
+	 * @param string $table
+	 * @param string $type
+	 */
+	private function updateDefaultValues($id, $table, $type)
+	{
+		$values = $this->get('rocksolid_frontend_helper.element_builder')
+			->getDefaultValues($table, $type);
+
+		$values = array_merge([
+			'type' => $type,
+			'tstamp' => time(),
+		], $values);
+
+		$this->get('doctrine.dbal.default_connection')
+			->update($table, $values, ['id' => $id])
+		;
 	}
 }
