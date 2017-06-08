@@ -279,7 +279,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			formData.append('parent', data.container);
 			formData.append('position', dropElement.position);
 
-			fetch('app_dev.php/contao/rocksolid-frontend-helper/insert', {
+			fetch(config.routes.insert, {
 				method: 'POST',
 				credentials: 'include',
 				body: formData,
@@ -380,7 +380,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	};
 
 	var initContentElementList = function() {
-		fetch('contao/rocksolid-frontend-helper/elements?table=tl_content', {
+		fetch(config.routes.elements + '?table=tl_content', {
 			credentials: 'include',
 		})
 			.then(function(response) {
