@@ -8,9 +8,13 @@
 
 namespace MadeYourDay\RockSolidFrontendHelper\Controller;
 
+use Contao\CoreBundle\Exception\RedirectResponseException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * RockSolid Frontend Helper JSON API
@@ -24,33 +28,18 @@ class JsonApiController extends Controller
 	/**
 	 * @return Response
 	 *
-	 * @Route("/content-elements", name="rocksolid_frontend_helper_content_elements")
+	 * @Route("/elements", name="rocksolid_frontend_helper_elements")
 	 */
-	public function contentElementsAction()
+	public function elementsAction(Request $request)
 	{
-		$this->get('contao.framework')->initialize();
-
-		return $this->json($this->getContentElements());
-	}
-
-	private function getContentElements()
-	{
-		return array_map(function($group) {
-			$elements = [];
-			foreach ($group as $key => $class) {
-				$elements[$key] = $this->getLabel($key);
-			}
-			return $elements;
-		}, $GLOBALS['TL_CTE']);
-	}
-
-	private function getLabel($key)
-	{
-		$this->get('contao.framework')->getAdapter('System')->loadLanguageFile('default', 'en');
-		if (isset($GLOBALS['TL_LANG']['CTE'][$key])) {
-			return $GLOBALS['TL_LANG']['CTE'][$key];
+		if (!is_string($request->get('table'))) {
+			throw new NotFoundHttpException();
 		}
 
-		return $key;
+		$this->get('contao.framework')->initialize();
+
+		return $this->json(
+			$this->get('rocksolid_frontend_helper.element_builder')->getElements($request->get('table'))
+		);
 	}
 }
