@@ -127,10 +127,12 @@ class FrontendHooks
 				'activate' => $GLOBALS['TL_LANG']['rocksolid_frontend_helper']['activateLabel'],
 				'deactivate' => $GLOBALS['TL_LANG']['rocksolid_frontend_helper']['deactivateLabel'],
 				'cancel' => $GLOBALS['TL_LANG']['MSC']['cancelBT'],
+				'contentElements' => $GLOBALS['TL_LANG']['rocksolid_frontend_helper']['contentElements'],
 			);
 
 			$data['config'] = array(
 				'lightbox' => (bool)FrontendHelperUser::getInstance()->rocksolidFrontendHelperLightbox,
+				'REQUEST_TOKEN' => '{{REQUEST_TOKEN}}',
 			);
 
 			$assetsDir = 'bundles/rocksolidfrontendhelper';
@@ -171,6 +173,9 @@ class FrontendHooks
 				}
 
 				if (in_array('contents', $permissions)) {
+
+					$data['container'] = 'tl_article:'.$matches2[2];
+					$data['table'] = 'tl_content';
 
 					\System::loadLanguageFile('tl_content');
 					$data['links']['pastenew'] = array(
@@ -523,7 +528,7 @@ class FrontendHooks
 
 		$data = array(
 			'toolbar' => true,
-			'table' => 'ce_content',
+			'table' => 'tl_content',
 			'id' => $row->id,
 			'parent' => ($row->ptable ?: 'tl_article') . ':' . $row->pid,
 		);

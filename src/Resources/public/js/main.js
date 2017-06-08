@@ -170,12 +170,229 @@ document.addEventListener('DOMContentLoaded', function() {
 		}
 		return data.labels[key];
 	};
+	var buildDropElements = function(container, containerData) {
+		var elements = [];
+		Array.prototype.forEach.call(container.querySelectorAll('*[data-frontend-helper]'), function(element) {
+			var data = getNodeData(element);
+			if (data.parent === containerData.container) {
+				elements.push({
+					element: element,
+					data: data,
+				});
+			}
+		});
+		return elements;
+	};
+	var destroyDropElements = function(dropElements) {
+		dropElements.length = 0;
+	};
+	var initDropArea = function(element, data) {
+		var dropping = 0;
+		var dropIndicator;
+		var dropElements = [];
+		var validateDragData = function(event) {
+			if (
+				!event.dataTransfer
+				|| !event.dataTransfer.types
+				|| event.dataTransfer.types.indexOf('text/rsfh-' + data.table) === -1
+			) {
+				return false;
+			}
+			return true;
+		};
+		var getDropElement = function(event) {
+			var currentDropElement;
+			dropElements.forEach(function(dropElement) {
+				var clientRect = getBoundingClientRect(dropElement.element);
+				if (!currentDropElement || (clientRect.width && clientRect.top < event.clientY && clientRect.left < event.clientX)) {
+					currentDropElement = {
+						element: dropElement.element,
+						data: dropElement.data,
+						clientRect: clientRect,
+						position: clientRect.top + (clientRect.height / 2) < event.clientY ? 'after' : 'before',
+					};
+				}
+			});
+			return currentDropElement;
+		};
+		addEvent(element, 'dragenter', function(event) {
+			if (validateDragData(event)) {
+				if (!dropping) {
+					dropElements = buildDropElements(element, data);
+					dropIndicator = document.createElement('div');
+					dropIndicator.className = 'rsfh-drop-indicator';
+					document.body.appendChild(dropIndicator);
+				}
+				dropping++;
+			}
+		});
+		addEvent(element, 'dragleave', function(event) {
+			if (dropping) {
+				dropping--;
+				if (!dropping) {
+					destroyDropElements(dropElements);
+					dropIndicator.parentNode.removeChild(dropIndicator);
+				}
+			}
+		});
+		addEvent(element, 'dragover', function(event) {
+			if (!validateDragData(event)) {
+				return;
+			}
+			event.preventDefault();
+			if (event.dataTransfer.effectAllowed === 'copy') {
+				event.dataTransfer.dropEffect = 'copy';
+			}
+			else {
+				event.dataTransfer.dropEffect = 'move';
+			}
+			var dropElement = getDropElement(event);
+			var clientRect = dropElement.clientRect;
+			dropIndicator.style.top = clientRect.top
+				+ (dropElement.position === 'before' ? 0 : clientRect.height)
+				+ window.pageYOffset + 'px';
+			dropIndicator.style.left = clientRect.left + window.pageXOffset + 'px';
+			dropIndicator.style.width = clientRect.width + 'px';
+		});
+		addEvent(element, 'drop', function(event) {
+			if (!validateDragData(event)) {
+				return;
+			}
+			if (dropping) {
+				dropping = 0;
+			}
+			var dropElement = getDropElement(event);
+			var dropData = dropElement.data;
+			var dragData = JSON.parse(event.dataTransfer.getData('text/rsfh-' + data.table));
+			event.stopPropagation();
+
+			destroyDropElements(dropElements);
+			dropIndicator.parentNode.removeChild(dropIndicator);
+
+			var formData = new FormData();
+			formData.append('REQUEST_TOKEN', config.REQUEST_TOKEN);
+			formData.append('table', data.table);
+			formData.append('act', dragData.act);
+			formData.append('type', dragData.type);
+			formData.append('ids', (dragData.ids || []).join(','));
+			formData.append('pid', dropData.id);
+			formData.append('parent', data.container);
+			formData.append('position', dropElement.position);
+
+			fetch('app_dev.php/contao/rocksolid-frontend-helper/insert', {
+				method: 'POST',
+				credentials: 'include',
+				body: formData,
+			})
+				.then(function(response) {
+					return response.json();
+				})
+				.then(function(json) {
+					setCookie('rsfh-scroll-position', Math.round(window.pageYOffset || document.documentElement.scrollTop) || 0);
+					document.location.reload();
+				})
+				.catch(function(error) {
+					throw error;
+				});
+
+		});
+	};
+	var initDragHandle = function(element, data, ids, handle) {
+		handle.draggable = true;
+		addEvent(handle, 'dragstart', function(event) {
+			if (event.dataTransfer.addElement) {
+				event.dataTransfer.addElement(element);
+			}
+			event.dataTransfer.effectAllowed = 'move';
+			event.dataTransfer.setData('text/rsfh-' + data.table, JSON.stringify({
+				act: 'cut',
+				ids: ids,
+			}));
+		});
+	};
 
 	var active = !!getCookie('rsfh-active');
 	var lightbox;
 	var lightboxIsPopup;
 	var lightboxScrollPosition;
 	var config = {};
+
+	var buildContentElementList = function(elements) {
+
+		var elementsByGroup = {};
+
+		Object.keys(elements).forEach(function(type) {
+			elementsByGroup[elements[type].group] = elementsByGroup[elements[type].group] || {};
+			elementsByGroup[elements[type].group][type] = elements[type];
+		});
+
+		var wrap = document.createElement('div');
+		wrap.className = 'rsfh-element-list is-closed';
+
+		var closeButton = document.createElement('a');
+		closeButton.className = 'rsfh-element-list-close';
+		closeButton.innerHTML = 'X';
+		closeButton.href = '';
+		addEvent(closeButton, 'click', function(event) {
+			event.preventDefault();
+			wrap.className += ' is-closed';
+			setTimeout(function() {
+				wrap.parentNode.removeChild(wrap);
+			}, 300);
+		});
+		wrap.appendChild(closeButton);
+
+		var wrapUl = document.createElement('ul');
+		wrap.appendChild(wrapUl);
+
+		Object.keys(elementsByGroup).forEach(function(group) {
+
+			var groupLi = document.createElement('li');
+			wrapUl.appendChild(groupLi);
+			var groupLabel = document.createElement('span');
+			groupLi.appendChild(groupLabel);
+			groupLabel.innerText = group;
+			var groupUl = document.createElement('ul');
+			groupLi.appendChild(groupUl);
+
+			Object.keys(elementsByGroup[group]).forEach(function(type) {
+				var elementLi = document.createElement('li');
+				groupUl.appendChild(elementLi);
+				elementLi.innerText = elementsByGroup[group][type].label[0] || type;
+				elementLi.draggable = true;
+				addEvent(elementLi, 'dragstart', function(event) {
+					event.dataTransfer.effectAllowed = 'copy';
+					event.dataTransfer.setData('text/rsfh-tl_content', JSON.stringify({
+						act: 'create',
+						type: type,
+					}));
+				});
+			});
+
+		});
+
+		document.body.appendChild(wrap);
+
+		// Trigger reflow to apply the styles
+		wrap.offsetWidth;
+		wrap.className = wrap.className.replace(' is-closed', '');
+
+	};
+
+	var initContentElementList = function() {
+		fetch('contao/rocksolid-frontend-helper/elements?table=tl_content', {
+			credentials: 'include',
+		})
+			.then(function(response) {
+				return response.json();
+			})
+			.then(function(json) {
+				buildContentElementList(json);
+			})
+			.catch(function(error) {
+				throw error;
+			});
+	};
 
 	var init = function(element) {
 
@@ -230,12 +447,18 @@ document.addEventListener('DOMContentLoaded', function() {
 				return;
 			}
 
+			lightboxIsPopup = !!targetLink.href.match(/[&?]popup=1(?:&|$)/);
+
 			// Disable lightbox if users try to open links in a new tab
 			if (event.ctrlKey || event.shiftKey || event.metaKey || event.which === 2) {
+				if (lightboxIsPopup) {
+					targetLink.href = targetLink.href.replace(/([&?])popup=1(?:&|$)/, '$1');
+					setTimeout(function() {
+						targetLink.href += '&popup=1';
+					}, 100);
+				}
 				return;
 			}
-
-			lightboxIsPopup = !!targetLink.href.match(/[&?]popup=1(?:&|$)/);
 
 			lightboxScrollPosition = Math.round(window.pageYOffset || document.documentElement.scrollTop) || 0;
 
@@ -379,6 +602,29 @@ document.addEventListener('DOMContentLoaded', function() {
 
 		}
 
+		if (data.container && data.table) {
+			initDropArea(element, data);
+		}
+
+		if (data.id && data.table && data.parent) {
+
+			var dragHandle = document.createElement('div');
+			dragHandle.className = 'rsfh-drag-handle';
+			toolbar.appendChild(dragHandle);
+
+			var ids = [data.id];
+
+			Array.prototype.forEach.call(element.querySelectorAll('*[data-frontend-helper]'), function(element) {
+				var childData = getNodeData(element);
+				if (childData.id && childData.table === data.table && childData.parent === data.parent) {
+					ids.push(childData.id);
+				}
+			});
+
+			initDragHandle(element, data, ids, dragHandle);
+
+		}
+
 		if (element === document.body) {
 
 			var activateLink = document.createElement('a');
@@ -429,6 +675,26 @@ document.addEventListener('DOMContentLoaded', function() {
 				document.createElement('hr'),
 				previewLink.nextSibling
 			);
+
+			var elementsLink = document.createElement('a');
+			elementsLink.href = document.location.href;
+			elementsLink.className = 'rsfh-elements';
+			elementsLink.innerHTML = elementsLink.title = getLabel('contentElements');
+			addEvent(elementsLink, 'click', function(event) {
+				initContentElementList();
+				event.stopPropagation();
+				event.preventDefault();
+			});
+			mainNavContents.insertBefore(
+				elementsLink,
+				mainNavContents.querySelector('.rsfh-backend')
+				|| mainNavContents.childNodes[0]
+			);
+			mainNavContents.insertBefore(
+				document.createElement('hr'),
+				elementsLink
+			);
+
 			if (
 				mainNavContents.querySelector('.rsfh-backend') &&
 				mainNavContents.querySelector('.rsfh-backend').previousSibling.nodeName.toLowerCase() !== 'hr'

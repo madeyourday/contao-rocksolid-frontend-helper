@@ -30,6 +30,16 @@
 	background: #26ade4;
 	opacity: .2;
 	box-shadow: 0 0 20px rgba(0, 0, 0, 0.75) inset;
+	pointer-events: none;
+}
+.rsfh-drop-indicator {
+	position: absolute;
+	z-index: 999997;
+	height: 6px;
+	margin-top: -3px;
+	background: #26ade4;
+	opacity: .75;
+	pointer-events: none;
 }
 .rsfh-toolbar > a {
 	position: relative;
@@ -55,6 +65,9 @@ a.rsfh-pastebottom {
 }
 a.rsfh-delete {
 	background-image: url("../../../system/themes/flexible/icons/delete.svg");
+}
+a.rsfh-elements {
+	background-image: url("../../../system/themes/flexible/icons/new.svg");
 }
 a.rsfh-backend {
 	background-image: url("../../../system/themes/flexible/images/home.gif");
@@ -208,7 +221,24 @@ a.rsfh-activate.rsfh-activate-active {
 .rsfh-info:hover > div {
 	display: block;
 }
-.rsfh-lightbox {
+.rsfh-drag-handle {
+	position: relative;
+	float: left;
+	width: 20px;
+	height: 26px;
+	background: url("../../../system/themes/flexible/icons/drag.svg") 50% 50% no-repeat;
+	cursor: move;
+	cursor: -webkit-grab;
+	cursor: -moz-grab;
+	cursor: grab;
+}
+.rsfh-drag-handle:active {
+	cursor: -webkit-grabbing;
+	cursor: -moz-grabbing;
+	cursor: grabbing;
+}
+.rsfh-lightbox,
+.rsfh-element-list {
 	position: fixed;
 	z-index: 999999;
 	top: 0;
@@ -222,14 +252,16 @@ a.rsfh-activate.rsfh-activate-active {
 	overflow-y: auto;
 	-webkit-overflow-scrolling: touch;
 }
-.rsfh-lightbox.is-popup {
+.rsfh-lightbox.is-popup,
+.rsfh-element-list {
 	right: auto;
 	width: 320px;
 	box-shadow: 10px 0 rgba(0, 0, 0, 0.25);
 	background-color: #fff;
 	transition: left 0.3s ease-out;
 }
-.rsfh-lightbox.is-popup.is-closed {
+.rsfh-lightbox.is-popup.is-closed,
+.rsfh-element-list.is-closed {
 	left: -330px;
 }
 .rsfh-lightbox:before {
@@ -255,7 +287,8 @@ a.rsfh-activate.rsfh-activate-active {
 	border-width: 36px 0 0 0;
 }
 .rsfh-lightbox-close,
-.rsfh-lightbox-cancel {
+.rsfh-lightbox-cancel,
+.rsfh-element-list-close {
 	box-sizing: border-box;
 	position: absolute;
 	top: 5px;
@@ -271,7 +304,8 @@ a.rsfh-activate.rsfh-activate-active {
 	box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
 }
 .is-popup > .rsfh-lightbox-close,
-.is-popup > .rsfh-lightbox-cancel {
+.is-popup > .rsfh-lightbox-cancel,
+.rsfh-element-list-close {
 	height: 26px;
 	border: 0;
 	border-radius: 0;
@@ -279,14 +313,53 @@ a.rsfh-activate.rsfh-activate-active {
 .rsfh-lightbox-close:hover,
 .rsfh-lightbox-close:focus,
 .rsfh-lightbox-cancel:hover,
-.rsfh-lightbox-cancel:focus {
+.rsfh-lightbox-cancel:focus,
+.rsfh-element-list-close:hover,
+.rsfh-element-list-close:focus {
 	background-color: #444;
 }
-.rsfh-lightbox-close {
+.rsfh-lightbox-close,
+.rsfh-element-list-close {
 	width: 30px;
 }
 .rsfh-lightbox-cancel {
 	right: 45px;
 	padding-right: 1em;
 	padding-left: 1em;
+}
+.rsfh-element-list {
+}
+.rsfh-element-list > ul {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+.rsfh-element-list > ul > li > span {
+	display: block;
+	margin: 0;
+	padding: 1.5em 1em 0.25em;
+	font-weight: bold;
+	border-bottom: 1px solid #444;
+}
+.rsfh-element-list > ul > li > ul {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+.rsfh-element-list > ul > li > ul > li {
+	margin: 0;
+	padding: 0.25em 1em 0.25em 2em;
+	border-bottom: 1px solid #444;
+	cursor: move;
+	cursor: -webkit-grab;
+	cursor: -moz-grab;
+	cursor: grab;
+}
+.rsfh-element-list > ul > li > ul > li:active {
+	cursor: -webkit-grabbing;
+	cursor: -moz-grabbing;
+	cursor: grabbing;
+}
+.rsfh-element-list > ul > li > ul > li:hover {
+	background: rgba(0, 0, 0, 0.1);
 }
