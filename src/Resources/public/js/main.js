@@ -288,12 +288,26 @@ document.addEventListener('DOMContentLoaded', function() {
 					return response.json();
 				})
 				.then(function(json) {
-					setCookie('rsfh-scroll-position', Math.round(window.pageYOffset || document.documentElement.scrollTop) || 0);
-					document.location.reload();
+					if (dragData.act !== 'cut' || !currentDragElement || !dropElement.element) {
+						setCookie('rsfh-scroll-position', Math.round(window.pageYOffset || document.documentElement.scrollTop) || 0);
+						document.location.reload();
+					}
 				})
 				.catch(function(error) {
 					throw error;
 				});
+
+			if (dragData.act === 'cut' && currentDragElement && dropElement.element) {
+				if (dropElement.position === 'before') {
+					dropElement.element.parentNode.insertBefore(currentDragElement, dropElement.element);
+				}
+				else if (dropElement.element.nextSibling) {
+					dropElement.element.parentNode.insertBefore(currentDragElement, dropElement.element.nextSibling);
+				}
+				else {
+					dropElement.element.parentNode.appendChild(currentDragElement);
+				}
+			}
 
 		});
 	};
@@ -303,6 +317,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			if (event.dataTransfer.addElement) {
 				event.dataTransfer.addElement(element);
 			}
+			currentDragElement = element;
 			event.dataTransfer.effectAllowed = 'move';
 			event.dataTransfer.setData('text/rsfh-' + data.table, JSON.stringify({
 				act: 'cut',
@@ -316,6 +331,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	var lightboxIsPopup;
 	var lightboxScrollPosition;
 	var config = {};
+	var currentDragElement;
 
 	var buildContentElementList = function(elements) {
 
