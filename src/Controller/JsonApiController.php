@@ -26,6 +26,8 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class JsonApiController extends Controller
 {
 	/**
+	 * @param Request $request
+	 *
 	 * @return Response
 	 *
 	 * @Route("/elements", name="rocksolid_frontend_helper_elements")
@@ -49,6 +51,8 @@ class JsonApiController extends Controller
 	}
 
 	/**
+	 * @param Request $request
+	 *
 	 * @return Response
 	 *
 	 * @Route("/insert", name="rocksolid_frontend_helper_insert")
@@ -100,6 +104,7 @@ class JsonApiController extends Controller
 		}
 
 		$this->mockGetParameters($request, $previousId);
+		$result = ['success' => true];
 
 		// Create a new element at the specified position
 		if ($act === 'create') {
@@ -108,6 +113,8 @@ class JsonApiController extends Controller
 				throw new \RuntimeException('Unable to create element.');
 			}
 			$this->updateDefaultValues($id, $table, $request->get('type'));
+			$result['table'] = $table;
+			$result['id'] = $id;
 		}
 		// Move all passed elements to the new position
 		else {
@@ -116,9 +123,7 @@ class JsonApiController extends Controller
 			}
 		}
 
-		return $this->json(
-			['success' => true]
-		);
+		return $this->json($result);
 	}
 
 	/**
