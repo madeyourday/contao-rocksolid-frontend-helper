@@ -59,6 +59,17 @@ document.addEventListener('DOMContentLoaded', function() {
 			return !!element.className.match('(?:^|\\s)' + className + '(?:$|\\s)');
 		}
 	};
+	var insertElementAt = function(element, reference, before) {
+		if (before) {
+			reference.parentNode.insertBefore(element, reference);
+		}
+		else if (reference.nextSibling) {
+			reference.parentNode.insertBefore(element, reference.nextSibling);
+		}
+		else {
+			reference.parentNode.appendChild(element);
+		}
+	};
 	var getBoundingClientRect = function(element) {
 		var boundingClientRect = element.getBoundingClientRect();
 		var nodeName = element.nodeName.toLowerCase();
@@ -279,6 +290,15 @@ document.addEventListener('DOMContentLoaded', function() {
 			formData.append('parent', data.container);
 			formData.append('position', dropElement.position);
 
+			if (dragData.act === 'cut' && currentDragElement && dropElement.element) {
+				insertElementAt(currentDragElement, dropElement.element, dropElement.position === 'before');
+			}
+			else {
+				var placeholder = document.createElement('div');
+				placeholder.innerHTML = '…';
+				insertElementAt(placeholder, dropElement.element, dropElement.position === 'before');
+			}
+
 			fetch(config.routes.insert, {
 				method: 'POST',
 				credentials: 'include',
@@ -288,26 +308,19 @@ document.addEventListener('DOMContentLoaded', function() {
 					return response.json();
 				})
 				.then(function(json) {
-					if (dragData.act !== 'cut' || !currentDragElement || !dropElement.element) {
-						setCookie('rsfh-scroll-position', Math.round(window.pageYOffset || document.documentElement.scrollTop) || 0);
-						document.location.reload();
+					if (placeholder) {
+						if (json.table && json.id) {
+							renderElement(placeholder, json.table, json.id);
+						}
+						else {
+							setCookie('rsfh-scroll-position', Math.round(window.pageYOffset || document.documentElement.scrollTop) || 0);
+							document.location.reload();
+						}
 					}
 				})
 				.catch(function(error) {
 					throw error;
 				});
-
-			if (dragData.act === 'cut' && currentDragElement && dropElement.element) {
-				if (dropElement.position === 'before') {
-					dropElement.element.parentNode.insertBefore(currentDragElement, dropElement.element);
-				}
-				else if (dropElement.element.nextSibling) {
-					dropElement.element.parentNode.insertBefore(currentDragElement, dropElement.element.nextSibling);
-				}
-				else {
-					dropElement.element.parentNode.appendChild(currentDragElement);
-				}
-			}
 
 		});
 	};
@@ -325,10 +338,47 @@ document.addEventListener('DOMContentLoaded', function() {
 			}));
 		});
 	};
+	var renderElement = function(element, table, id) {
+
+		var formData = new FormData();
+		formData.append('table', table);
+		formData.append('id', id);
+
+		element.style.setProperty('opacity', '0.25', 'important');
+
+		fetch(config.routes.render, {
+			method: 'POST',
+			credentials: 'include',
+			body: formData,
+		})
+			.then(function(response) {
+				return response.text();
+			})
+			.then(function(html) {
+				var htmlWrap = document.createElement('div');
+				var nodes = [];
+				htmlWrap.innerHTML = html;
+				while (htmlWrap.firstChild) {
+					nodes.push(htmlWrap.firstChild);
+					element.parentNode.insertBefore(htmlWrap.firstChild, element);
+				}
+				element.parentNode.removeChild(element);
+				nodes.forEach(function(node) {
+					if (node.getAttribute && node.getAttribute('data-frontend-helper')) {
+						init(node);
+					}
+				});
+			})
+			.catch(function(error) {
+				throw error;
+			});
+
+	};
 
 	var active = !!getCookie('rsfh-active');
 	var lightbox;
 	var lightboxIsPopup;
+	var renderOnClose;
 	var lightboxScrollPosition;
 	var config = {};
 	var currentDragElement;
@@ -464,6 +514,17 @@ document.addEventListener('DOMContentLoaded', function() {
 			}
 
 			lightboxIsPopup = !!targetLink.href.match(/[&?]popup=1(?:&|$)/);
+
+			if (lightboxIsPopup && data.table && data.id) {
+				renderOnClose = {
+					element: element,
+					table: data.table,
+					id: data.id,
+				};
+			}
+			else {
+				renderOnClose = undefined;
+			}
 
 			// Disable lightbox if users try to open links in a new tab
 			if (event.ctrlKey || event.shiftKey || event.metaKey || event.which === 2) {
@@ -835,8 +896,13 @@ document.addEventListener('DOMContentLoaded', function() {
 			clean();
 		}
 		if (!withoutReload) {
-			setCookie('rsfh-scroll-position', lightboxScrollPosition);
-			document.location.reload();
+			if (renderOnClose) {
+				renderElement(renderOnClose.element, renderOnClose.table, renderOnClose.id);
+			}
+			else {
+				setCookie('rsfh-scroll-position', lightboxScrollPosition);
+				document.location.reload();
+			}
 		}
 		function clean() {
 			if (lightbox) {
