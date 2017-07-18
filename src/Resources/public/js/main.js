@@ -374,6 +374,38 @@ document.addEventListener('DOMContentLoaded', function() {
 			});
 
 	};
+	var deleteElement = function(element, data) {
+
+		element.style.setProperty('opacity', '0.25', 'important');
+
+		var formData = new FormData();
+		formData.append('table', data.table);
+		formData.append('id', data.id);
+		formData.append('parent', data.parent);
+		formData.append('REQUEST_TOKEN', config.REQUEST_TOKEN);
+
+		fetch(config.routes.delete, {
+			method: 'POST',
+			credentials: 'include',
+			body: formData,
+		})
+			.then(function(response) {
+				return response.json();
+			})
+			.then(function(json) {
+				if (json.success) {
+					element.parentNode.removeChild(element);
+				}
+				else {
+					throw new Error();
+				}
+			})
+			.catch(function(error) {
+				element.style.opacity = '';
+				throw error;
+			});
+
+	};
 
 	var active = !!getCookie('rsfh-active');
 	var lightbox;
@@ -503,6 +535,12 @@ document.addEventListener('DOMContentLoaded', function() {
 					event.preventDefault();
 					return;
 				}
+			}
+
+			if (targetLink.href.match(/[&?]act=delete(?:&|$)/) && data.table && data.id && data.parent) {
+				event.preventDefault();
+				deleteElement(element, data);
+				return;
 			}
 
 			if (

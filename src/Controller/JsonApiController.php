@@ -103,7 +103,7 @@ class JsonApiController extends Controller
 			;
 		}
 
-		$this->mockGetParameters($request, $previousId);
+		$this->mockInsertGetParameters($request, $previousId);
 		$result = ['success' => true];
 
 		// Create a new element at the specified position
@@ -127,12 +127,56 @@ class JsonApiController extends Controller
 	}
 
 	/**
+	 * @param Request $request
+	 *
+	 * @return Response
+	 *
+	 * @Route("/delete", name="rocksolid_frontend_helper_delete")
+	 * @Method({"POST"})
+	 */
+	public function deleteAction(Request $request)
+	{
+		$this->get('contao.framework')->initialize();
+
+		$table = $request->get('table');
+		$parent = explode(':', $request->get('parent'));
+		$id = (int) $request->get('id');
+
+		if (!is_string($table) || !$id || !is_array($parent)) {
+			throw new \InvalidArgumentException();
+		}
+
+		// Only tl_content is supported so far
+		if ($table !== 'tl_content') {
+			throw new NotFoundHttpException();
+		}
+
+		$input = $this->get('contao.framework')->getAdapter('Input');
+		$params = [
+			'act' => 'delete',
+			'rt' => $request->get('REQUEST_TOKEN'),
+		];
+
+		if (substr($request->get('parent'), 0, 11) === 'tl_article:') {
+			$params['do'] = 'article';
+		}
+
+		foreach ($params as $key => $value) {
+			$input->setGet($key, $value);
+		}
+
+		$this->callDcaMethod('delete', $table, $parent[0], $id);
+
+		return $this->json(['success' => true]);
+	}
+
+	/**
 	 * Mock get parameters for the data container
 	 *
 	 * @param Request  $request
 	 * @param int|null $previousId
 	 */
-	private function mockGetParameters(Request $request, $previousId)
+	private function mockInsertGetParameters(Request $request, $previousId)
 	{
 		$params = [
 			'act' => $request->get('act'),
@@ -172,7 +216,7 @@ class JsonApiController extends Controller
 	 *
 	 * @return int|null ID of the created element
 	 */
-	private function callDcaMethod($act, $table, $ptable, $id = null)
+	private function callDcaMethod($act, $table, $ptable = null, $id = null)
 	{
 		$framework = $this->get('contao.framework');
 		$input = $framework->getAdapter('Input');

@@ -136,6 +136,7 @@ class FrontendHooks
 				'routes' => [
 					'elements' => \Controller::getContainer()->get('router')->generate('rocksolid_frontend_helper_elements'),
 					'insert' => \Controller::getContainer()->get('router')->generate('rocksolid_frontend_helper_insert'),
+					'delete' => \Controller::getContainer()->get('router')->generate('rocksolid_frontend_helper_delete'),
 					'render' => \Controller::getContainer()->get('router')->generate('rocksolid_frontend_helper_render'),
 				],
 			);
