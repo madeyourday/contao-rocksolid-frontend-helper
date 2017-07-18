@@ -31,6 +31,11 @@ document.addEventListener('DOMContentLoaded', function() {
 			}
 		}
 	};
+	var triggerEvent = function(element, eventName) {
+		var evt = document.createEvent('HTMLEvents');
+		evt.initEvent(eventName, true, true);
+		element.dispatchEvent(evt);
+	};
 	var addClass = function(element, className) {
 		if (!hasClass(element, className)) {
 			if (element.classList && element.classList.add) {
@@ -291,6 +296,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			formData.append('position', dropElement.position);
 
 			if (dragData.act === 'cut' && currentDragElement && dropElement.element) {
+				triggerEvent(currentDragElement, 'mouseout');
 				insertElementAt(currentDragElement, dropElement.element, dropElement.position === 'before');
 			}
 			else {
@@ -362,6 +368,7 @@ document.addEventListener('DOMContentLoaded', function() {
 					nodes.push(htmlWrap.firstChild);
 					element.parentNode.insertBefore(htmlWrap.firstChild, element);
 				}
+				triggerEvent(element, 'mouseout');
 				element.parentNode.removeChild(element);
 				nodes.forEach(function(node) {
 					if (node.getAttribute && node.getAttribute('data-frontend-helper')) {
@@ -394,6 +401,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			})
 			.then(function(json) {
 				if (json.success) {
+					triggerEvent(element, 'mouseout');
 					element.parentNode.removeChild(element);
 				}
 				else {
@@ -888,6 +896,9 @@ document.addEventListener('DOMContentLoaded', function() {
 			timeout = setTimeout(function() {
 				isOver = false;
 				document.body.removeChild(toolbar);
+				if (overlay.parentNode === document.body) {
+					document.body.removeChild(overlay);
+				}
 			}, 400);
 			if (fromToolbar) {
 				clearTimeout(timeout2);
