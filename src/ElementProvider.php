@@ -97,12 +97,15 @@ class ElementProvider implements ElementProviderInterface
 
 		foreach ($GLOBALS['TL_CTE'] as $group => $groupElements) {
 			foreach ($groupElements as $type => $class) {
-				if (!isset(static::$defaultValues[$type])) {
-					continue;
-				}
 				$elements[$type] = [
 					'group' => $this->getLabel($group),
 					'label' => $this->getLabel($type),
+					'insert' => isset(static::$defaultValues[$type]),
+					'renderLive' =>
+						!in_array($type, $GLOBALS['TL_WRAPPERS']['start'])
+						&& !in_array($type, $GLOBALS['TL_WRAPPERS']['stop'])
+						&& !in_array($type, $GLOBALS['TL_WRAPPERS']['separator'])
+					,
 				];
 			}
 		}

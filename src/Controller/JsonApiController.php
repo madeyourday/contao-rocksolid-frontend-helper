@@ -46,7 +46,12 @@ class JsonApiController extends Controller
 		$this->get('contao.framework')->initialize();
 
 		return $this->json(
-			$this->get('rocksolid_frontend_helper.element_builder')->getElements($request->get('table'))
+			array_filter(
+				$this->get('rocksolid_frontend_helper.element_builder')->getElements($request->get('table')),
+				function($element) {
+					return !empty($element['insert']);
+				}
+			)
 		);
 	}
 

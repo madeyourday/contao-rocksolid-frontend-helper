@@ -16,6 +16,16 @@ namespace MadeYourDay\RockSolidFrontendHelper;
 class FrontendHooks
 {
 	/**
+	 * @var ElementBuilder
+	 */
+	private $elementBuilder;
+
+	/**
+	 * @var array
+	 */
+	private $elementTypeSettings = [];
+
+	/**
 	 * @var array
 	 */
 	private $backendModules = [];
@@ -23,10 +33,12 @@ class FrontendHooks
 	/**
 	 * @param array $backendModules Backend modules configuration array
 	 */
-	public function __construct(array $backendModules = [])
+	public function __construct(ElementBuilder $elementBuilder, array $backendModules = [])
 	{
+		$this->elementBuilder = $elementBuilder;
 		$this->backendModules = $backendModules;
 	}
+
 	/**
 	 * parseFrontendTemplate hook
 	 *
@@ -537,6 +549,7 @@ class FrontendHooks
 			'table' => 'tl_content',
 			'id' => $row->id,
 			'parent' => ($row->ptable ?: 'tl_article') . ':' . $row->pid,
+			'renderLive' => !empty($this->getElementTypeSettings('tl_content', $row->type)['renderLive']),
 		);
 
 		if (in_array('contents', $permissions)) {
@@ -840,5 +853,20 @@ class FrontendHooks
 		}
 
 		return '<span class="rsfh-dummy" data-frontend-helper="' . htmlspecialchars(json_encode($data)) . '"></span>' . $content;
+	}
+
+	/**
+	 * @param string $table
+	 * @param string $type
+	 *
+	 * @return array
+	 */
+	private function getElementTypeSettings($table, $type)
+	{
+		if (!isset($this->elementTypeSettings[$table])) {
+			$this->elementTypeSettings[$table] = $this->elementBuilder->getElements($table);
+		}
+
+		return $this->elementTypeSettings[$table][$type] ?: [];
 	}
 }

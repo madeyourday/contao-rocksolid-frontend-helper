@@ -3,6 +3,7 @@ services:
     rocksolid_frontend_helper.frontend_hooks:
         class: MadeYourDay\RockSolidFrontendHelper\FrontendHooks
         arguments:
+            - "@rocksolid_frontend_helper.element_builder"
             - "%rocksolid_frontend_helper.backend_modules%"
 
     rocksolid_frontend_helper.backend_hooks:

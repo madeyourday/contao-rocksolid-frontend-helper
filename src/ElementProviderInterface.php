@@ -14,7 +14,14 @@ namespace MadeYourDay\RockSolidFrontendHelper;
 interface ElementProviderInterface
 {
 	/**
-	 * Get elements configuration array indexed by type
+	 * Get elements configuration arrays indexed by type
+	 *
+	 * Each configuration array consists of the following elements:
+	 *
+	 * - label      string  Label of the element
+	 * - group      string  Label of the elements group
+	 * - insert     boolean If the element can be inserted via drag and drop
+	 * - renderLive boolean If the element can be rerenderd without a page reload
 	 *
 	 * @param string $table
 	 *

@@ -561,7 +561,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 			lightboxIsPopup = !!targetLink.href.match(/[&?]popup=1(?:&|$)/);
 
-			if (lightboxIsPopup && data.table && data.id) {
+			if (data.renderLive) {
 				renderOnClose = {
 					element: element,
 					table: data.table,
