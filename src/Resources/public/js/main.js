@@ -603,15 +603,6 @@ document.addEventListener('DOMContentLoaded', function() {
 			var firstLoadEvent = true;
 			var iframe = document.createElement('iframe');
 			iframe.id = iframe.name = 'rsfh-lightbox-iframe';
-			addEvent(iframe, 'load', function(event) {
-				if (firstLoadEvent) {
-					firstLoadEvent = false;
-					return;
-				}
-				if (iframe.contentWindow.location.href === 'about:blank') {
-					closeLightbox(true);
-				}
-			});
 			lightbox.appendChild(iframe);
 
 			var lightboxCloseButton = document.createElement('a');
