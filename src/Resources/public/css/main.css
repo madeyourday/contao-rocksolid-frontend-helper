@@ -11,7 +11,7 @@
 	margin: -1px 1px 1px -1px;
 	padding: 0 3px;
 	border: 1px solid #ddd;
-	font: 11px/14px Verdana, Arial, sans-serif;
+	font: 12px/16px Verdana, Arial, sans-serif;
 	color: #000;
 	background: white;
 }
@@ -42,13 +42,25 @@
 	pointer-events: none;
 }
 .rsfh-toolbar > a {
-	position: relative;
 	float: left;
 	width: 20px;
 	height: 26px;
-	overflow: hidden;
-	text-indent: -999px;
 	background: 50% 50% no-repeat;
+}
+.rsfh-toolbar > a > .rsfh-label {
+	display: none;
+	position: absolute;
+	top: 100%;
+	left: 0;
+	white-space: nowrap;
+	padding: 5px 10px;
+	margin: 0 -1px -1px;
+	border: 1px solid #ddd;
+	color: #000;
+	background: #f9f9fb;
+}
+.rsfh-toolbar > a:hover > .rsfh-label {
+	display: block;
 }
 .rsfh-main-toolbar > a {
 	width: 26px;
@@ -202,13 +214,18 @@ a.rsfh-activate.rsfh-activate-active {
 	background: white;
 	background: rgba(255, 255, 255, .95);
 	box-shadow: 0 0 2px rgba(0, 0, 0, .3);
+	font-size: 11px;
+	line-height: 14px;
 }
 .rsfh-info-column {
 	margin-bottom: 5px;
 }
 .rsfh-templates-label {
+	display: block;
 	font-weight: bold;
 	color: #666;
+	font-size: 12px;
+	margin-bottom: 5px;
 }
 .rsfh-info > div a {
 	color: inherit;

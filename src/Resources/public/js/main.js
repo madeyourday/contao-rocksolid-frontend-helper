@@ -656,7 +656,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			link.href = data.links[key].url;
 			link.target = '_top';
 			link.className = 'rsfh-' + key;
-			link.innerHTML = link.title = data.links[key].label;
+			link.innerHTML = '<span class="rsfh-label">' + data.links[key].label;
 			if (data.links[key].icon) {
 				link.style.backgroundImage = 'url("' + data.links[key].icon + '")';
 			}
@@ -747,15 +747,19 @@ document.addEventListener('DOMContentLoaded', function() {
 			if (getCookie('rsfh-active')) {
 				addClass(activateLink, 'rsfh-activate-active');
 			}
-			activateLink.innerHTML = activateLink.title = active ?
+			activateLink.innerHTML = '<span class="rsfh-label">' + (
+				active ?
 				data.labels.deactivate :
-				data.labels.activate;
+				data.labels.activate
+			);
 			addEvent(activateLink, 'click', function (event) {
 				setCookie('rsfh-active', active ? null : '1');
 				active = !active;
-				this.innerHTML = this.title = active ?
+				this.innerHTML = this.title = '<span class="rsfh-label">' + (
+					active ?
 					data.labels.deactivate :
-					data.labels.activate;
+					data.labels.activate
+				);
 				if (active) {
 					addClass(activateLink, 'rsfh-activate-active');
 				}
