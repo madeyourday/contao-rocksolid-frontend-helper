@@ -328,6 +328,8 @@ a.rsfh-activate.rsfh-activate-active {
 	padding-left: 1em;
 }
 .rsfh-element-list {
+	font-size: 16px;
+	line-height: 1.5;
 }
 .rsfh-element-list > ul {
 	margin: 0;
