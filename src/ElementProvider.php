@@ -8,17 +8,15 @@
 
 namespace MadeYourDay\RockSolidFrontendHelper;
 
-use Contao\CoreBundle\Framework\ContaoFrameworkInterface;
+use Contao\CoreBundle\Framework\FrameworkAwareInterface;
+use Contao\CoreBundle\Framework\FrameworkAwareTrait;
 
 /**
  * @author Martin Auswöger <martin@madeyourday.net>
  */
-class ElementProvider implements ElementProviderInterface
+class ElementProvider implements ElementProviderInterface, FrameworkAwareInterface
 {
-	/**
-	 * @var ContaoFrameworkInterface
-	 */
-	private $framework;
+	use FrameworkAwareTrait;
 
 	/**
 	 * @var array
@@ -73,14 +71,6 @@ class ElementProvider implements ElementProviderInterface
 		'download' => [],
 		'downloads' => [],
 	];
-
-	/**
-	 * @param ContaoFrameworkInterface $framework
-	 */
-	public function __construct(ContaoFrameworkInterface $framework)
-	{
-		$this->framework = $framework;
-	}
 
 	/**
 	 * {@inheritdoc}

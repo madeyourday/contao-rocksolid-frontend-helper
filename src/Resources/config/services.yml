@@ -22,8 +22,6 @@ services:
     rocksolid_frontend_helper.element_provider:
         class: MadeYourDay\RockSolidFrontendHelper\ElementProvider
         public: false
-        arguments:
-            - "@contao.framework"
         tags:
             - { name: rocksolid_frontend_helper.element_provider, priority: 192 }
 
