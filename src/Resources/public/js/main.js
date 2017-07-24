@@ -629,7 +629,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 			// Trigger reflow to apply the styles
 			lightbox.offsetWidth;
-			lightbox.className = lightbox.className.replace(' is-closed', '');
+			removeClass(lightbox, 'is-closed');
 
 			targetLink.target = 'rsfh-lightbox-iframe';
 
@@ -696,17 +696,25 @@ document.addEventListener('DOMContentLoaded', function() {
 					data.column.split('&').join('&amp;').split('<').join('&lt;') + '</div>';
 			}
 			infoHtml += '<div class="rsfh-templates-label">Templates:</div>';
+			infoHtml += '<div class="rsfh-templates-rows">';
 			for (var template in infoTemplates) {
-				infoHtml += '<div><b>' + template + ':</b> ';
+				infoHtml += '<div><b class="rsfh-templates-name">' + template + ':</b> ';
 				if (infoTemplates[template].url) {
-					infoHtml += '<a href="' + infoTemplates[template].url + '" title="' + infoTemplates[template].label.split('"').join('&quot;') + '">';
+					infoHtml += '<a class="rsfh-templates-path" href="' + infoTemplates[template].url + '" title="' + infoTemplates[template].label.split('"').join('&quot;') + '">';
+				}
+				else {
+					infoHtml += '<span class="rsfh-templates-path">'
 				}
 				infoHtml += infoTemplates[template].path;
 				if (infoTemplates[template].url) {
 					infoHtml += '</a>';
 				}
+				else {
+					infoHtml += '</span>'
+				}
 				infoHtml += '</div>';
 			}
+			infoHtml += '</div>';
 			infoHtml += '</div>';
 
 			var info = document.createElement('div');
