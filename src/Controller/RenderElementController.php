@@ -8,6 +8,9 @@
 
 namespace MadeYourDay\RockSolidFrontendHelper\Controller;
 
+use Contao\CoreBundle\Framework\FrameworkAwareInterface;
+use Contao\CoreBundle\Framework\FrameworkAwareTrait;
+use MadeYourDay\RockSolidFrontendHelper\FrontendHooks;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -23,20 +26,23 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  *
  * @Route("/_rocksolid-frontend-helper", defaults={"_scope" = "frontend"})
  */
-class RenderElementController extends Controller
+class RenderElementController extends Controller implements FrameworkAwareInterface
 {
+	use FrameworkAwareTrait;
+
 	/**
-	 * @param Request $request
+	 * @param Request       $request
+	 * @param FrontendHooks $frontendHooks
 	 *
 	 * @return Response
 	 *
 	 * @Route("/render", name="rocksolid_frontend_helper_render")
 	 * @Method({"POST"})
 	 */
-	public function renderAction(Request $request)
+	public function renderAction(Request $request, FrontendHooks $frontendHooks)
 	{
-		$this->get('contao.framework')->initialize();
-		$permissions = $this->get('rocksolid_frontend_helper.frontend_hooks')->checkLogin();
+		$this->framework->initialize();
+		$permissions = $frontendHooks->checkLogin();
 
 		if (!$permissions || !in_array('contents', $permissions, true)) {
 			throw new AccessDeniedHttpException();
@@ -71,7 +77,7 @@ class RenderElementController extends Controller
 			throw new \InvalidArgumentException('Table "'.$act.'" is not supported');
 		}
 
-		return $this->get('contao.framework')
+		return $this->framework
 			->getAdapter('Controller')
 			->getContentElement($id)
 		;

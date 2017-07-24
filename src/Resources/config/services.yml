@@ -1,5 +1,15 @@
 services:
 
+    _instanceof:
+        Contao\CoreBundle\Framework\FrameworkAwareInterface:
+            calls:
+                - ["setFramework", ["@contao.framework"]]
+
+    MadeYourDay\RockSolidFrontendHelper\Controller\:
+        resource: '../../Controller'
+        public: true
+        tags: ['controller.service_arguments']
+
     rocksolid_frontend_helper.frontend_hooks:
         class: MadeYourDay\RockSolidFrontendHelper\FrontendHooks
         arguments:

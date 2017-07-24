@@ -9,6 +9,10 @@
 namespace MadeYourDay\RockSolidFrontendHelper\Controller;
 
 use Contao\CoreBundle\Exception\RedirectResponseException;
+use Contao\CoreBundle\Framework\FrameworkAwareInterface;
+use Contao\CoreBundle\Framework\FrameworkAwareTrait;
+use Doctrine\DBAL\Connection;
+use MadeYourDay\RockSolidFrontendHelper\ElementBuilder;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -23,16 +27,19 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  *
  * @Route("/contao/rocksolid-frontend-helper", defaults={"_scope" = "backend", "_token_check" = true})
  */
-class JsonApiController extends Controller
+class JsonApiController extends Controller implements FrameworkAwareInterface
 {
+	use FrameworkAwareTrait;
+
 	/**
-	 * @param Request $request
+	 * @param Request        $request
+	 * @param ElementBuilder $elementBuilder
 	 *
 	 * @return Response
 	 *
 	 * @Route("/elements", name="rocksolid_frontend_helper_elements")
 	 */
-	public function elementsAction(Request $request)
+	public function elementsAction(Request $request, ElementBuilder $elementBuilder)
 	{
 		if (!is_string($request->get('table'))) {
 			throw new NotFoundHttpException();
@@ -43,11 +50,11 @@ class JsonApiController extends Controller
 			throw new NotFoundHttpException();
 		}
 
-		$this->get('contao.framework')->initialize();
+		$this->framework->initialize();
 
 		return $this->json(
 			array_filter(
-				$this->get('rocksolid_frontend_helper.element_builder')->getElements($request->get('table')),
+				$elementBuilder->getElements($request->get('table')),
 				function($element) {
 					return !empty($element['insert']);
 				}
@@ -56,16 +63,18 @@ class JsonApiController extends Controller
 	}
 
 	/**
-	 * @param Request $request
+	 * @param  Request        $request
+	 * @param  ElementBuilder $elementBuilder
+	 * @param  Connection     $connection
 	 *
 	 * @return Response
 	 *
 	 * @Route("/insert", name="rocksolid_frontend_helper_insert")
 	 * @Method({"POST"})
 	 */
-	public function insertAction(Request $request)
+	public function insertAction(Request $request, ElementBuilder $elementBuilder, Connection $connection)
 	{
-		$this->get('contao.framework')->initialize();
+		$this->framework->initialize();
 
 		$table = $request->get('table');
 		$act = $request->get('act');
@@ -87,11 +96,11 @@ class JsonApiController extends Controller
 		$previousId = null;
 
 		if ($request->get('position') === 'before') {
-			$content = $this->get('contao.framework')
+			$content = $this->framework
 				->getAdapter('ContentModel')
 				->findByPk($request->get('pid'))
 			;
-			$previousId = $this->get('doctrine.dbal.default_connection')
+			$previousId = $connection
 				->fetchColumn('
 					SELECT id
 					FROM tl_content
@@ -117,7 +126,7 @@ class JsonApiController extends Controller
 			if (!$id) {
 				throw new \RuntimeException('Unable to create element.');
 			}
-			$this->updateDefaultValues($id, $table, $request->get('type'));
+			$this->updateDefaultValues($elementBuilder, $connection, $id, $table, $request->get('type'));
 			$result['table'] = $table;
 			$result['id'] = $id;
 		}
@@ -141,7 +150,7 @@ class JsonApiController extends Controller
 	 */
 	public function deleteAction(Request $request)
 	{
-		$this->get('contao.framework')->initialize();
+		$this->framework->initialize();
 
 		$table = $request->get('table');
 		$parent = explode(':', $request->get('parent'));
@@ -156,7 +165,7 @@ class JsonApiController extends Controller
 			throw new NotFoundHttpException();
 		}
 
-		$input = $this->get('contao.framework')->getAdapter('Input');
+		$input = $this->framework->getAdapter('Input');
 		$params = [
 			'act' => 'delete',
 			'rt' => $request->get('REQUEST_TOKEN'),
@@ -204,7 +213,7 @@ class JsonApiController extends Controller
 			}
 		}
 
-		$input = $this->get('contao.framework')->getAdapter('Input');
+		$input = $this->framework->getAdapter('Input');
 
 		foreach ($params as $key => $value) {
 			$input->setGet($key, $value);
@@ -223,9 +232,8 @@ class JsonApiController extends Controller
 	 */
 	private function callDcaMethod($act, $table, $ptable = null, $id = null)
 	{
-		$framework = $this->get('contao.framework');
-		$input = $framework->getAdapter('Input');
-		$controller = $framework->getAdapter('Controller');
+		$input = $this->framework->getAdapter('Input');
+		$controller = $this->framework->getAdapter('Controller');
 
 		if ($id) {
 			$input->setGet('id', $id);
@@ -255,22 +263,21 @@ class JsonApiController extends Controller
 	/**
 	 * Update the database record with the default values from the element providers
 	 *
-	 * @param int    $id
-	 * @param string $table
-	 * @param string $type
+	 * @param ElementBuilder $elementBuilder
+	 * @param Connection     $connection
+	 * @param int            $id
+	 * @param string         $table
+	 * @param string         $type
 	 */
-	private function updateDefaultValues($id, $table, $type)
+	private function updateDefaultValues(ElementBuilder $elementBuilder, Connection $connection, $id, $table, $type)
 	{
-		$values = $this->get('rocksolid_frontend_helper.element_builder')
-			->getDefaultValues($table, $type);
+		$values = $elementBuilder->getDefaultValues($table, $type);
 
 		$values = array_merge([
 			'type' => $type,
 			'tstamp' => time(),
 		], $values);
 
-		$this->get('doctrine.dbal.default_connection')
-			->update($table, $values, ['id' => $id])
-		;
+		$connection->update($table, $values, ['id' => $id]);
 	}
 }
