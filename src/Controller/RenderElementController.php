@@ -10,6 +10,7 @@ namespace MadeYourDay\RockSolidFrontendHelper\Controller;
 
 use Contao\CoreBundle\Framework\FrameworkAwareInterface;
 use Contao\CoreBundle\Framework\FrameworkAwareTrait;
+use Contao\InsertTags;
 use MadeYourDay\RockSolidFrontendHelper\FrontendHooks;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -57,9 +58,10 @@ class RenderElementController extends Controller implements FrameworkAwareInterf
 			throw new NotFoundHttpException();
 		}
 
-		return new Response(
-			$this->renderElement((int) $request->get('id'), $request->get('table'))
-		);
+		$html = $this->renderElement((int) $request->get('id'), $request->get('table'));
+		$html = $this->framework->createInstance(InsertTags::class)->replace($html);
+
+		return new Response($html);
 	}
 
 	/**
