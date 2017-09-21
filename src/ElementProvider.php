@@ -83,6 +83,10 @@ class ElementProvider implements ElementProviderInterface, FrameworkAwareInterfa
 
 		$this->framework->initialize();
 
+		/** @var FrontendHelperUser $user */
+		$user = $this->framework->createInstance(FrontendHelperUser::class);
+		$user->authenticate();
+
 		$elements = [];
 
 		foreach ($GLOBALS['TL_CTE'] as $group => $groupElements) {
@@ -91,6 +95,11 @@ class ElementProvider implements ElementProviderInterface, FrameworkAwareInterfa
 					'group' => $this->getLabel($group),
 					'label' => $this->getLabel($type),
 					'insert' => isset(static::$defaultValues[$type]),
+					'showToolbar' =>
+						$user->isAdmin
+						|| !is_array($user->rocksolidFrontendHelperHideContentElements)
+						|| !in_array($type, $user->rocksolidFrontendHelperHideContentElements)
+					,
 					'renderLive' =>
 						!in_array($type, $GLOBALS['TL_WRAPPERS']['start'])
 						&& !in_array($type, $GLOBALS['TL_WRAPPERS']['stop'])

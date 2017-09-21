@@ -13,3 +13,5 @@
  */
 
 $GLOBALS['TL_LANG']['tl_user_group']['rocksolid_frontend_helper_legend'] = 'RockSolid Frontend Helper';
+$GLOBALS['TL_LANG']['tl_user_group']['rocksolidFrontendHelperHideContentElements'][0] = 'Disable Frontend Helper for Content Elements';
+$GLOBALS['TL_LANG']['tl_user_group']['rocksolidFrontendHelperHideContentElements'][1] = 'Disable the helper toolbar for specific content elements.';

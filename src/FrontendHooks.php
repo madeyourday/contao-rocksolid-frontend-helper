@@ -545,7 +545,7 @@ class FrontendHooks
 		}
 
 		$data = array(
-			'toolbar' => true,
+			'toolbar' => !empty($this->getElementTypeSettings('tl_content', $row->type)['showToolbar']),
 			'table' => 'tl_content',
 			'id' => $row->id,
 			'parent' => ($row->ptable ?: 'tl_article') . ':' . $row->pid,
