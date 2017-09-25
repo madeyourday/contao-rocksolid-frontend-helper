@@ -12,8 +12,8 @@
  * @author Martin Auswöger <martin@madeyourday.net>
  */
 
-$GLOBALS['TL_DCA']['tl_user']['palettes']['extend'] = str_replace('formp;', 'formp;{rocksolid_frontend_helper_legend},rocksolidFrontendHelperOperations;', $GLOBALS['TL_DCA']['tl_user']['palettes']['extend']);
-$GLOBALS['TL_DCA']['tl_user']['palettes']['custom'] = str_replace('formp;', 'formp;{rocksolid_frontend_helper_legend},rocksolidFrontendHelperOperations;', $GLOBALS['TL_DCA']['tl_user']['palettes']['custom']);
+$GLOBALS['TL_DCA']['tl_user']['palettes']['extend'] = str_replace('formp;', 'formp;{rocksolid_frontend_helper_legend},rocksolidFrontendHelperOperations,rocksolidFrontendHelperHideContentElements;', $GLOBALS['TL_DCA']['tl_user']['palettes']['extend']);
+$GLOBALS['TL_DCA']['tl_user']['palettes']['custom'] = str_replace('formp;', 'formp;{rocksolid_frontend_helper_legend},rocksolidFrontendHelperOperations,rocksolidFrontendHelperHideContentElements;', $GLOBALS['TL_DCA']['tl_user']['palettes']['custom']);
 
 $GLOBALS['TL_DCA']['tl_user']['palettes']['admin'] = preg_replace('(([,;}]useCE)([,;{]))i', '$1,rocksolidFrontendHelper,rocksolidFrontendHelperLightbox$2', $GLOBALS['TL_DCA']['tl_user']['palettes']['admin']);
 $GLOBALS['TL_DCA']['tl_user']['palettes']['default'] = preg_replace('(([,;}]useCE)([,;{]))i', '$1,rocksolidFrontendHelper,rocksolidFrontendHelperLightbox$2', $GLOBALS['TL_DCA']['tl_user']['palettes']['default']);
@@ -28,6 +28,23 @@ $GLOBALS['TL_DCA']['tl_user']['fields']['rocksolidFrontendHelperOperations'] = a
 	'inputType' => 'checkbox',
 	'options' => array('feModules', 'beModules', 'pages', 'articles', 'contents', 'infos'),
 	'reference' => &$GLOBALS['TL_LANG']['tl_user']['rocksolidFrontendHelperOperationsValues'],
+	'eval' => array('multiple' => true),
+	'sql' => "blob NULL",
+);
+$GLOBALS['TL_DCA']['tl_user']['fields']['rocksolidFrontendHelperHideContentElements'] = array(
+	'label' => &$GLOBALS['TL_LANG']['tl_user']['rocksolidFrontendHelperHideContentElements'],
+	'exclude' => true,
+	'inputType' => 'checkbox',
+	'options_callback' => function() {
+		$groups = [];
+		foreach ($GLOBALS['TL_CTE'] as $k => $v) {
+			foreach (array_keys($v) as $kk) {
+				$groups[$k][] = $kk;
+			}
+		}
+		return $groups;
+	},
+	'reference' => &$GLOBALS['TL_LANG']['CTE'],
 	'eval' => array('multiple' => true),
 	'sql' => "blob NULL",
 );

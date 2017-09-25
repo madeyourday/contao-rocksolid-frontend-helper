@@ -25,3 +25,5 @@ $GLOBALS['TL_LANG']['tl_user']['rocksolidFrontendHelperOperationsValues']['pages
 $GLOBALS['TL_LANG']['tl_user']['rocksolidFrontendHelperOperationsValues']['articles'] = 'Artikel';
 $GLOBALS['TL_LANG']['tl_user']['rocksolidFrontendHelperOperationsValues']['contents'] = 'Inhalts-Elemente';
 $GLOBALS['TL_LANG']['tl_user']['rocksolidFrontendHelperOperationsValues']['infos'] = 'Template-Informationen anzeigen';
+$GLOBALS['TL_LANG']['tl_user']['rocksolidFrontendHelperHideContentElements'][0] = 'Frontend Helper für Inhalts-Elemente deaktivieren';
+$GLOBALS['TL_LANG']['tl_user']['rocksolidFrontendHelperHideContentElements'][1] = 'Hier können Sie die Helper-Toolbar für einzelne Elemente deaktivieren.';

@@ -24,7 +24,7 @@ $GLOBALS['TL_DCA']['tl_user_group']['fields']['rocksolidFrontendHelperOperations
 	'sql' => "blob NULL",
 );
 $GLOBALS['TL_DCA']['tl_user_group']['fields']['rocksolidFrontendHelperHideContentElements'] = array(
-	'label' => &$GLOBALS['TL_LANG']['tl_user_group']['rocksolidFrontendHelperHideContentElements'],
+	'label' => &$GLOBALS['TL_LANG']['tl_user']['rocksolidFrontendHelperHideContentElements'],
 	'exclude' => true,
 	'inputType' => 'checkbox',
 	'options_callback' => function() {
