@@ -97,8 +97,8 @@ class ElementProvider implements ElementProviderInterface, FrameworkAwareInterfa
 					'insert' => isset(static::$defaultValues[$type]),
 					'showToolbar' =>
 						$user->isAdmin
-						|| !is_array($user->rocksolidFrontendHelperHideContentElements)
-						|| !in_array($type, $user->rocksolidFrontendHelperHideContentElements)
+						|| empty($user->rocksolidFrontendHelperContentElements)
+						|| in_array($type, $user->rocksolidFrontendHelperContentElements)
 					,
 					'renderLive' =>
 						!in_array($type, $GLOBALS['TL_WRAPPERS']['start'])

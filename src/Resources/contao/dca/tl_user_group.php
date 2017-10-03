@@ -12,7 +12,7 @@
  * @author Martin Auswöger <martin@madeyourday.net>
  */
 
-$GLOBALS['TL_DCA']['tl_user_group']['palettes']['default'] = str_replace('formp;', 'formp;{rocksolid_frontend_helper_legend},rocksolidFrontendHelperOperations,rocksolidFrontendHelperHideContentElements;', $GLOBALS['TL_DCA']['tl_user_group']['palettes']['default']);
+$GLOBALS['TL_DCA']['tl_user_group']['palettes']['default'] = str_replace('formp;', 'formp;{rocksolid_frontend_helper_legend},rocksolidFrontendHelperOperations,rocksolidFrontendHelperContentElements;', $GLOBALS['TL_DCA']['tl_user_group']['palettes']['default']);
 
 $GLOBALS['TL_DCA']['tl_user_group']['fields']['rocksolidFrontendHelperOperations'] = array(
 	'label' => &$GLOBALS['TL_LANG']['tl_user']['rocksolidFrontendHelperOperations'],
@@ -23,8 +23,8 @@ $GLOBALS['TL_DCA']['tl_user_group']['fields']['rocksolidFrontendHelperOperations
 	'eval' => array('multiple' => true),
 	'sql' => "blob NULL",
 );
-$GLOBALS['TL_DCA']['tl_user_group']['fields']['rocksolidFrontendHelperHideContentElements'] = array(
-	'label' => &$GLOBALS['TL_LANG']['tl_user']['rocksolidFrontendHelperHideContentElements'],
+$GLOBALS['TL_DCA']['tl_user_group']['fields']['rocksolidFrontendHelperContentElements'] = array(
+	'label' => &$GLOBALS['TL_LANG']['tl_user']['rocksolidFrontendHelperContentElements'],
 	'exclude' => true,
 	'inputType' => 'checkbox',
 	'options_callback' => function() {

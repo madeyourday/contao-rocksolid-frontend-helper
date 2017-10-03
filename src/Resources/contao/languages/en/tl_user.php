@@ -25,5 +25,5 @@ $GLOBALS['TL_LANG']['tl_user']['rocksolidFrontendHelperOperationsValues']['pages
 $GLOBALS['TL_LANG']['tl_user']['rocksolidFrontendHelperOperationsValues']['articles'] = 'Article';
 $GLOBALS['TL_LANG']['tl_user']['rocksolidFrontendHelperOperationsValues']['contents'] = 'Content elements';
 $GLOBALS['TL_LANG']['tl_user']['rocksolidFrontendHelperOperationsValues']['infos'] = 'Display template informations';
-$GLOBALS['TL_LANG']['tl_user']['rocksolidFrontendHelperHideContentElements'][0] = 'Disable Frontend Helper for Content Elements';
-$GLOBALS['TL_LANG']['tl_user']['rocksolidFrontendHelperHideContentElements'][1] = 'Disable the helper toolbar for specific content elements.';
+$GLOBALS['TL_LANG']['tl_user']['rocksolidFrontendHelperContentElements'][0] = 'Limit Content Elements';
+$GLOBALS['TL_LANG']['tl_user']['rocksolidFrontendHelperContentElements'][1] = 'Enable the helper toolbar only for specific content elements.';

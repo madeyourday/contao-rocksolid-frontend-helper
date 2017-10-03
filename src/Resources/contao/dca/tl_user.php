@@ -12,8 +12,8 @@
  * @author Martin Auswöger <martin@madeyourday.net>
  */
 
-$GLOBALS['TL_DCA']['tl_user']['palettes']['extend'] = str_replace('formp;', 'formp;{rocksolid_frontend_helper_legend},rocksolidFrontendHelperOperations,rocksolidFrontendHelperHideContentElements;', $GLOBALS['TL_DCA']['tl_user']['palettes']['extend']);
-$GLOBALS['TL_DCA']['tl_user']['palettes']['custom'] = str_replace('formp;', 'formp;{rocksolid_frontend_helper_legend},rocksolidFrontendHelperOperations,rocksolidFrontendHelperHideContentElements;', $GLOBALS['TL_DCA']['tl_user']['palettes']['custom']);
+$GLOBALS['TL_DCA']['tl_user']['palettes']['extend'] = str_replace('formp;', 'formp;{rocksolid_frontend_helper_legend},rocksolidFrontendHelperOperations,rocksolidFrontendHelperContentElements;', $GLOBALS['TL_DCA']['tl_user']['palettes']['extend']);
+$GLOBALS['TL_DCA']['tl_user']['palettes']['custom'] = str_replace('formp;', 'formp;{rocksolid_frontend_helper_legend},rocksolidFrontendHelperOperations,rocksolidFrontendHelperContentElements;', $GLOBALS['TL_DCA']['tl_user']['palettes']['custom']);
 
 $GLOBALS['TL_DCA']['tl_user']['palettes']['admin'] = preg_replace('(([,;}]useCE)([,;{]))i', '$1,rocksolidFrontendHelper,rocksolidFrontendHelperLightbox$2', $GLOBALS['TL_DCA']['tl_user']['palettes']['admin']);
 $GLOBALS['TL_DCA']['tl_user']['palettes']['default'] = preg_replace('(([,;}]useCE)([,;{]))i', '$1,rocksolidFrontendHelper,rocksolidFrontendHelperLightbox$2', $GLOBALS['TL_DCA']['tl_user']['palettes']['default']);
@@ -31,8 +31,8 @@ $GLOBALS['TL_DCA']['tl_user']['fields']['rocksolidFrontendHelperOperations'] = a
 	'eval' => array('multiple' => true),
 	'sql' => "blob NULL",
 );
-$GLOBALS['TL_DCA']['tl_user']['fields']['rocksolidFrontendHelperHideContentElements'] = array(
-	'label' => &$GLOBALS['TL_LANG']['tl_user']['rocksolidFrontendHelperHideContentElements'],
+$GLOBALS['TL_DCA']['tl_user']['fields']['rocksolidFrontendHelperContentElements'] = array(
+	'label' => &$GLOBALS['TL_LANG']['tl_user']['rocksolidFrontendHelperContentElements'],
 	'exclude' => true,
 	'inputType' => 'checkbox',
 	'options_callback' => function() {
