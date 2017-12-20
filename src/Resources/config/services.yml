@@ -3,5 +3,7 @@ services:
         class: MadeYourDay\RockSolidFrontendHelper\FrontendHooks
         arguments:
             - "%rocksolid_frontend_helper.backend_modules%"
+        public: true
     rocksolid_frontend_helper.backend_hooks:
         class: MadeYourDay\RockSolidFrontendHelper\BackendHooks
+        public: true

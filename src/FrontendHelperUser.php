@@ -8,6 +8,8 @@
 
 namespace MadeYourDay\RockSolidFrontendHelper;
 
+use Symfony\Component\Security\Core\User\UserInterface;
+
 /**
  * RockSolid Frontend Helper User
  *
@@ -33,10 +35,15 @@ class FrontendHelperUser extends \BackendUser
 	 */
 	public function authenticate()
 	{
-		if ($this->frontendHelperUserAuthenticated === null) {
-			$this->frontendHelperUserAuthenticated = \User::authenticate();
+		// Backwards compatibility for Contao 4.4
+		if (!$this instanceof UserInterface) {
+			if ($this->frontendHelperUserAuthenticated === null) {
+				$this->frontendHelperUserAuthenticated = \User::authenticate();
+			}
+			return $this->frontendHelperUserAuthenticated;
 		}
-		return $this->frontendHelperUserAuthenticated;
+
+		return $this->username && $this->intId;
 	}
 
 	/**

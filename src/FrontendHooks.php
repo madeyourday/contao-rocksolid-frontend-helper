@@ -8,6 +8,8 @@
 
 namespace MadeYourDay\RockSolidFrontendHelper;
 
+use Symfony\Component\Security\Core\User\UserInterface;
+
 /**
  * RockSolid Frontend Helper
  *
@@ -627,8 +629,13 @@ class FrontendHooks
 	 */
 	public static function checkLogin()
 	{
+		// Only try to authenticate in the front end
+		if (TL_MODE !== 'FE') {
+			return false;
+		}
+
 		// Do not create a user instance if there is no authentication cookie
-		if (! \Input::cookie('BE_USER_AUTH') || TL_MODE !== 'FE') {
+		if (! is_subclass_of('BackendUser', UserInterface::class) && ! \Input::cookie('BE_USER_AUTH')) {
 			return false;
 		}
 
