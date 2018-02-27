@@ -25,6 +25,11 @@ class BackendHooks
 		}
 
 		\Environment::set('queryString', preg_replace('(([&?])rsfhr=1(&|$))', '$1', \Environment::get('queryString')));
+
+		// Fix missing CURRENT_ID if rsfhr is set
+		if (\Input::get('act') === 'create' && \Input::get('id')) {
+			\System::getContainer()->get('session')->set('CURRENT_ID', \Input::get('id'));
+		}
 	}
 
 	/**
