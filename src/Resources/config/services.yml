@@ -10,22 +10,23 @@ services:
         public: true
         tags: ['controller.service_arguments']
 
-    rocksolid_frontend_helper.frontend_hooks:
-        class: MadeYourDay\RockSolidFrontendHelper\FrontendHooks
+    MadeYourDay\RockSolidFrontendHelper\FrontendHooks:
         arguments:
             - "@rocksolid_frontend_helper.element_builder"
             - "%rocksolid_frontend_helper.backend_modules%"
         public: true
 
-    rocksolid_frontend_helper.backend_hooks:
-        class: MadeYourDay\RockSolidFrontendHelper\BackendHooks
+    MadeYourDay\RockSolidFrontendHelper\BackendHooks:
         public: true
 
-    rocksolid_frontend_helper.element_provider:
-        class: MadeYourDay\RockSolidFrontendHelper\ElementProvider
+    MadeYourDay\RockSolidFrontendHelper\ElementProvider:
         public: false
         tags:
             - { name: rocksolid_frontend_helper.element_provider, priority: 192 }
 
-    rocksolid_frontend_helper.element_builder:
-        class: MadeYourDay\RockSolidFrontendHelper\ElementBuilder
+    MadeYourDay\RockSolidFrontendHelper\ElementBuilder: ~
+
+    rocksolid_frontend_helper.frontend_hooks: '@MadeYourDay\RockSolidFrontendHelper\FrontendHooks'
+    rocksolid_frontend_helper.backend_hooks: '@MadeYourDay\RockSolidFrontendHelper\BackendHooks'
+    rocksolid_frontend_helper.element_provider: '@MadeYourDay\RockSolidFrontendHelper\ElementProvider'
+    rocksolid_frontend_helper.element_builder: '@MadeYourDay\RockSolidFrontendHelper\ElementBuilder'
