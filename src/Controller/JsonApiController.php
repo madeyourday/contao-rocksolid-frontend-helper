@@ -218,6 +218,10 @@ class JsonApiController extends Controller implements FrameworkAwareInterface
 		foreach ($params as $key => $value) {
 			$input->setGet($key, $value);
 		}
+
+		if (!defined('CURRENT_ID')) {
+			define('CURRENT_ID', (string) explode(':', $request->get('parent'))[1]);
+		}
 	}
 
 	/**

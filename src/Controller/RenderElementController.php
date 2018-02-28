@@ -79,6 +79,12 @@ class RenderElementController extends Controller implements FrameworkAwareInterf
 			throw new \InvalidArgumentException('Table "'.$act.'" is not supported');
 		}
 
+		if (!defined('BE_USER_LOGGED_IN') && !defined('FE_USER_LOGGED_IN')) {
+			$tokenChecker = $this->get('contao.security.token_checker');
+			define('FE_USER_LOGGED_IN', $tokenChecker->hasFrontendUser());
+			define('BE_USER_LOGGED_IN', $tokenChecker->hasBackendUser() && $tokenChecker->isPreviewMode());
+		}
+
 		return $this->framework
 			->getAdapter('Controller')
 			->getContentElement($id)
