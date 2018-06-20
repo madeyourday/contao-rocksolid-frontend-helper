@@ -91,15 +91,15 @@ class ElementProvider implements ElementProviderInterface, FrameworkAwareInterfa
 
 		foreach ($GLOBALS['TL_CTE'] as $group => $groupElements) {
 			foreach ($groupElements as $type => $class) {
+				$hasAccess = $user->isAdmin
+					|| empty($user->rocksolidFrontendHelperContentElements)
+					|| in_array($type, $user->rocksolidFrontendHelperContentElements)
+				;
 				$elements[$type] = [
 					'group' => $this->getLabel($group),
 					'label' => $this->getLabel($type),
-					'insert' => isset(static::$defaultValues[$type]),
-					'showToolbar' =>
-						$user->isAdmin
-						|| empty($user->rocksolidFrontendHelperContentElements)
-						|| in_array($type, $user->rocksolidFrontendHelperContentElements)
-					,
+					'insert' => isset(static::$defaultValues[$type]) && $hasAccess,
+					'showToolbar' => $hasAccess,
 					'renderLive' =>
 						!in_array($type, $GLOBALS['TL_WRAPPERS']['start'])
 						&& !in_array($type, $GLOBALS['TL_WRAPPERS']['stop'])
