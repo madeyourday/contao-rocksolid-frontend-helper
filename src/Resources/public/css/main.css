@@ -296,13 +296,16 @@ a.rsfh-activate.rsfh-activate-active {
 .rsfh-element-list {
 	right: auto;
 	width: 320px;
-	box-shadow: 10px 0 rgba(0, 0, 0, 0.25);
-	background-color: #fff;
-	transition: left 0.3s ease-out;
+	box-shadow: none;
+	transition: transform 0.3s ease-out;
+}
+.rsfh-lightbox.is-popup {
+	min-width: 260px;
+	background: linear-gradient(to right, #fff 0%, #fff calc(100% - 10px), transparent calc(100% - 10px));
 }
 .rsfh-lightbox.is-popup.is-closed,
 .rsfh-element-list.is-closed {
-	left: -330px;
+	transform: translateX(-100%);
 }
 .rsfh-lightbox:before {
 	content: "";
@@ -324,7 +327,7 @@ a.rsfh-activate.rsfh-activate-active {
 	margin-bottom: -20px;
 }
 .rsfh-lightbox.is-popup iframe {
-	border-width: 36px 0 0 0;
+	border-width: 36px 10px 0 0;
 }
 .rsfh-lightbox-close,
 .rsfh-lightbox-cancel,
@@ -368,11 +371,39 @@ a.rsfh-activate.rsfh-activate-active {
 	padding-right: 1em;
 	padding-left: 1em;
 }
+.is-popup > .rsfh-lightbox-close {
+	right: 15px;
+}
+.is-popup > .rsfh-lightbox-cancel {
+	right: 55px;
+}
+.rsfh-lightbox-resize-handle {
+	position: absolute;
+	top: 0;
+	right: 0;
+	height: 100%;
+	width: 10px;
+	background: rgba(0, 0, 0, 0.25);
+	cursor: ew-resize;
+}
+.rsfh-lightbox-resize-handle:before {
+	box-sizing: border-box;
+	content: "";
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 4px;
+	height: 20px;
+	border: solid rgba(255, 255, 255, 0.5);
+	border-width: 0 1px;
+}
 .rsfh-element-list {
 	font-size: 16px;
 	line-height: 1.5;
 	color: #d3d5d7;
 	background: #0f1c26;
+	box-shadow: 10px 0 rgba(0, 0, 0, 0.25);
 }
 .rsfh-element-list > ul {
 	margin: 0;

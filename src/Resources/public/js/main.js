@@ -31,6 +31,17 @@ document.addEventListener('DOMContentLoaded', function() {
 			}
 		}
 	};
+	var removeEvent = function(element, events, func){
+		events = events.split(' ');
+		for (var i = 0; i < events.length; i++) {
+			if (element.removeEventListener) {
+				element.removeEventListener(events[i], func, false);
+			}
+			else {
+				element.detachEvent('on'+events[i], func);
+			}
+		}
+	};
 	var triggerEvent = function(element, eventName) {
 		var evt = document.createEvent('HTMLEvents');
 		evt.initEvent(eventName, true, true);
@@ -595,6 +606,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			lightbox = lightbox || document.createElement('div');
 			lightbox.innerHTML = '';
 			lightbox.className = 'rsfh-lightbox is-closed';
+			lightbox.style.width = '';
 
 			if (lightboxIsPopup) {
 				lightbox.className += ' is-popup';
@@ -624,6 +636,30 @@ document.addEventListener('DOMContentLoaded', function() {
 				event.preventDefault();
 			});
 			lightbox.appendChild(lightboxCancelButton);
+
+			if (lightboxIsPopup) {
+				if (window.localStorage && localStorage.rsfhLightboxWidth) {
+					lightbox.style.width = localStorage.rsfhLightboxWidth;
+				}
+				var lightboxResizeHandle = document.createElement('span');
+				lightboxResizeHandle.className = 'rsfh-lightbox-resize-handle';
+				addEvent(lightboxResizeHandle, 'mousedown', function(event) {
+					event.preventDefault();
+					iframe.style.pointerEvents = 'none';
+					addEvent(window, 'mousemove', mouseMove);
+					addEvent(window, 'mouseup', mouseUp);
+					function mouseMove(event) {
+						lightbox.style.width = event.clientX + 5 + 'px';
+					}
+					function mouseUp(event) {
+						iframe.style.pointerEvents = '';
+						localStorage.rsfhLightboxWidth = lightbox.style.width;
+						removeEvent(window, 'mousemove', mouseMove);
+						removeEvent(window, 'mouseup', mouseUp);
+					}
+				});
+				lightbox.appendChild(lightboxResizeHandle);
+			}
 
 			document.body.appendChild(lightbox);
 
