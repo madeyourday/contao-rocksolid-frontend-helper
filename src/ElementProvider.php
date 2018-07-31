@@ -210,7 +210,7 @@ class ElementProvider implements ElementProviderInterface, FrameworkAwareInterfa
 	 */
 	private function getLabel($key)
 	{
-		$this->framework->getAdapter('System')->loadLanguageFile('default', 'en');
+		$this->framework->getAdapter('System')->loadLanguageFile('default');
 
 		if (isset($GLOBALS['TL_LANG']['CTE'][$key])) {
 			return $GLOBALS['TL_LANG']['CTE'][$key];
