@@ -26,7 +26,13 @@ services:
 
     MadeYourDay\RockSolidFrontendHelper\ElementBuilder: ~
 
-    rocksolid_frontend_helper.frontend_hooks: '@MadeYourDay\RockSolidFrontendHelper\FrontendHooks'
-    rocksolid_frontend_helper.backend_hooks: '@MadeYourDay\RockSolidFrontendHelper\BackendHooks'
+    rocksolid_frontend_helper.frontend_hooks:
+        alias: 'MadeYourDay\RockSolidFrontendHelper\FrontendHooks'
+        public: true
+
+    rocksolid_frontend_helper.backend_hooks:
+        alias: 'MadeYourDay\RockSolidFrontendHelper\BackendHooks'
+        public: true
+
     rocksolid_frontend_helper.element_provider: '@MadeYourDay\RockSolidFrontendHelper\ElementProvider'
     rocksolid_frontend_helper.element_builder: '@MadeYourDay\RockSolidFrontendHelper\ElementBuilder'
