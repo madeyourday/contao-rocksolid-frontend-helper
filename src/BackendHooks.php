@@ -69,10 +69,15 @@ class BackendHooks
 	 */
 	private function removeRsfhrParam($ref)
 	{
-		$referrerSession = \System::getContainer()->get('session')->get('referer');
+		$session = \System::getContainer()->get('session');
+		if (!$session->isStarted()) {
+			return;
+		}
+
+		$referrerSession = $session->get('referer');
 		if (!empty($referrerSession[$ref]['current'])) {
 			$referrerSession[$ref]['current'] = preg_replace('(([&?])rsfhr=1(&|$))', '$1', $referrerSession[$ref]['current']);
-			\System::getContainer()->get('session')->set('referer', $referrerSession);
+			$session->set('referer', $referrerSession);
 		}
 	}
 

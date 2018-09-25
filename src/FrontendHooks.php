@@ -66,116 +66,8 @@ class FrontendHooks
 			}
 		}
 
-		if (substr($template, 0, 3) === 'fe_') {
-
-			\System::loadLanguageFile('rocksolid_frontend_helper');
-
-			$data['toolbar'] = true;
-
-			if (in_array('pages', $permissions)) {
-				\System::loadLanguageFile('tl_page');
-				$data['links']['page'] = array(
-					'url' => static::getBackendURL('page', null, $GLOBALS['objPage']->id),
-					'label' => sprintf($GLOBALS['TL_LANG']['tl_page']['edit'][1], $GLOBALS['objPage']->id),
-				);
-			}
-
-			if (in_array('articles', $permissions)) {
-				\System::loadLanguageFile('tl_page');
-				$data['links']['article'] = array(
-					'url' => static::getBackendURL('article', null, null, null, array(
-						'pn' => $GLOBALS['objPage']->id,
-					)),
-					'label' => sprintf($GLOBALS['TL_LANG']['tl_page']['articles'][1], $GLOBALS['objPage']->id),
-				);
-			}
-
-			if (in_array('feModules', $permissions)) {
-				\System::loadLanguageFile('tl_layout');
-				$data['links']['layout'] = array(
-					'url' => static::getBackendURL('themes', 'tl_layout', $GLOBALS['objPage']->layout),
-					'label' => sprintf($GLOBALS['TL_LANG']['tl_layout']['edit'][1], $GLOBALS['objPage']->layout),
-				);
-				if ($GLOBALS['objPage']->getRelated('layout') && $GLOBALS['objPage']->getRelated('layout')->pid) {
-					\System::loadLanguageFile('tl_theme');
-					$data['links']['fe-module'] = array(
-						'url' => static::getBackendURL('themes', 'tl_module', $GLOBALS['objPage']->getRelated('layout')->pid, null),
-						'label' => sprintf($GLOBALS['TL_LANG']['tl_theme']['modules'][1], $GLOBALS['objPage']->getRelated('layout')->pid),
-					);
-					$data['links']['image-size'] = array(
-						'url' => static::getBackendURL('themes', 'tl_image_size', $GLOBALS['objPage']->getRelated('layout')->pid, null),
-						'label' => sprintf($GLOBALS['TL_LANG']['tl_theme']['imageSizes'][1], $GLOBALS['objPage']->getRelated('layout')->pid),
-					);
-					if (
-						$GLOBALS['objPage']->getRelated('layout')->stylesheet &&
-						count(\StringUtil::deserialize($GLOBALS['objPage']->getRelated('layout')->stylesheet))
-					) {
-						// Only show a stylesheets link if stylesheets are used
-						$data['links']['stylesheet'] = array(
-							'url' => static::getBackendURL('themes', 'tl_style_sheet', $GLOBALS['objPage']->getRelated('layout')->pid, null),
-							'label' => sprintf($GLOBALS['TL_LANG']['tl_theme']['css'][1], $GLOBALS['objPage']->getRelated('layout')->pid),
-						);
-					}
-				}
-			}
-
-			if (in_array('rstAssistant', $permissions) && $assistantId = static::getThemeAssistantStylesheet()) {
-				$data['links']['assistant'] = array(
-					'url' => static::getBackendURL('rocksolid_theme_assistant', null, $assistantId),
-					'label' => $GLOBALS['TL_LANG']['rocksolid_frontend_helper']['assistantLabel'],
-				);
-			}
-
-			$data['links']['backend'] = array(
-				'url' => static::getBackendURL(null, null, null, null),
-				'label' => $GLOBALS['TL_LANG']['MSC']['homeTitle'],
-			);
-
-			$data['labels'] = array(
-				'previewHide' =>
-					$GLOBALS['TL_LANG']['MSC']['hiddenElements'] . ' ' .
-					$GLOBALS['TL_LANG']['MSC']['hiddenHide'],
-				'previewShow' =>
-					$GLOBALS['TL_LANG']['MSC']['hiddenElements'] . ' ' .
-					$GLOBALS['TL_LANG']['MSC']['hiddenShow'],
-				'activate' => $GLOBALS['TL_LANG']['rocksolid_frontend_helper']['activateLabel'],
-				'deactivate' => $GLOBALS['TL_LANG']['rocksolid_frontend_helper']['deactivateLabel'],
-				'cancel' => $GLOBALS['TL_LANG']['MSC']['cancelBT'],
-				'contentElements' => $GLOBALS['TL_LANG']['rocksolid_frontend_helper']['contentElements'],
-			);
-
-			$data['config'] = array(
-				'lightbox' => (bool)FrontendHelperUser::getInstance()->rocksolidFrontendHelperLightbox,
-				'REQUEST_TOKEN' => '{{REQUEST_TOKEN}}',
-				'routes' => [
-					'elements' => \Controller::getContainer()->get('router')->generate('rocksolid_frontend_helper_elements'),
-					'insert' => \Controller::getContainer()->get('router')->generate('rocksolid_frontend_helper_insert'),
-					'delete' => \Controller::getContainer()->get('router')->generate('rocksolid_frontend_helper_delete'),
-					'render' => \Controller::getContainer()->get('router')->generate('rocksolid_frontend_helper_render'),
-				],
-			);
-
-			$assetsDir = 'bundles/rocksolidfrontendhelper';
-
-			$GLOBALS['TL_JAVASCRIPT'][] = $assetsDir . '/js/main.js';
-			$GLOBALS['TL_CSS'][] = $assetsDir . '/css/main.css';
-
-			// Remove dummy elements inside script tags and insert them before the script tags
-			$content = preg_replace_callback('(<script[^>]*>.*?</script>)is', function($matches) {
-				preg_match_all('(<span class="rsfh-dummy[^>]*></span>)is', $matches[0], $dummies);
-				if (!count($dummies[0])) {
-					return $matches[0];
-				}
-				return implode('', $dummies[0]) . str_replace($dummies[0], '', $matches[0]);
-			}, $content);
-
-			$content = explode('<body', $content, 2);
-			return $content[0] . static::insertData('<body' . $content[1], $data);
-
-		}
-
 		// get the first tag
-		if (preg_match('(<[a-z0-9]+\\s[^>]+)is', $content, $matches)) {
+		if (preg_match('(<[a-z0-9]+\\s(?>"[^"]*"|\'[^\']*\'|[^>"\'])+)is', $content, $matches)) {
 
 			// search for an article id injected by getArticleHook
 			if (preg_match('(^(.*\\sclass="[^"]*)rsfh-article-([0-9]+)-([0-9a-f]*)(.*)$)is', $matches[0], $matches2)) {
@@ -298,6 +190,133 @@ class FrontendHooks
 			}
 
 		}
+
+		return static::insertData($content, $data);
+	}
+
+	/**
+	 * outputFrontendTemplate hook
+	 *
+	 * @param  string $content  html content
+	 * @param  string $template template name
+	 * @return string           modified $content
+	 */
+	public function outputFrontendTemplateHook($content, $template)
+	{
+		if (
+			!($permissions = static::checkLogin())
+			|| !$template
+			|| substr($template, 0, 3) !== 'fe_'
+		) {
+			return $content;
+		}
+
+		$data = array(
+			'toolbar' => true,
+		);
+
+		\System::loadLanguageFile('rocksolid_frontend_helper');
+
+		if (in_array('pages', $permissions)) {
+			\System::loadLanguageFile('tl_page');
+			$data['links']['page'] = array(
+				'url' => static::getBackendURL('page', null, $GLOBALS['objPage']->id),
+				'label' => sprintf($GLOBALS['TL_LANG']['tl_page']['edit'][1], $GLOBALS['objPage']->id),
+			);
+		}
+
+		if (in_array('articles', $permissions)) {
+			\System::loadLanguageFile('tl_page');
+			$data['links']['article'] = array(
+				'url' => static::getBackendURL('article', null, null, null, array(
+					'pn' => $GLOBALS['objPage']->id,
+				)),
+				'label' => sprintf($GLOBALS['TL_LANG']['tl_page']['articles'][1], $GLOBALS['objPage']->id),
+			);
+		}
+
+		if (in_array('feModules', $permissions)) {
+			\System::loadLanguageFile('tl_layout');
+			$data['links']['layout'] = array(
+				'url' => static::getBackendURL('themes', 'tl_layout', $GLOBALS['objPage']->layout),
+				'label' => sprintf($GLOBALS['TL_LANG']['tl_layout']['edit'][1], $GLOBALS['objPage']->layout),
+			);
+			if ($GLOBALS['objPage']->getRelated('layout') && $GLOBALS['objPage']->getRelated('layout')->pid) {
+				\System::loadLanguageFile('tl_theme');
+				$data['links']['fe-module'] = array(
+					'url' => static::getBackendURL('themes', 'tl_module', $GLOBALS['objPage']->getRelated('layout')->pid, null),
+					'label' => sprintf($GLOBALS['TL_LANG']['tl_theme']['modules'][1], $GLOBALS['objPage']->getRelated('layout')->pid),
+				);
+				$data['links']['image-size'] = array(
+					'url' => static::getBackendURL('themes', 'tl_image_size', $GLOBALS['objPage']->getRelated('layout')->pid, null),
+					'label' => sprintf($GLOBALS['TL_LANG']['tl_theme']['imageSizes'][1], $GLOBALS['objPage']->getRelated('layout')->pid),
+				);
+				if (
+					$GLOBALS['objPage']->getRelated('layout')->stylesheet &&
+					count(\StringUtil::deserialize($GLOBALS['objPage']->getRelated('layout')->stylesheet))
+				) {
+					// Only show a stylesheets link if stylesheets are used
+					$data['links']['stylesheet'] = array(
+						'url' => static::getBackendURL('themes', 'tl_style_sheet', $GLOBALS['objPage']->getRelated('layout')->pid, null),
+						'label' => sprintf($GLOBALS['TL_LANG']['tl_theme']['css'][1], $GLOBALS['objPage']->getRelated('layout')->pid),
+					);
+				}
+			}
+		}
+
+		if (in_array('rstAssistant', $permissions) && $assistantId = static::getThemeAssistantStylesheet()) {
+			$data['links']['assistant'] = array(
+				'url' => static::getBackendURL('rocksolid_theme_assistant', null, $assistantId),
+				'label' => $GLOBALS['TL_LANG']['rocksolid_frontend_helper']['assistantLabel'],
+			);
+		}
+
+		$data['links']['backend'] = array(
+			'url' => static::getBackendURL(null, null, null, null),
+			'label' => $GLOBALS['TL_LANG']['MSC']['homeTitle'],
+		);
+
+		$data['labels'] = array(
+			'activate' => $GLOBALS['TL_LANG']['rocksolid_frontend_helper']['activateLabel'],
+			'deactivate' => $GLOBALS['TL_LANG']['rocksolid_frontend_helper']['deactivateLabel'],
+			'cancel' => $GLOBALS['TL_LANG']['MSC']['cancelBT'],
+			'contentElements' => $GLOBALS['TL_LANG']['rocksolid_frontend_helper']['contentElements'],
+		);
+
+		$previewEnabled = \defined('BE_USER_LOGGED_IN') && BE_USER_LOGGED_IN;
+		$data['config'] = array(
+			'lightbox' => (bool)FrontendHelperUser::getInstance()->rocksolidFrontendHelperLightbox,
+			'REQUEST_TOKEN' => REQUEST_TOKEN,
+			'beSwitch' => array(
+				'label' => $GLOBALS['TL_LANG']['MSC']['hiddenElements'] . ': ' . $GLOBALS['TL_LANG']['MSC'][$previewEnabled ? 'hiddenHide' : 'hiddenShow'],
+				'url' => \System::getContainer()->get('router')->generate('contao_backend_switch'),
+				'data' => array(
+					'FORM_SUBMIT' => 'tl_switch',
+					'REQUEST_TOKEN' => REQUEST_TOKEN,
+					'unpublished' => $previewEnabled ? 'hide' : 'show',
+				),
+			),
+			'routes' => [
+				'elements' => \Controller::getContainer()->get('router')->generate('rocksolid_frontend_helper_elements'),
+				'insert' => \Controller::getContainer()->get('router')->generate('rocksolid_frontend_helper_insert'),
+				'delete' => \Controller::getContainer()->get('router')->generate('rocksolid_frontend_helper_delete'),
+				'render' => \Controller::getContainer()->get('router')->generate('rocksolid_frontend_helper_render'),
+			],
+		);
+
+		$assetsDir = 'bundles/rocksolidfrontendhelper';
+
+		$GLOBALS['TL_JAVASCRIPT'][] = $assetsDir . '/js/main.js';
+		$GLOBALS['TL_CSS'][] = $assetsDir . '/css/main.css';
+
+		// Remove dummy elements inside script tags and insert them before the script tags
+		$content = preg_replace_callback('(<script(?>"[^"]*"|\'[^\']*\'|[^>"\'])*>.*?</script>)is', function($matches) {
+			preg_match_all('(<span class="rsfh-dummy[^>]*></span>)is', $matches[0], $dummies);
+			if (!count($dummies[0])) {
+				return $matches[0];
+			}
+			return implode('', $dummies[0]) . str_replace($dummies[0], '', $matches[0]);
+		}, $content);
 
 		return static::insertData($content, $data);
 	}
@@ -840,7 +859,12 @@ class FrontendHooks
 	 */
 	protected static function insertData($content, $data)
 	{
-		if (preg_match('(^.*?(?:<div class="rs-column\\s[^"]*">)?.*?<[a-z0-9]+(?:\\s[^>]+|))is', $content, $matches)) {
+		if (preg_match('(^.*?(?:<div class="rs-column\\s[^"]*">)?.*?<([a-z0-9]+)(?:\\s(?>"[^"]*"|\'[^\']*\'|[^>"\'])+|))is', $content, $matches)) {
+
+			if ($matches[1] === 'html' && strpos($content, '<body') !== -1) {
+				$content = explode('<body', $content, 2);
+				return $content[0] . static::insertData('<body' . $content[1], $data);
+			}
 
 			$content = substr($content, strlen($matches[0]));
 
