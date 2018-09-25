@@ -262,19 +262,23 @@ class FrontendHooks
 		);
 
 		$data['labels'] = array(
-			'previewHide' =>
-				$GLOBALS['TL_LANG']['MSC']['hiddenElements'] . ' ' .
-				$GLOBALS['TL_LANG']['MSC']['hiddenHide'],
-			'previewShow' =>
-				$GLOBALS['TL_LANG']['MSC']['hiddenElements'] . ' ' .
-				$GLOBALS['TL_LANG']['MSC']['hiddenShow'],
 			'activate' => $GLOBALS['TL_LANG']['rocksolid_frontend_helper']['activateLabel'],
 			'deactivate' => $GLOBALS['TL_LANG']['rocksolid_frontend_helper']['deactivateLabel'],
 			'cancel' => $GLOBALS['TL_LANG']['MSC']['cancelBT'],
 		);
 
+		$previewEnabled = \defined('BE_USER_LOGGED_IN') && BE_USER_LOGGED_IN;
 		$data['config'] = array(
 			'lightbox' => (bool)FrontendHelperUser::getInstance()->rocksolidFrontendHelperLightbox,
+			'beSwitch' => array(
+				'label' => $GLOBALS['TL_LANG']['MSC']['hiddenElements'] . ': ' . $GLOBALS['TL_LANG']['MSC'][$previewEnabled ? 'hiddenHide' : 'hiddenShow'],
+				'url' => \System::getContainer()->get('router')->generate('contao_backend_switch'),
+				'data' => array(
+					'FORM_SUBMIT' => 'tl_switch',
+					'REQUEST_TOKEN' => REQUEST_TOKEN,
+					'unpublished' => $previewEnabled ? 'hide' : 'show',
+				),
+			),
 		);
 
 		$assetsDir = 'bundles/rocksolidfrontendhelper';

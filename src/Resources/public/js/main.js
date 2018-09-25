@@ -170,6 +170,35 @@ document.addEventListener('DOMContentLoaded', function() {
 		}
 		return data.labels[key];
 	};
+	var postToIframe = function(url, data, callback) {
+
+		var iframe = document.createElement('iframe');
+		var form = document.createElement('form');
+		form.method = 'post';
+		form.action = url;
+		form.target = iframe.name = 'iframe_post_target_'+(new Date());
+
+		for (var key in data) {
+			if (data.hasOwnProperty(key)) {
+				var hiddenField = document.createElement('input');
+				hiddenField.type = 'hidden';
+				hiddenField.name = key;
+				hiddenField.value = data[key];
+				form.appendChild(hiddenField);
+			}
+		}
+
+		document.body.appendChild(iframe);
+		document.body.appendChild(form);
+		form.submit();
+
+		iframe.addEventListener('load', function (event) {
+			callback && callback(event);
+			document.body.removeChild(iframe);
+			document.body.removeChild(form);
+		});
+
+	}
 
 	var active = !!getCookie('rsfh-active');
 	var lightbox;
@@ -394,14 +423,15 @@ document.addEventListener('DOMContentLoaded', function() {
 			var previewLink = document.createElement('a');
 			previewLink.href = document.location.href;
 			previewLink.className = 'rsfh-preview';
-			if (getCookie('FE_PREVIEW')) {
+			if (data.config.beSwitch.data.unpublished === 'hide') {
 				addClass(previewLink, 'rsfh-preview-active');
 			}
-			previewLink.innerHTML = previewLink.title = getCookie('FE_PREVIEW') ?
-				data.labels.previewHide :
-				data.labels.previewShow;
-			addEvent(previewLink, 'click', function () {
-				setCookie('FE_PREVIEW', getCookie('FE_PREVIEW') ? null : '1');
+			previewLink.innerHTML = previewLink.title = data.config.beSwitch.label;
+			addEvent(previewLink, 'click', function (event) {
+				postToIframe(data.config.beSwitch.url, data.config.beSwitch.data, function() {
+					document.location.reload();
+				});
+				event && event.preventDefault && event.preventDefault();
 			});
 			mainNavContents.insertBefore(
 				previewLink,
