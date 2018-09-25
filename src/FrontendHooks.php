@@ -55,7 +55,7 @@ class FrontendHooks
 		}
 
 		// get the first tag
-		if (preg_match('(<[a-z0-9]+\\s[^>]+)is', $content, $matches)) {
+		if (preg_match('(<[a-z0-9]+\\s(?>"[^"]*"|\'[^\']*\'|[^>"\'])+)is', $content, $matches)) {
 
 			// search for an article id injected by getArticleHook
 			if (preg_match('(^(.*\\sclass="[^"]*)rsfh-article-([0-9]+)-([0-9a-f]*)(.*)$)is', $matches[0], $matches2)) {
@@ -283,7 +283,7 @@ class FrontendHooks
 		$GLOBALS['TL_CSS'][] = $assetsDir . '/css/main.css';
 
 		// Remove dummy elements inside script tags and insert them before the script tags
-		$content = preg_replace_callback('(<script[^>]*>.*?</script>)is', function($matches) {
+		$content = preg_replace_callback('(<script(?>"[^"]*"|\'[^\']*\'|[^>"\'])*>.*?</script>)is', function($matches) {
 			preg_match_all('(<span class="rsfh-dummy[^>]*></span>)is', $matches[0], $dummies);
 			if (!count($dummies[0])) {
 				return $matches[0];
@@ -828,7 +828,7 @@ class FrontendHooks
 	 */
 	protected static function insertData($content, $data)
 	{
-		if (preg_match('(^.*?(?:<div class="rs-column\\s[^"]*">)?.*?<([a-z0-9]+)(?:\\s[^>]+|))is', $content, $matches)) {
+		if (preg_match('(^.*?(?:<div class="rs-column\\s[^"]*">)?.*?<([a-z0-9]+)(?:\\s(?>"[^"]*"|\'[^\']*\'|[^>"\'])+|))is', $content, $matches)) {
 
 			if ($matches[1] === 'html' && strpos($content, '<body') !== -1) {
 				$content = explode('<body', $content, 2);
