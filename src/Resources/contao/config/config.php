@@ -13,6 +13,7 @@
  */
 
 $GLOBALS['TL_HOOKS']['parseFrontendTemplate'][] = array('rocksolid_frontend_helper.frontend_hooks', 'parseFrontendTemplateHook');
+$GLOBALS['TL_HOOKS']['outputFrontendTemplate'][] = array('rocksolid_frontend_helper.frontend_hooks', 'outputFrontendTemplateHook');
 $GLOBALS['TL_HOOKS']['parseTemplate'][] = array('rocksolid_frontend_helper.frontend_hooks', 'parseTemplateHook');
 $GLOBALS['TL_HOOKS']['parseWidget'][] = array('rocksolid_frontend_helper.frontend_hooks', 'parseWidgetHook');
 $GLOBALS['TL_HOOKS']['parseArticles'][] = array('rocksolid_frontend_helper.frontend_hooks', 'parseArticlesHook');
