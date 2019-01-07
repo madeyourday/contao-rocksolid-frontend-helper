@@ -832,7 +832,10 @@ class FrontendHooks
 	 */
 	protected static function insertData($content, $data)
 	{
-		if (preg_match('(^.*?(?:<div class="rs-column\\s[^"]*">)?.*?<([a-z0-9]+)(?:\\s(?>"[^"]*"|\'[^\']*\'|[^>"\'])+|))is', $content, $matches)) {
+		if (
+			preg_match('(^.*?(?:<div class="rs-column\\s[^"]*">)?.*?<([a-z0-9]+)(?:\\s(?>"[^"]*"|\'[^\']*\'|[^>"\'])+|))is', $content, $matches)
+			&& $matches[1] !== 'esi'
+		) {
 
 			if ($matches[1] === 'html' && strpos($content, '<body') !== -1) {
 				$content = explode('<body', $content, 2);
