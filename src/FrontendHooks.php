@@ -457,7 +457,7 @@ class FrontendHooks
 	 */
 	public function getFrontendModuleHook($row, $content, $module = null)
 	{
-		if (! $permissions = static::checkLogin()) {
+		if (! $content || ! $permissions = static::checkLogin()) {
 			return $content;
 		}
 
