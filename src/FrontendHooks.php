@@ -242,6 +242,9 @@ class FrontendHooks
 				'label' => sprintf($GLOBALS['TL_LANG']['tl_layout']['edit'][1], $GLOBALS['objPage']->layout),
 			);
 			if ($GLOBALS['objPage']->getRelated('layout') && $GLOBALS['objPage']->getRelated('layout')->pid) {
+				if ($GLOBALS['objPage']->getRelated('layout')->name) {
+					$data['links']['layout']['label'] .= ' (' . $GLOBALS['objPage']->getRelated('layout')->name . ')';
+				}
 				\System::loadLanguageFile('tl_theme');
 				$data['links']['fe-module'] = array(
 					'url' => static::getBackendURL('themes', 'tl_module', $GLOBALS['objPage']->getRelated('layout')->pid, null),
@@ -480,7 +483,7 @@ class FrontendHooks
 	 */
 	public function getFrontendModuleHook($row, $content, $module = null)
 	{
-		if (! $permissions = static::checkLogin()) {
+		if (! $content || ! $permissions = static::checkLogin()) {
 			return $content;
 		}
 
@@ -859,7 +862,10 @@ class FrontendHooks
 	 */
 	protected static function insertData($content, $data)
 	{
-		if (preg_match('(^.*?(?:<div class="rs-column\\s[^"]*">)?.*?<([a-z0-9]+)(?:\\s(?>"[^"]*"|\'[^\']*\'|[^>"\'])+|))is', $content, $matches)) {
+		if (
+			preg_match('(^.*?(?:<div class="rs-column\\s[^"]*">)?.*?<([a-z0-9]+)(?:\\s(?>"[^"]*"|\'[^\']*\'|[^>"\'])+|))is', $content, $matches)
+			&& $matches[1] !== 'esi'
+		) {
 
 			if ($matches[1] === 'html' && strpos($content, '<body') !== -1) {
 				$content = explode('<body', $content, 2);
