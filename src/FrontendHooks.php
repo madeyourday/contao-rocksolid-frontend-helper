@@ -227,6 +227,9 @@ class FrontendHooks
 				'label' => sprintf($GLOBALS['TL_LANG']['tl_layout']['edit'][1], $GLOBALS['objPage']->layout),
 			);
 			if ($GLOBALS['objPage']->getRelated('layout') && $GLOBALS['objPage']->getRelated('layout')->pid) {
+				if ($GLOBALS['objPage']->getRelated('layout')->name) {
+					$data['links']['layout']['label'] .= ' (' . $GLOBALS['objPage']->getRelated('layout')->name . ')';
+				}
 				\System::loadLanguageFile('tl_theme');
 				$data['links']['fe-module'] = array(
 					'url' => static::getBackendURL('themes', 'tl_module', $GLOBALS['objPage']->getRelated('layout')->pid, null),
