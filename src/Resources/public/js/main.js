@@ -360,6 +360,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		var formData = new FormData();
 		formData.append('table', table);
 		formData.append('id', id);
+		formData.append('REQUEST_TOKEN', config.REQUEST_TOKEN);
 
 		element.style.setProperty('opacity', '0.25', 'important');
 
