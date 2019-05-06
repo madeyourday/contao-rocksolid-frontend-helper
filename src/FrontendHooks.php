@@ -315,10 +315,20 @@ class FrontendHooks
 		// Remove dummy elements inside script tags and insert them before the script tags
 		$content = preg_replace_callback('(<script(?>"[^"]*"|\'[^\']*\'|[^>"\'])*>.*?</script>)is', function($matches) {
 			preg_match_all('(<span class="rsfh-dummy[^>]*></span>)is', $matches[0], $dummies);
-			if (!count($dummies[0])) {
-				return $matches[0];
+			if (count($dummies[0])) {
+				$matches[0] = str_replace($dummies[0], '', $matches[0]);
 			}
-			return implode('', $dummies[0]) . str_replace($dummies[0], '', $matches[0]);
+			preg_match_all('( data-frontend-helper="[^"]*")is', $matches[0], $attributes);
+			if (count($attributes[0])) {
+				$matches[0] = '<span class="rsfh-dummy"' . implode(
+					'></span><span class="rsfh-dummy"',
+					$attributes[0]
+				) . '></span>' . str_replace($attributes[0], '', $matches[0]);
+			}
+			if (count($dummies[0])) {
+				$matches[0] = implode('', $dummies[0]) . $matches[0];
+			}
+			return $matches[0];
 		}, $content);
 
 		return static::insertData($content, $data);
