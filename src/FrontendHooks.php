@@ -68,7 +68,7 @@ class FrontendHooks
 					\System::loadLanguageFile('tl_article');
 					$data['links']['article'] = array(
 						'url' => static::getBackendURL('article', 'tl_content', $matches2[2], false),
-						'label' => sprintf($GLOBALS['TL_LANG']['tl_article']['edit'][1], $matches2[2]),
+						'label' => sprintf(is_array($GLOBALS['TL_LANG']['tl_article']['edit']) ? $GLOBALS['TL_LANG']['tl_article']['edit'][1] : $GLOBALS['TL_LANG']['tl_article']['edit'], $matches2[2]),
 					);
 				}
 
@@ -94,8 +94,8 @@ class FrontendHooks
 					\System::loadLanguageFile('rocksolid_frontend_helper');
 					$data['columnLabel'] = $GLOBALS['TL_LANG']['rocksolid_frontend_helper']['column'];
 					$data['column'] = pack("H*" , $matches2[3]);
-					if (isset($GLOBALS['TL_LANG']['tl_article'][$data['column']])) {
-						$data['column'] = $GLOBALS['TL_LANG']['tl_article'][$data['column']];
+					if (isset($GLOBALS['TL_LANG']['COLS'][$data['column']])) {
+						$data['column'] = $GLOBALS['TL_LANG']['COLS'][$data['column']];
 					}
 
 				}
@@ -113,7 +113,7 @@ class FrontendHooks
 					\System::loadLanguageFile('tl_news');
 					$data['links']['be-module'] = array(
 						'url' => static::getBackendURL('news', 'tl_content', $matches2[2], false),
-						'label' => sprintf($GLOBALS['TL_LANG']['tl_news']['edit'][1], $matches2[2]),
+						'label' => sprintf(is_array($GLOBALS['TL_LANG']['tl_news']['edit']) ? $GLOBALS['TL_LANG']['tl_news']['edit'][1] : $GLOBALS['TL_LANG']['tl_news']['edit'], $matches2[2]),
 						'icon' => \Image::getPath('news.svg'),
 					);
 				}
@@ -131,7 +131,7 @@ class FrontendHooks
 					\System::loadLanguageFile('tl_calendar');
 					$data['links']['be-module'] = array(
 						'url' => static::getBackendURL('calendar', 'tl_content', $matches2[2], false),
-						'label' => sprintf($GLOBALS['TL_LANG']['tl_calendar']['edit'][1], $matches2[2]),
+						'label' => sprintf(is_array($GLOBALS['TL_LANG']['tl_calendar']['edit']) ? $GLOBALS['TL_LANG']['tl_calendar']['edit'][1] : $GLOBALS['TL_LANG']['tl_calendar']['edit'], $matches2[2]),
 						'icon' => \Image::getPath('settings.svg'),
 					);
 				}
@@ -149,7 +149,7 @@ class FrontendHooks
 					\System::loadLanguageFile('tl_comments');
 					$data['links']['be-module'] = array(
 						'url' => static::getBackendURL('comments', null, $matches2[2]),
-						'label' => sprintf($GLOBALS['TL_LANG']['tl_comments']['edit'][1], $matches2[2]),
+						'label' => sprintf(is_array($GLOBALS['TL_LANG']['tl_comments']['edit']) ? $GLOBALS['TL_LANG']['tl_comments']['edit'][1] : $GLOBALS['TL_LANG']['tl_comments']['edit'], $matches2[2]),
 						'icon' => \Image::getPath('settings.svg'),
 					);
 				}
@@ -206,7 +206,7 @@ class FrontendHooks
 			\System::loadLanguageFile('tl_page');
 			$data['links']['page'] = array(
 				'url' => static::getBackendURL('page', null, $GLOBALS['objPage']->id),
-				'label' => sprintf($GLOBALS['TL_LANG']['tl_page']['edit'][1], $GLOBALS['objPage']->id),
+				'label' => sprintf(is_array($GLOBALS['TL_LANG']['tl_page']['edit']) ? $GLOBALS['TL_LANG']['tl_page']['edit'][1] : $GLOBALS['TL_LANG']['tl_page']['edit'], $GLOBALS['objPage']->id),
 			);
 		}
 
@@ -216,7 +216,7 @@ class FrontendHooks
 				'url' => static::getBackendURL('article', null, null, null, array(
 					'pn' => $GLOBALS['objPage']->id,
 				)),
-				'label' => sprintf($GLOBALS['TL_LANG']['tl_page']['articles'][1], $GLOBALS['objPage']->id),
+				'label' => sprintf(is_array($GLOBALS['TL_LANG']['tl_page']['articles']) ? $GLOBALS['TL_LANG']['tl_page']['articles'][1] : $GLOBALS['TL_LANG']['tl_page']['articles'], $GLOBALS['objPage']->id),
 			);
 		}
 
@@ -224,7 +224,7 @@ class FrontendHooks
 			\System::loadLanguageFile('tl_layout');
 			$data['links']['layout'] = array(
 				'url' => static::getBackendURL('themes', 'tl_layout', $GLOBALS['objPage']->layout),
-				'label' => sprintf($GLOBALS['TL_LANG']['tl_layout']['edit'][1], $GLOBALS['objPage']->layout),
+				'label' => sprintf(is_array($GLOBALS['TL_LANG']['tl_layout']['edit']) ? $GLOBALS['TL_LANG']['tl_layout']['edit'][1] : $GLOBALS['TL_LANG']['tl_layout']['edit'], $GLOBALS['objPage']->layout),
 			);
 			if ($GLOBALS['objPage']->getRelated('layout') && $GLOBALS['objPage']->getRelated('layout')->pid) {
 				if ($GLOBALS['objPage']->getRelated('layout')->name) {
@@ -233,11 +233,11 @@ class FrontendHooks
 				\System::loadLanguageFile('tl_theme');
 				$data['links']['fe-module'] = array(
 					'url' => static::getBackendURL('themes', 'tl_module', $GLOBALS['objPage']->getRelated('layout')->pid, null),
-					'label' => sprintf($GLOBALS['TL_LANG']['tl_theme']['modules'][1], $GLOBALS['objPage']->getRelated('layout')->pid),
+					'label' => sprintf(is_array($GLOBALS['TL_LANG']['tl_theme']['modules']) ? $GLOBALS['TL_LANG']['tl_theme']['modules'][1] : $GLOBALS['TL_LANG']['tl_theme']['modules'], $GLOBALS['objPage']->getRelated('layout')->pid),
 				);
 				$data['links']['image-size'] = array(
 					'url' => static::getBackendURL('themes', 'tl_image_size', $GLOBALS['objPage']->getRelated('layout')->pid, null),
-					'label' => sprintf($GLOBALS['TL_LANG']['tl_theme']['imageSizes'][1], $GLOBALS['objPage']->getRelated('layout')->pid),
+					'label' => sprintf(is_array($GLOBALS['TL_LANG']['tl_theme']['imageSizes']) ? $GLOBALS['TL_LANG']['tl_theme']['imageSizes'][1] : $GLOBALS['TL_LANG']['tl_theme']['imageSizes'], $GLOBALS['objPage']->getRelated('layout')->pid),
 				);
 				if (
 					$GLOBALS['objPage']->getRelated('layout')->stylesheet &&
@@ -246,7 +246,7 @@ class FrontendHooks
 					// Only show a stylesheets link if stylesheets are used
 					$data['links']['stylesheet'] = array(
 						'url' => static::getBackendURL('themes', 'tl_style_sheet', $GLOBALS['objPage']->getRelated('layout')->pid, null),
-						'label' => sprintf($GLOBALS['TL_LANG']['tl_theme']['css'][1], $GLOBALS['objPage']->getRelated('layout')->pid),
+						'label' => sprintf(is_array($GLOBALS['TL_LANG']['tl_theme']['css']) ? $GLOBALS['TL_LANG']['tl_theme']['css'][1] : $GLOBALS['TL_LANG']['tl_theme']['css'], $GLOBALS['objPage']->getRelated('layout')->pid),
 					);
 				}
 			}
@@ -365,11 +365,11 @@ class FrontendHooks
 			\System::loadLanguageFile('tl_form_field');
 			$data['links']['edit'] = array(
 				'url' => static::getBackendURL('form', 'tl_form_field', $widget->id),
-				'label' => sprintf($GLOBALS['TL_LANG']['tl_form_field']['edit'][1], $widget->id),
+				'label' => sprintf(is_array($GLOBALS['TL_LANG']['tl_form_field']['edit']) ? $GLOBALS['TL_LANG']['tl_form_field']['edit'][1] : $GLOBALS['TL_LANG']['tl_form_field']['edit'], $widget->id),
 			);
 			$data['links']['delete'] = array(
 				'url' => static::getBackendURL('form', 'tl_form_field', $widget->id, 'delete'),
-				'label' => sprintf($GLOBALS['TL_LANG']['tl_form_field']['delete'][1], $widget->id),
+				'label' => sprintf(is_array($GLOBALS['TL_LANG']['tl_form_field']['delete']) ? $GLOBALS['TL_LANG']['tl_form_field']['delete'][1] : $GLOBALS['TL_LANG']['tl_form_field']['delete'], $widget->id),
 				'confirm' => sprintf($GLOBALS['TL_LANG']['MSC']['deleteConfirm'], $widget->id),
 			);
 			$data['links']['pastenew'] = array(
@@ -489,8 +489,8 @@ class FrontendHooks
 			$data['columnLabel'] = $GLOBALS['TL_LANG']['rocksolid_frontend_helper']['column'];
 			$data['column'] = $module->Template->inColumn;
 			\System::loadLanguageFile('tl_article');
-			if (isset($GLOBALS['TL_LANG']['tl_article'][$data['column']])) {
-				$data['column'] = $GLOBALS['TL_LANG']['tl_article'][$data['column']];
+			if (isset($GLOBALS['TL_LANG']['COLS'][$data['column']])) {
+				$data['column'] = $GLOBALS['TL_LANG']['COLS'][$data['column']];
 			}
 		}
 
@@ -498,7 +498,7 @@ class FrontendHooks
 			\System::loadLanguageFile('tl_module');
 			$data['links']['fe-module'] = array(
 				'url' => static::getBackendURL('themes', 'tl_module', $row->id),
-				'label' => sprintf($GLOBALS['TL_LANG']['tl_module']['edit'][1], $row->id . ' (' . $row->name . ')'),
+				'label' => sprintf(is_array($GLOBALS['TL_LANG']['tl_module']['edit']) ? $GLOBALS['TL_LANG']['tl_module']['edit'][1] : $GLOBALS['TL_LANG']['tl_module']['edit'], $row->id . ' (' . $row->name . ')'),
 			);
 		}
 
@@ -592,11 +592,11 @@ class FrontendHooks
 			if ($editAllowed) {
 				$data['links']['edit'] = array(
 					'url' => static::getBackendURL($do, 'tl_content', $row->id),
-					'label' => sprintf($GLOBALS['TL_LANG']['tl_content']['edit'][1], $row->id),
+					'label' => sprintf(is_array($GLOBALS['TL_LANG']['tl_content']['edit']) ? $GLOBALS['TL_LANG']['tl_content']['edit'][1] : $GLOBALS['TL_LANG']['tl_content']['edit'], $row->id),
 				);
 				$data['links']['delete'] = array(
 					'url' => static::getBackendURL($do, 'tl_content', $row->id, 'delete'),
-					'label' => sprintf($GLOBALS['TL_LANG']['tl_content']['delete'][1], $row->id),
+					'label' => sprintf(is_array($GLOBALS['TL_LANG']['tl_content']['delete']) ? $GLOBALS['TL_LANG']['tl_content']['delete'][1] : $GLOBALS['TL_LANG']['tl_content']['delete'], $row->id),
 					'confirm' => sprintf($GLOBALS['TL_LANG']['MSC']['deleteConfirm'], $row->id),
 				);
 			}
@@ -719,7 +719,7 @@ class FrontendHooks
 				$ptable = $GLOBALS['TL_DCA'][$config['table']]['config']['ptable'];
 				\System::loadLanguageFile($ptable);
 				if ($id && !empty($GLOBALS['TL_LANG'][$ptable]['edit'][1])) {
-					return sprintf($GLOBALS['TL_LANG'][$ptable]['edit'][1], $id);
+					return sprintf(is_array($GLOBALS['TL_LANG'][$ptable]['edit']) ? $GLOBALS['TL_LANG'][$ptable]['edit'][1] : $GLOBALS['TL_LANG'][$ptable]['edit'], $id);
 				}
 				if (!empty($GLOBALS['TL_LANG'][$ptable]['edit'][0])) {
 					return $GLOBALS['TL_LANG'][$ptable]['edit'][0];
@@ -734,7 +734,7 @@ class FrontendHooks
 			return $GLOBALS['TL_LANG'][$config['table']]['editheader'][0];
 		}
 		if ($id && !empty($GLOBALS['TL_LANG'][$config['table']]['edit'][1])) {
-			return sprintf($GLOBALS['TL_LANG'][$config['table']]['edit'][1], $id);
+			return sprintf(is_array($GLOBALS['TL_LANG'][$config['table']]['edit']) ? $GLOBALS['TL_LANG'][$config['table']]['edit'][1] : $GLOBALS['TL_LANG'][$config['table']]['edit'], $id);
 		}
 		if (!empty($GLOBALS['TL_LANG'][$config['table']]['edit'][0])) {
 			return $GLOBALS['TL_LANG'][$config['table']]['edit'][0];
@@ -758,7 +758,7 @@ class FrontendHooks
 			$data['templateURL'] = static::getBackendURL('tpl_editor', null, $data['templatePath'], 'source');
 
 			\System::loadLanguageFile('tl_files');
-			$data['templateLabel'] = sprintf($GLOBALS['TL_LANG']['tl_files']['source'][1], basename($data['templatePath']));
+			$data['templateLabel'] = sprintf(is_array($GLOBALS['TL_LANG']['tl_files']['source']) ? $GLOBALS['TL_LANG']['tl_files']['source'][1] : $GLOBALS['TL_LANG']['tl_files']['source'], basename($data['templatePath']));
 
 		}
 		else {
