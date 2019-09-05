@@ -8,6 +8,7 @@
 
 namespace MadeYourDay\RockSolidFrontendHelper;
 
+use Contao\CoreBundle\Util\PackageUtil;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
@@ -306,6 +307,14 @@ class FrontendHooks
 				'render' => \Controller::getContainer()->get('router')->generate('rocksolid_frontend_helper_render'),
 			],
 		);
+
+		if (
+			class_exists(PackageUtil::class)
+			&& version_compare(PackageUtil::getContaoVersion(), '4.8', '>=')
+			&& \System::getContainer()->getParameter('contao.preview_script') !== \Environment::get('scriptName')
+		) {
+			unset($data['config']['beSwitch']);
+		}
 
 		$assetsDir = 'bundles/rocksolidfrontendhelper';
 

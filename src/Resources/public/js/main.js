@@ -433,6 +433,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		form.method = 'post';
 		form.action = url;
 		form.target = iframe.name = 'iframe_post_target_'+(new Date());
+		iframe.style.cssText = form.style.cssText = 'position: absolute; height: 1px; width: 1px; clip: rect(1px 1px 1px 1px);';
 
 		for (var key in data) {
 			if (data.hasOwnProperty(key)) {
@@ -449,9 +450,9 @@ document.addEventListener('DOMContentLoaded', function() {
 		form.submit();
 
 		iframe.addEventListener('load', function (event) {
-			callback && callback(event);
 			document.body.removeChild(iframe);
 			document.body.removeChild(form);
+			callback && callback(event);
 		});
 
 	}
@@ -844,29 +845,34 @@ document.addEventListener('DOMContentLoaded', function() {
 			});
 			toolbar.appendChild(activateLink);
 
-			var previewLink = document.createElement('a');
-			previewLink.href = document.location.href;
-			previewLink.className = 'rsfh-preview';
-			if (data.config.beSwitch.data.unpublished === 'hide') {
-				addClass(previewLink, 'rsfh-preview-active');
-			}
-			previewLink.innerHTML = previewLink.title = data.config.beSwitch.label;
-			addEvent(previewLink, 'click', function (event) {
-				postToIframe(data.config.beSwitch.url, data.config.beSwitch.data, function() {
-					document.location.reload();
+			if (data.config.beSwitch) {
+				var previewLink = document.createElement('a');
+				previewLink.href = document.location.href;
+				previewLink.className = 'rsfh-preview';
+				if (data.config.beSwitch.data.unpublished === 'hide') {
+					addClass(previewLink, 'rsfh-preview-active');
+				}
+				previewLink.innerHTML = previewLink.title = data.config.beSwitch.label;
+				addEvent(previewLink, 'click', function (event) {
+					postToIframe(data.config.beSwitch.url, data.config.beSwitch.data, function() {
+						document.location.reload();
+					});
+					event && event.preventDefault && event.preventDefault();
 				});
-				event && event.preventDefault && event.preventDefault();
-			});
-			mainNavContents.insertBefore(
-				previewLink,
-				(mainNavContents.querySelector('.rsfh-article') && mainNavContents.querySelector('.rsfh-article').nextSibling) ||
-				(mainNavContents.querySelector('.rsfh-page') && mainNavContents.querySelector('.rsfh-page').nextSibling) ||
-				mainNavContents.childNodes[0]
-			);
+				mainNavContents.insertBefore(
+					previewLink,
+					(mainNavContents.querySelector('.rsfh-article') && mainNavContents.querySelector('.rsfh-article').nextSibling) ||
+					(mainNavContents.querySelector('.rsfh-page') && mainNavContents.querySelector('.rsfh-page').nextSibling) ||
+					mainNavContents.childNodes[0]
+				);
+			}
 
 			mainNavContents.insertBefore(
 				document.createElement('hr'),
-				previewLink.nextSibling
+				(previewLink && previewLink.nextSibling) ||
+				(mainNavContents.querySelector('.rsfh-article') && mainNavContents.querySelector('.rsfh-article').nextSibling) ||
+				(mainNavContents.querySelector('.rsfh-page') && mainNavContents.querySelector('.rsfh-page').nextSibling) ||
+				mainNavContents.childNodes[0]
 			);
 
 			var elementsLink = document.createElement('a');
