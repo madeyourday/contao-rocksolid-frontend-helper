@@ -286,7 +286,7 @@ class FrontendHooks
 		);
 
 		if (
-			class_exists(PackageUtil::class)
+			is_callable([PackageUtil::class, 'getContaoVersion'])
 			&& version_compare(PackageUtil::getContaoVersion(), '4.8', '>=')
 			&& \System::getContainer()->getParameter('contao.preview_script') !== \Environment::get('scriptName')
 		) {
