@@ -9,6 +9,7 @@
 namespace MadeYourDay\RockSolidFrontendHelper;
 
 use Contao\CoreBundle\Util\PackageUtil;
+use Symfony\Component\Routing\Exception\RouteNotFoundException;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
@@ -271,26 +272,30 @@ class FrontendHooks
 			'cancel' => $GLOBALS['TL_LANG']['MSC']['cancelBT'],
 		);
 
-		$previewEnabled = \defined('BE_USER_LOGGED_IN') && BE_USER_LOGGED_IN;
 		$data['config'] = array(
 			'lightbox' => (bool)FrontendHelperUser::getInstance()->rocksolidFrontendHelperLightbox,
-			'beSwitch' => array(
-				'label' => $GLOBALS['TL_LANG']['MSC']['hiddenElements'] . ': ' . $GLOBALS['TL_LANG']['MSC'][$previewEnabled ? 'hiddenHide' : 'hiddenShow'],
-				'url' => \System::getContainer()->get('router')->generate('contao_backend_switch'),
-				'data' => array(
-					'FORM_SUBMIT' => 'tl_switch',
-					'REQUEST_TOKEN' => REQUEST_TOKEN,
-					'unpublished' => $previewEnabled ? 'hide' : 'show',
-				),
-			),
 		);
 
 		if (
-			is_callable([PackageUtil::class, 'getContaoVersion'])
-			&& version_compare(PackageUtil::getContaoVersion(), '4.8', '>=')
-			&& \System::getContainer()->getParameter('contao.preview_script') !== \Environment::get('scriptName')
+			!is_callable([PackageUtil::class, 'getContaoVersion'])
+			|| version_compare(PackageUtil::getContaoVersion(), '4.8', '<')
+			|| \System::getContainer()->getParameter('contao.preview_script') === \Environment::get('scriptName')
 		) {
-			unset($data['config']['beSwitch']);
+			try {
+				$previewEnabled = \defined('BE_USER_LOGGED_IN') && BE_USER_LOGGED_IN;
+				$data['config']['beSwitch'] = array(
+					'label' => $GLOBALS['TL_LANG']['MSC']['hiddenElements'] . ': ' . $GLOBALS['TL_LANG']['MSC'][$previewEnabled ? 'hiddenHide' : 'hiddenShow'],
+					'url' => \System::getContainer()->get('router')->generate('contao_backend_switch'),
+					'data' => array(
+						'FORM_SUBMIT' => 'tl_switch',
+						'REQUEST_TOKEN' => REQUEST_TOKEN,
+						'unpublished' => $previewEnabled ? 'hide' : 'show',
+					),
+				);
+			}
+			catch(RouteNotFoundException $exception) {
+				// Ignore missing route contao_backend_switch
+			}
 		}
 
 		$assetsDir = 'bundles/rocksolidfrontendhelper';
