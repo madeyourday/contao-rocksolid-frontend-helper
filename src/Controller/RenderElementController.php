@@ -11,6 +11,7 @@ namespace MadeYourDay\RockSolidFrontendHelper\Controller;
 use Contao\CoreBundle\Framework\FrameworkAwareInterface;
 use Contao\CoreBundle\Framework\FrameworkAwareTrait;
 use Contao\InsertTags;
+use Contao\PageModel;
 use MadeYourDay\RockSolidFrontendHelper\FrontendHooks;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -56,6 +57,23 @@ class RenderElementController extends Controller implements FrameworkAwareInterf
 		// Only tl_content is supported so far
 		if ($request->get('table') !== 'tl_content') {
 			throw new NotFoundHttpException();
+		}
+
+		// Setup global page, theme and layout state
+		if ($request->get('pageId')) {
+			$GLOBALS['objPage'] = PageModel::findPublishedById((int) $request->get('pageId'));
+			if ($GLOBALS['objPage'] !== null) {
+				$GLOBALS['objPage']->loadDetails();
+				if ($GLOBALS['objPage']->type === 'regular') {
+					try {
+						$objHandler = new $GLOBALS['TL_PTY'][$GLOBALS['objPage']->type]();
+						$objHandler->getResponse($GLOBALS['objPage']);
+					}
+					catch (\Throwable $e) {
+						// Ignore page errors
+					}
+				}
+			}
 		}
 
 		$html = $this->renderElement((int) $request->get('id'), $request->get('table'));

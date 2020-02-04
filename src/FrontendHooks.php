@@ -291,6 +291,7 @@ class FrontendHooks
 		$data['config'] = array(
 			'lightbox' => (bool)FrontendHelperUser::getInstance()->rocksolidFrontendHelperLightbox,
 			'REQUEST_TOKEN' => REQUEST_TOKEN,
+			'pageId' => $GLOBALS['objPage']->id ?? null,
 			'routes' => [
 				'elements' => \Controller::getContainer()->get('router')->generate('rocksolid_frontend_helper_elements'),
 				'insert' => \Controller::getContainer()->get('router')->generate('rocksolid_frontend_helper_insert'),
