@@ -170,7 +170,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		}
 		return data.labels[key];
 	};
-	var postToIframe = function(url, data, isXmlHttpRequest, callback) {
+	var postFormRequest = function(url, data, isXmlHttpRequest, callback) {
 
 		var iframe = document.createElement('iframe');
 		var form = document.createElement('form');
@@ -443,7 +443,7 @@ document.addEventListener('DOMContentLoaded', function() {
 				}
 				previewLink.innerHTML = previewLink.title = data.config.beSwitch.label;
 				addEvent(previewLink, 'click', function (event) {
-					postToIframe(data.config.beSwitch.url, data.config.beSwitch.data, data.config.beSwitch.isXmlHttpRequest, function() {
+					postFormRequest(data.config.beSwitch.url, data.config.beSwitch.data, data.config.beSwitch.isXmlHttpRequest, function() {
 						document.location.reload();
 					});
 					event && event.preventDefault && event.preventDefault();
