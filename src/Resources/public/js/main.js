@@ -170,7 +170,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		}
 		return data.labels[key];
 	};
-	var switchBackend = function(url, requestType, data, callback) {
+	var postToIframe = function(url, data, isXmlHttpRequest, callback) {
 
 		var iframe = document.createElement('iframe');
 		var form = document.createElement('form');
@@ -179,7 +179,6 @@ document.addEventListener('DOMContentLoaded', function() {
 		form.target = iframe.name = 'iframe_post_target_'+(new Date());
 		iframe.style.cssText = form.style.cssText = 'position: absolute; height: 1px; width: 1px; clip: rect(1px 1px 1px 1px);';
 
-		const formData = new FormData();
 		for (var key in data) {
 			if (data.hasOwnProperty(key)) {
 				var hiddenField = document.createElement('input');
@@ -187,30 +186,31 @@ document.addEventListener('DOMContentLoaded', function() {
 				hiddenField.name = key;
 				hiddenField.value = data[key];
 				form.appendChild(hiddenField);
-				formData.append(key, data[key]);
 			}
 		}
 
-		document.body.appendChild(iframe);
-		document.body.appendChild(form);
-
-		if (requestType === 'XMLHttpRequest') {
-			const request = new XMLHttpRequest();
-			request.open(form.method, form.action, true);
-			request.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-			request.onload = function () {
-				callback.apply(this);
-			};
-			request.send(formData);
-		} else {
-			form.submit();
+		if (isXmlHttpRequest) {
+			fetch(url, {
+				method: 'POST',
+				body: new FormData(form),
+				headers: {
+					'X-Requested-With': 'XMLHttpRequest',
+				},
+			}).then(function () {
+				callback && callback();
+			});
 		}
+		else {
+			document.body.appendChild(iframe);
+			document.body.appendChild(form);
+			form.submit();
 
-		iframe.addEventListener('load', function (event) {
-			document.body.removeChild(iframe);
-			document.body.removeChild(form);
-			callback && callback(event);
-		});
+			iframe.addEventListener('load', function (event) {
+				document.body.removeChild(iframe);
+				document.body.removeChild(form);
+				callback && callback();
+			});
+		}
 
 	}
 
@@ -443,7 +443,7 @@ document.addEventListener('DOMContentLoaded', function() {
 				}
 				previewLink.innerHTML = previewLink.title = data.config.beSwitch.label;
 				addEvent(previewLink, 'click', function (event) {
-					switchBackend(data.config.beSwitch.url, data.config.beSwitch.requestType, data.config.beSwitch.data, function() {
+					postToIframe(data.config.beSwitch.url, data.config.beSwitch.data, data.config.beSwitch.isXmlHttpRequest, function() {
 						document.location.reload();
 					});
 					event && event.preventDefault && event.preventDefault();

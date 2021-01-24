@@ -286,13 +286,14 @@ class FrontendHooks
 				$data['config']['beSwitch'] = array(
 					'label' => $GLOBALS['TL_LANG']['MSC']['hiddenElements'] . ': ' . $GLOBALS['TL_LANG']['MSC'][$previewEnabled ? 'hiddenHide' : 'hiddenShow'],
 					'url' => \System::getContainer()->get('router')->generate('contao_backend_switch'),
-                    'requestType' => !is_callable([PackageUtil::class, 'getContaoVersion'])
-                    || version_compare(PackageUtil::getContaoVersion(), '4.9', '<') ? null : 'XMLHttpRequest',
 					'data' => array(
 						'FORM_SUBMIT' => 'tl_switch',
 						'REQUEST_TOKEN' => REQUEST_TOKEN,
 						'unpublished' => $previewEnabled ? 'hide' : 'show',
 					),
+					'isXmlHttpRequest' =>
+						is_callable([PackageUtil::class, 'getContaoVersion'])
+						&& version_compare(PackageUtil::getContaoVersion(), '4.9', '>='),
 				);
 			}
 			catch(RouteNotFoundException $exception) {
