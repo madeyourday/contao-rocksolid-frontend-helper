@@ -291,6 +291,9 @@ class FrontendHooks
 						'REQUEST_TOKEN' => REQUEST_TOKEN,
 						'unpublished' => $previewEnabled ? 'hide' : 'show',
 					),
+					'isXmlHttpRequest' =>
+						is_callable([PackageUtil::class, 'getContaoVersion'])
+						&& version_compare(PackageUtil::getContaoVersion(), '4.9', '>='),
 				);
 			}
 			catch(RouteNotFoundException $exception) {

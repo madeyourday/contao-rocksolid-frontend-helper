@@ -170,7 +170,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		}
 		return data.labels[key];
 	};
-	var postToIframe = function(url, data, callback) {
+	var postFormRequest = function(url, data, isXmlHttpRequest, callback) {
 
 		var iframe = document.createElement('iframe');
 		var form = document.createElement('form');
@@ -189,15 +189,28 @@ document.addEventListener('DOMContentLoaded', function() {
 			}
 		}
 
-		document.body.appendChild(iframe);
-		document.body.appendChild(form);
-		form.submit();
+		if (isXmlHttpRequest) {
+			fetch(url, {
+				method: 'POST',
+				body: new FormData(form),
+				headers: {
+					'X-Requested-With': 'XMLHttpRequest',
+				},
+			}).then(function () {
+				callback && callback();
+			});
+		}
+		else {
+			document.body.appendChild(iframe);
+			document.body.appendChild(form);
+			form.submit();
 
-		iframe.addEventListener('load', function (event) {
-			document.body.removeChild(iframe);
-			document.body.removeChild(form);
-			callback && callback(event);
-		});
+			iframe.addEventListener('load', function (event) {
+				document.body.removeChild(iframe);
+				document.body.removeChild(form);
+				callback && callback();
+			});
+		}
 
 	}
 
@@ -430,7 +443,7 @@ document.addEventListener('DOMContentLoaded', function() {
 				}
 				previewLink.innerHTML = previewLink.title = data.config.beSwitch.label;
 				addEvent(previewLink, 'click', function (event) {
-					postToIframe(data.config.beSwitch.url, data.config.beSwitch.data, function() {
+					postFormRequest(data.config.beSwitch.url, data.config.beSwitch.data, data.config.beSwitch.isXmlHttpRequest, function() {
 						document.location.reload();
 					});
 					event && event.preventDefault && event.preventDefault();
