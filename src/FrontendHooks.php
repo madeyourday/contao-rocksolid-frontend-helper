@@ -315,6 +315,9 @@ class FrontendHooks
 						'REQUEST_TOKEN' => REQUEST_TOKEN,
 						'unpublished' => $previewEnabled ? 'hide' : 'show',
 					),
+					'isXmlHttpRequest' =>
+						is_callable([PackageUtil::class, 'getContaoVersion'])
+						&& version_compare(PackageUtil::getContaoVersion(), '4.9', '>='),
 				);
 			}
 			catch(RouteNotFoundException $exception) {
@@ -396,8 +399,6 @@ class FrontendHooks
 			return $content;
 		}
 
-		global $page;
-
 		$data = array(
 			'toolbar' => true,
 		);
@@ -425,12 +426,7 @@ class FrontendHooks
 			&& $widget->template !== 'form_rs_columns_plain'
 		) {
 			$data['template'] = $widget->template;
-			$data['templatePath'] = substr($widget->getTemplate(
-				$widget->template,
-				(TL_MODE === 'FE' && $page->outputFormat) ?
-					$page->outputFormat :
-					'html5'
-			), strlen(TL_ROOT) + 1);
+			$data['templatePath'] = substr($widget->getTemplate($widget->template), strlen(TL_ROOT) + 1);
 			if (in_array('tpl_editor', $permissions)) {
 				$data = static::addTemplateURL($data);
 			}
@@ -496,7 +492,7 @@ class FrontendHooks
 			return;
 		}
 
-		$cssId = \StringUtil::deserialize($row->cssID, true);
+		$cssId = \StringUtil::deserialize($row->cssID, true) + array('', '');
 		$cssId[1] = trim($cssId[1] . ' rsfh-article-' . $row->id . '-' . bin2hex($row->inColumn ?: ''));
 		$row->cssID = serialize($cssId);
 	}

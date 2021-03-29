@@ -23,8 +23,15 @@ class Configuration implements ConfigurationInterface
 	 */
 	public function getConfigTreeBuilder()
 	{
-		$treeBuilder = new TreeBuilder();
-		$rootNode = $treeBuilder->root('rocksolid_frontend_helper');
+		if (method_exists(TreeBuilder::class, 'getRootNode')) {
+			$treeBuilder = new TreeBuilder('rocksolid_frontend_helper');
+			$rootNode = $treeBuilder->getRootNode();
+		}
+		else {
+			// Backwards compatibility
+			$treeBuilder = new TreeBuilder();
+			$rootNode = $treeBuilder->root('rocksolid_frontend_helper');
+		}
 
 		$rootNode
 			->children()
