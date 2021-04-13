@@ -110,7 +110,7 @@ class BackendHooks
 		$base .= \System::getContainer()->get('router')->generate('contao_backend');
 
 		$referrer = parse_url(\Environment::get('httpReferer'));
-		$referrer = $referrer['path'] . ($referrer['query'] ? '?' . $referrer['query'] : '');
+		$referrer = ($referrer['path'] ?? '') . (($referrer['query'] ?? null) ? '?' . $referrer['query'] : '');
 
 		// Stop if the referrer is a backend URL
 		if (

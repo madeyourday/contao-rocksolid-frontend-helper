@@ -67,7 +67,7 @@ class FrontendHelperUser extends \BackendUser
 		$always = array('alexf');
 		$depends = array();
 
-		if (is_array($GLOBALS['TL_PERMISSIONS']) && ! empty($GLOBALS['TL_PERMISSIONS'])) {
+		if (!empty($GLOBALS['TL_PERMISSIONS']) && is_array($GLOBALS['TL_PERMISSIONS'])) {
 			$depends = array_merge($depends, $GLOBALS['TL_PERMISSIONS']);
 		}
 
