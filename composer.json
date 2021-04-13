@@ -20,7 +20,9 @@
 	"require":{
 		"php":">=5.5",
 		"contao/core-bundle":"^4.4",
-		"symfony/dependency-injection": "^3.3 || ^4.0"
+		"symfony/dependency-injection": "4.4.* || 5.2.*",
+		"symfony/framework-bundle": "4.4.* || 5.2.*",
+		"symfony/routing": "4.4.* || 5.2.*"
 	},
 	"require-dev": {
 		"contao/manager-plugin": "^2.0"

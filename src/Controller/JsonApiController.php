@@ -13,12 +13,11 @@ use Contao\CoreBundle\Framework\FrameworkAwareInterface;
 use Contao\CoreBundle\Framework\FrameworkAwareTrait;
 use Doctrine\DBAL\Connection;
 use MadeYourDay\RockSolidFrontendHelper\ElementBuilder;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * RockSolid Frontend Helper JSON API
@@ -27,7 +26,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  *
  * @Route("/contao/rocksolid-frontend-helper", defaults={"_scope" = "backend", "_token_check" = true})
  */
-class JsonApiController extends Controller implements FrameworkAwareInterface
+class JsonApiController extends AbstractController implements FrameworkAwareInterface
 {
 	use FrameworkAwareTrait;
 
@@ -69,8 +68,7 @@ class JsonApiController extends Controller implements FrameworkAwareInterface
 	 *
 	 * @return Response
 	 *
-	 * @Route("/insert", name="rocksolid_frontend_helper_insert")
-	 * @Method({"POST"})
+	 * @Route("/insert", name="rocksolid_frontend_helper_insert", methods={"POST"})
 	 */
 	public function insertAction(Request $request, ElementBuilder $elementBuilder, Connection $connection)
 	{
@@ -145,8 +143,7 @@ class JsonApiController extends Controller implements FrameworkAwareInterface
 	 *
 	 * @return Response
 	 *
-	 * @Route("/delete", name="rocksolid_frontend_helper_delete")
-	 * @Method({"POST"})
+	 * @Route("/delete", name="rocksolid_frontend_helper_delete", methods={"POST"})
 	 */
 	public function deleteAction(Request $request)
 	{

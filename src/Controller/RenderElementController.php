@@ -13,13 +13,12 @@ use Contao\CoreBundle\Framework\FrameworkAwareTrait;
 use Contao\InsertTags;
 use Contao\PageModel;
 use MadeYourDay\RockSolidFrontendHelper\FrontendHooks;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * RockSolid Frontend Helper render API
@@ -28,7 +27,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  *
  * @Route("/_rocksolid-frontend-helper", defaults={"_scope" = "frontend"})
  */
-class RenderElementController extends Controller implements FrameworkAwareInterface
+class RenderElementController extends AbstractController implements FrameworkAwareInterface
 {
 	use FrameworkAwareTrait;
 
@@ -38,8 +37,7 @@ class RenderElementController extends Controller implements FrameworkAwareInterf
 	 *
 	 * @return Response
 	 *
-	 * @Route("/render", name="rocksolid_frontend_helper_render")
-	 * @Method({"POST"})
+	 * @Route("/render", name="rocksolid_frontend_helper_render", methods={"POST"})
 	 */
 	public function renderAction(Request $request, FrontendHooks $frontendHooks)
 	{
