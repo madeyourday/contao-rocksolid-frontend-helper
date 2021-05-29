@@ -738,22 +738,22 @@ class FrontendHooks
 					return $GLOBALS['TL_LANG'][$ptable]['editmeta'];
 				}
 				if (!empty($GLOBALS['TL_LANG'][$ptable]['edit'][0])) {
-					return $GLOBALS['TL_LANG'][$ptable]['edit'][0];
+					return is_array($GLOBALS['TL_LANG'][$ptable]['edit']) ? $GLOBALS['TL_LANG'][$ptable]['edit'][0] : $GLOBALS['TL_LANG'][$ptable]['edit'];
 				}
 				if (!empty($GLOBALS['TL_LANG'][$ptable]['editheader'][0])) {
-					return $GLOBALS['TL_LANG'][$ptable]['editheader'][0];
+					return is_array($GLOBALS['TL_LANG'][$ptable]['editheader']) ? $GLOBALS['TL_LANG'][$ptable]['editheader'][0] : $GLOBALS['TL_LANG'][$ptable]['editheader'];
 				}
 			}
 		}
 		\System::loadLanguageFile($config['table']);
 		if (!empty($GLOBALS['TL_LANG'][$config['table']]['editheader'][0])) {
-			return $GLOBALS['TL_LANG'][$config['table']]['editheader'][0];
+            return is_array($GLOBALS['TL_LANG'][$config['table']]['editheader']) ? $GLOBALS['TL_LANG'][$config['table']]['editheader'][0] : $GLOBALS['TL_LANG'][$config['table']]['editheader'];
 		}
 		if ($id && !empty($GLOBALS['TL_LANG'][$config['table']]['edit'][1])) {
 			return sprintf(is_array($GLOBALS['TL_LANG'][$config['table']]['edit']) ? $GLOBALS['TL_LANG'][$config['table']]['edit'][1] : $GLOBALS['TL_LANG'][$config['table']]['edit'], $id);
 		}
 		if (!empty($GLOBALS['TL_LANG'][$config['table']]['edit'][0])) {
-			return $GLOBALS['TL_LANG'][$config['table']]['edit'][0];
+            return is_array($GLOBALS['TL_LANG'][$config['table']]['edit']) ? $GLOBALS['TL_LANG'][$config['table']]['edit'][0] : $GLOBALS['TL_LANG'][$config['table']]['edit'];
 		}
 		if ($id) {
 			return sprintf($GLOBALS['TL_LANG']['MSC']['editRecord'], $id);
