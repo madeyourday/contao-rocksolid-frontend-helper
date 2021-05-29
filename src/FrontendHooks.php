@@ -734,6 +734,9 @@ class FrontendHooks
 				if ($id && !empty($GLOBALS['TL_LANG'][$ptable]['edit'][1])) {
 					return sprintf(is_array($GLOBALS['TL_LANG'][$ptable]['edit']) ? $GLOBALS['TL_LANG'][$ptable]['edit'][1] : $GLOBALS['TL_LANG'][$ptable]['edit'], $id);
 				}
+				if (!empty($GLOBALS['TL_LANG'][$ptable]['editmeta'])) {
+					return $GLOBALS['TL_LANG'][$ptable]['editmeta'];
+				}
 				if (!empty($GLOBALS['TL_LANG'][$ptable]['edit'][0])) {
 					return $GLOBALS['TL_LANG'][$ptable]['edit'][0];
 				}
