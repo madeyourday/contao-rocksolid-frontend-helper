@@ -130,10 +130,10 @@ class FrontendHooks
 				$content = str_replace($matches2[0], $matches2[1] . $matches2[3], $content);
 
 				if (in_array('beModules', $permissions)) {
-					\System::loadLanguageFile('tl_calendar');
+					\System::loadLanguageFile('tl_calendar_events');
 					$data['links']['be-module'] = array(
 						'url' => static::getBackendURL('calendar', 'tl_content', $matches2[2], false),
-						'label' => sprintf(is_array($GLOBALS['TL_LANG']['tl_calendar']['edit']) ? $GLOBALS['TL_LANG']['tl_calendar']['edit'][1] : $GLOBALS['TL_LANG']['tl_calendar']['edit'], $matches2[2]),
+						'label' => sprintf(is_array($GLOBALS['TL_LANG']['tl_calendar_events']['edit']) ? $GLOBALS['TL_LANG']['tl_calendar_events']['edit'][1] : $GLOBALS['TL_LANG']['tl_calendar_events']['edit'], $matches2[2]),
 						'icon' => \Image::getPath('settings.svg'),
 					);
 				}
