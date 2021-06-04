@@ -145,10 +145,10 @@ class FrontendHooks
 				$content = str_replace($matches2[0], $matches2[1] . $matches2[3], $content);
 
 				if (in_array('beModules', $permissions)) {
-					\System::loadLanguageFile('tl_calendar');
+					\System::loadLanguageFile('tl_calendar_events');
 					$data['links']['be-module'] = array(
 						'url' => static::getBackendURL('calendar', 'tl_content', $matches2[2], false),
-						'label' => sprintf(is_array($GLOBALS['TL_LANG']['tl_calendar']['edit']) ? $GLOBALS['TL_LANG']['tl_calendar']['edit'][1] : $GLOBALS['TL_LANG']['tl_calendar']['edit'], $matches2[2]),
+						'label' => sprintf(is_array($GLOBALS['TL_LANG']['tl_calendar_events']['edit']) ? $GLOBALS['TL_LANG']['tl_calendar_events']['edit'][1] : $GLOBALS['TL_LANG']['tl_calendar_events']['edit'], $matches2[2]),
 						'icon' => \Image::getPath('settings.svg'),
 					);
 				}
@@ -762,23 +762,26 @@ class FrontendHooks
 				if ($id && !empty($GLOBALS['TL_LANG'][$ptable]['edit'][1])) {
 					return sprintf(is_array($GLOBALS['TL_LANG'][$ptable]['edit']) ? $GLOBALS['TL_LANG'][$ptable]['edit'][1] : $GLOBALS['TL_LANG'][$ptable]['edit'], $id);
 				}
+				if (!empty($GLOBALS['TL_LANG'][$ptable]['editmeta'])) {
+					return $GLOBALS['TL_LANG'][$ptable]['editmeta'];
+				}
 				if (!empty($GLOBALS['TL_LANG'][$ptable]['edit'][0])) {
-					return $GLOBALS['TL_LANG'][$ptable]['edit'][0];
+					return is_array($GLOBALS['TL_LANG'][$ptable]['edit']) ? $GLOBALS['TL_LANG'][$ptable]['edit'][0] : $GLOBALS['TL_LANG'][$ptable]['edit'];
 				}
 				if (!empty($GLOBALS['TL_LANG'][$ptable]['editheader'][0])) {
-					return $GLOBALS['TL_LANG'][$ptable]['editheader'][0];
+					return is_array($GLOBALS['TL_LANG'][$ptable]['editheader']) ? $GLOBALS['TL_LANG'][$ptable]['editheader'][0] : $GLOBALS['TL_LANG'][$ptable]['editheader'];
 				}
 			}
 		}
 		\System::loadLanguageFile($config['table']);
 		if (!empty($GLOBALS['TL_LANG'][$config['table']]['editheader'][0])) {
-			return $GLOBALS['TL_LANG'][$config['table']]['editheader'][0];
+			return is_array($GLOBALS['TL_LANG'][$config['table']]['editheader']) ? $GLOBALS['TL_LANG'][$config['table']]['editheader'][0] : $GLOBALS['TL_LANG'][$config['table']]['editheader'];
 		}
 		if ($id && !empty($GLOBALS['TL_LANG'][$config['table']]['edit'][1])) {
 			return sprintf(is_array($GLOBALS['TL_LANG'][$config['table']]['edit']) ? $GLOBALS['TL_LANG'][$config['table']]['edit'][1] : $GLOBALS['TL_LANG'][$config['table']]['edit'], $id);
 		}
 		if (!empty($GLOBALS['TL_LANG'][$config['table']]['edit'][0])) {
-			return $GLOBALS['TL_LANG'][$config['table']]['edit'][0];
+			return is_array($GLOBALS['TL_LANG'][$config['table']]['edit']) ? $GLOBALS['TL_LANG'][$config['table']]['edit'][0] : $GLOBALS['TL_LANG'][$config['table']]['edit'];
 		}
 		if ($id) {
 			return sprintf($GLOBALS['TL_LANG']['MSC']['editRecord'], $id);
