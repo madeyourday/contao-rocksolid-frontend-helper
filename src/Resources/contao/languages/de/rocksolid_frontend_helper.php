@@ -16,3 +16,4 @@ $GLOBALS['TL_LANG']['rocksolid_frontend_helper']['activateLabel'] = 'Frontend He
 $GLOBALS['TL_LANG']['rocksolid_frontend_helper']['deactivateLabel'] = 'Frontend Helper deaktivieren';
 $GLOBALS['TL_LANG']['rocksolid_frontend_helper']['assistantLabel'] = 'Stylesheet mit dem Theme Assistant bearbeiten';
 $GLOBALS['TL_LANG']['rocksolid_frontend_helper']['column'] = 'Layoutbereich';
+$GLOBALS['TL_LANG']['rocksolid_frontend_helper']['contentElements'] = 'Inhaltselement einfügen';

@@ -1,0 +1,3 @@
+contao:
+    resource: "@RockSolidFrontendHelperBundle/Controller"
+    type: annotation

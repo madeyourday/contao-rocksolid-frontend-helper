@@ -1,9 +1,40 @@
 services:
-    rocksolid_frontend_helper.frontend_hooks:
-        class: MadeYourDay\RockSolidFrontendHelper\FrontendHooks
+
+    _instanceof:
+        Contao\CoreBundle\Framework\FrameworkAwareInterface:
+            calls:
+                - ["setFramework", ["@contao.framework"]]
+
+    MadeYourDay\RockSolidFrontendHelper\Controller\:
+        resource: '../../Controller'
+        public: true
+        tags: ['controller.service_arguments']
+        calls:
+            - [setContainer, ['@service_container']]
+
+    MadeYourDay\RockSolidFrontendHelper\FrontendHooks:
         arguments:
+            - "@rocksolid_frontend_helper.element_builder"
             - "%rocksolid_frontend_helper.backend_modules%"
         public: true
-    rocksolid_frontend_helper.backend_hooks:
-        class: MadeYourDay\RockSolidFrontendHelper\BackendHooks
+
+    MadeYourDay\RockSolidFrontendHelper\BackendHooks:
         public: true
+
+    MadeYourDay\RockSolidFrontendHelper\ElementProvider:
+        public: false
+        tags:
+            - { name: rocksolid_frontend_helper.element_provider, priority: 192 }
+
+    MadeYourDay\RockSolidFrontendHelper\ElementBuilder: ~
+
+    rocksolid_frontend_helper.frontend_hooks:
+        alias: 'MadeYourDay\RockSolidFrontendHelper\FrontendHooks'
+        public: true
+
+    rocksolid_frontend_helper.backend_hooks:
+        alias: 'MadeYourDay\RockSolidFrontendHelper\BackendHooks'
+        public: true
+
+    rocksolid_frontend_helper.element_provider: '@MadeYourDay\RockSolidFrontendHelper\ElementProvider'
+    rocksolid_frontend_helper.element_builder: '@MadeYourDay\RockSolidFrontendHelper\ElementBuilder'
