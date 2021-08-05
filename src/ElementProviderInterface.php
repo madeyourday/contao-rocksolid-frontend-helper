@@ -22,7 +22,7 @@ interface ElementProviderInterface
 	 * - group       string  Label of the elements group
 	 * - insert      boolean If the element can be inserted via drag and drop
 	 * - showToolbar boolean If an edit toolbar should be shown in the frontend
-	 * - renderLive  boolean If the element can be rerenderd without a page reload
+	 * - liveReload  boolean If the element can be rerenderd without a page reload
 	 *
 	 * @param string $table
 	 *

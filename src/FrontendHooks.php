@@ -598,7 +598,7 @@ class FrontendHooks
 			'table' => 'tl_content',
 			'id' => $row->id,
 			'parent' => ($row->ptable ?: 'tl_article') . ':' . $row->pid,
-			'renderLive' => !empty($this->getElementTypeSettings('tl_content', $row->type)['renderLive']),
+			'liveReload' => !empty($this->getElementTypeSettings('tl_content', $row->type)['liveReload']),
 		);
 
 		if (in_array('contents', $permissions)) {

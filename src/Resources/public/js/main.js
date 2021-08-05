@@ -631,7 +631,7 @@ document.addEventListener('DOMContentLoaded', function() {
 				return;
 			}
 
-			if (data.renderLive) {
+			if (data.liveReload) {
 				renderOnClose = {
 					element: element,
 					table: data.table,

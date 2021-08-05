@@ -101,8 +101,8 @@ class ElementProvider implements ElementProviderInterface, FrameworkAwareInterfa
 					'insert' => isset(static::$defaultValues[$type]) && $hasAccess,
 					'showToolbar' => $hasAccess,
 				];
-				if ($this->typeCanBeRenderedLive($type) !== $elements[$type]['insert']) {
-					$elements[$type]['renderLive'] = !$elements[$type]['insert'];
+				if ($this->typeCanBeReloadedLive($type) !== $elements[$type]['insert']) {
+					$elements[$type]['liveReload'] = !$elements[$type]['insert'];
 				}
 			}
 		}
@@ -217,7 +217,7 @@ class ElementProvider implements ElementProviderInterface, FrameworkAwareInterfa
 		return [$key, ''];
 	}
 
-	private function typeCanBeRenderedLive(string $type): bool
+	private function typeCanBeReloadedLive(string $type): bool
 	{
 		if (
 			in_array($type, $GLOBALS['TL_WRAPPERS']['start'])

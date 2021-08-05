@@ -49,9 +49,9 @@ class ElementBuilder
 				'showToolbar' => false,
 			];
 
-			// Enable live rendering by default for dynamically insertable elements
-			if (!isset($elements[$type]['renderLive'])) {
-				$elements[$type]['renderLive'] = $elements[$type]['insert'];
+			// Enable live reloading by default for dynamically insertable elements
+			if (!isset($elements[$type]['liveReload'])) {
+				$elements[$type]['liveReload'] = $elements[$type]['insert'];
 			}
 		}
 
