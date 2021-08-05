@@ -610,15 +610,26 @@ document.addEventListener('DOMContentLoaded', function() {
 				return;
 			}
 
+			lightboxIsPopup = !!targetLink.href.match(/[&?]popup=1(?:&|$)/);
+
 			if (
 				!config.lightbox
 				|| hasClass(event.target, 'rsfh-activate')
 				|| hasClass(event.target, 'rsfh-preview')
+				// Disable lightbox if users try to open links in a new tab
+				|| event.ctrlKey
+				|| event.shiftKey
+				|| event.metaKey
+				|| event.which === 2
 			) {
+				if (lightboxIsPopup) {
+					targetLink.href = targetLink.href.replace(/([&?])popup=1(?:&|$)/, '$1');
+					setTimeout(function() {
+						targetLink.href += '&popup=1';
+					}, 100);
+				}
 				return;
 			}
-
-			lightboxIsPopup = !!targetLink.href.match(/[&?]popup=1(?:&|$)/);
 
 			if (data.renderLive) {
 				renderOnClose = {
@@ -629,17 +640,6 @@ document.addEventListener('DOMContentLoaded', function() {
 			}
 			else {
 				renderOnClose = undefined;
-			}
-
-			// Disable lightbox if users try to open links in a new tab
-			if (event.ctrlKey || event.shiftKey || event.metaKey || event.which === 2) {
-				if (lightboxIsPopup) {
-					targetLink.href = targetLink.href.replace(/([&?])popup=1(?:&|$)/, '$1');
-					setTimeout(function() {
-						targetLink.href += '&popup=1';
-					}, 100);
-				}
-				return;
 			}
 
 			lightboxScrollPosition = Math.round(window.pageYOffset || document.documentElement.scrollTop) || 0;
