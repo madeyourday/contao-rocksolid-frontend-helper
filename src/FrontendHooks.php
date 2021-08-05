@@ -932,6 +932,6 @@ class FrontendHooks
 			$this->elementTypeSettings[$table] = $this->elementBuilder->getElements($table);
 		}
 
-		return $this->elementTypeSettings[$table][$type] ?: [];
+		return $this->elementTypeSettings[$table][$type] ?? [];
 	}
 }
