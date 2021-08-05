@@ -151,9 +151,9 @@ class JsonApiController extends AbstractController implements FrameworkAwareInte
 
 		$table = $request->get('table');
 		$parent = explode(':', $request->get('parent'));
-		$id = (int) $request->get('id');
+		$ids = array_values(array_map('intval', (array) $request->get('ids', [])));
 
-		if (!is_string($table) || !$id || !is_array($parent)) {
+		if (!is_string($table) || !$ids || !is_array($parent)) {
 			throw new \InvalidArgumentException();
 		}
 
@@ -176,7 +176,9 @@ class JsonApiController extends AbstractController implements FrameworkAwareInte
 			$input->setGet($key, $value);
 		}
 
-		$this->callDcaMethod('delete', $table, $parent[0], $id);
+		foreach ($ids as $id) {
+			$this->callDcaMethod('delete', $table, $parent[0], $id);
+		}
 
 		return $this->json(['success' => true]);
 	}
@@ -237,7 +239,7 @@ class JsonApiController extends AbstractController implements FrameworkAwareInte
 		$controller = $this->framework->getAdapter('Controller');
 
 		if ($id) {
-			$input->setGet('id', $id);
+			$input->setGet('id', (string) $id);
 		}
 
 		$input->setGet('table', $table);

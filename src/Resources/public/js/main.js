@@ -341,7 +341,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 		});
 	};
-	var initDragHandle = function(element, data, ids, handle) {
+	var initDragHandle = function(element, data, handle) {
 		handle.draggable = true;
 		addEvent(handle, 'dragstart', function(event) {
 			if (event.dataTransfer.addElement) {
@@ -351,7 +351,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			event.dataTransfer.effectAllowed = 'move';
 			event.dataTransfer.setData('text/rsfh-' + data.table, JSON.stringify({
 				act: 'cut',
-				ids: ids,
+				ids: data.allIds,
 			}));
 		});
 	};
@@ -400,9 +400,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
 		var formData = new FormData();
 		formData.append('table', data.table);
-		formData.append('id', data.id);
 		formData.append('parent', data.parent);
 		formData.append('REQUEST_TOKEN', config.REQUEST_TOKEN);
+
+		(data.allIds || [data.id]).forEach(function(id) {
+			formData.append('ids[]', id);
+		});
 
 		fetch(config.routes.delete, {
 			method: 'POST',
@@ -815,16 +818,16 @@ document.addEventListener('DOMContentLoaded', function() {
 			dragHandle.className = 'rsfh-drag-handle';
 			toolbar.appendChild(dragHandle);
 
-			var ids = [data.id];
+			data.allIds = [data.id];
 
 			Array.prototype.forEach.call(element.querySelectorAll('*[data-frontend-helper]'), function(element) {
 				var childData = getNodeData(element);
 				if (childData.id && childData.table === data.table && childData.parent === data.parent) {
-					ids.push(childData.id);
+					data.allIds.push(childData.id);
 				}
 			});
 
-			initDragHandle(element, data, ids, dragHandle);
+			initDragHandle(element, data, dragHandle);
 
 		}
 
