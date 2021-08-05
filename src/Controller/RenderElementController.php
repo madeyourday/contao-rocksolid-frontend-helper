@@ -10,6 +10,7 @@ namespace MadeYourDay\RockSolidFrontendHelper\Controller;
 
 use Contao\CoreBundle\Framework\FrameworkAwareInterface;
 use Contao\CoreBundle\Framework\FrameworkAwareTrait;
+use Contao\Environment;
 use Contao\InsertTags;
 use Contao\PageModel;
 use MadeYourDay\RockSolidFrontendHelper\FrontendHooks;
@@ -55,6 +56,15 @@ class RenderElementController extends AbstractController implements FrameworkAwa
 		// Only tl_content is supported so far
 		if ($request->get('table') !== 'tl_content') {
 			throw new NotFoundHttpException();
+		}
+
+		// Setup environment URL
+		try {
+			Environment::reset();
+			Environment::set('requestUri', preg_replace('(^https?://[^/]+)i', '', $request->headers->get('referer', '/')));
+		}
+		catch (\Throwable $e) {
+			// Ignore set URL errors
 		}
 
 		// Setup global page, theme and layout state
