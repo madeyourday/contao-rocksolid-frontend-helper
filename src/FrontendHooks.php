@@ -285,6 +285,7 @@ class FrontendHooks
 			'activate' => $GLOBALS['TL_LANG']['rocksolid_frontend_helper']['activateLabel'],
 			'deactivate' => $GLOBALS['TL_LANG']['rocksolid_frontend_helper']['deactivateLabel'],
 			'cancel' => $GLOBALS['TL_LANG']['MSC']['cancelBT'],
+			'close' => $GLOBALS['TL_LANG']['MSC']['close'],
 			'contentElements' => $GLOBALS['TL_LANG']['rocksolid_frontend_helper']['contentElements'],
 		);
 
@@ -633,7 +634,7 @@ class FrontendHooks
 			if ($editAllowed) {
 				$data['links']['edit'] = array(
 					'url' => static::getBackendURL($do, 'tl_content', $row->id, 'edit', ['popup' => 1]),
-					'label' => sprintf(is_array($GLOBALS['TL_LANG']['tl_content']['edit']) ? $GLOBALS['TL_LANG']['tl_content']['edit'][1] : $GLOBALS['TL_LANG']['tl_content']['edit'], $row->id),
+					'label' => sprintf(is_array($GLOBALS['TL_LANG']['tl_content']['edit']) ? $GLOBALS['TL_LANG']['tl_content']['edit'][1] : $GLOBALS['TL_LANG']['tl_content']['edit'], $row->id . ' (' . ($GLOBALS['TL_LANG']['CTE'][$row->type][0] ?? $row->type) . ')'),
 				);
 				$data['links']['delete'] = array(
 					'url' => static::getBackendURL($do, 'tl_content', $row->id, 'delete'),

@@ -299,6 +299,10 @@ a.rsfh-activate.rsfh-activate-active {
 	box-shadow: none;
 	transition: transform 0.3s ease-out;
 }
+.rsfh-element-list {
+	width: max-content;
+	max-width: 320px;
+}
 .rsfh-lightbox.is-popup {
 	min-width: 260px;
 	background: linear-gradient(to right, #fff 0%, #fff calc(100% - 10px), transparent calc(100% - 10px));
@@ -327,15 +331,12 @@ a.rsfh-activate.rsfh-activate-active {
 	margin-bottom: -20px;
 }
 .rsfh-lightbox.is-popup iframe {
-	border-width: 36px 10px 0 0;
+	border-width: 51px 10px 0 0;
 }
 .rsfh-lightbox-close,
 .rsfh-lightbox-cancel,
 .rsfh-element-list-close {
 	box-sizing: border-box;
-	position: absolute;
-	top: 5px;
-	right: 5px;
 	height: 30px;
 	border: 2px solid #d3d5d7;
 	border-radius: 99em;
@@ -346,9 +347,10 @@ a.rsfh-activate.rsfh-activate-active {
 	background: #0f1c26;
 	box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
 }
-.is-popup > .rsfh-lightbox-close,
-.is-popup > .rsfh-lightbox-cancel,
 .rsfh-element-list-close {
+	position: absolute;
+	top: 5px;
+	right: 5px;
 	height: 26px;
 	border: 0;
 	border-radius: 0;
@@ -362,20 +364,57 @@ a.rsfh-activate.rsfh-activate-active {
 .rsfh-element-list-close:focus {
 	background-color: #444;
 }
-.rsfh-lightbox-close,
 .rsfh-element-list-close {
 	width: 30px;
 }
-.rsfh-lightbox-cancel {
-	right: 45px;
+.rsfh-lightbox-cancel,
+.rsfh-lightbox-close {
 	padding-right: 1em;
 	padding-left: 1em;
+	margin-left: 0.5em;
 }
-.is-popup > .rsfh-lightbox-close {
-	right: 15px;
+.rsfh-lightbox-toolbar {
+	box-sizing: border-box;
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 51px;
+	padding: 5px;
 }
-.is-popup > .rsfh-lightbox-cancel {
-	right: 55px;
+.rsfh-lightbox-toolbar > .rsfh-lightbox-close,
+.rsfh-lightbox-toolbar > .rsfh-lightbox-cancel {
+	float: right;
+	box-sizing: border-box;
+}
+.is-popup > .rsfh-lightbox-toolbar {
+	right: 10px;
+	height: 51px;
+	padding: 10px 15px;
+	background: #f3f3f5;
+	border-bottom: 1px solid #ddd;
+}
+.is-popup > .rsfh-lightbox-toolbar > .rsfh-lightbox-close,
+.is-popup > .rsfh-lightbox-toolbar > .rsfh-lightbox-cancel {
+	position: static;
+	box-shadow: none;
+	height: 30px;
+	width: auto;
+	padding: 7px 12px;
+	margin: 0 0 0 4px;
+	border: 1px solid #aaa;
+	border-radius: 2px;
+	background: #fff;
+	transition: background .2s ease;
+	font-size: 14px;
+	font-family: -apple-system,system-ui,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;
+	line-height: 1;
+	font-weight: 400;
+	color: #444;
+}
+.is-popup > .rsfh-lightbox-toolbar > .rsfh-lightbox-close:hover,
+.is-popup > .rsfh-lightbox-toolbar > .rsfh-lightbox-cancel:hover {
+	background: #f6f6f6;
 }
 .rsfh-lightbox-resize-handle {
 	position: absolute;
@@ -399,7 +438,7 @@ a.rsfh-activate.rsfh-activate-active {
 	border-width: 0 1px;
 }
 .rsfh-element-list {
-	font-size: 16px;
+	font-size: 14px;
 	line-height: 1.5;
 	color: #d3d5d7;
 	background: #0f1c26;
@@ -413,7 +452,8 @@ a.rsfh-activate.rsfh-activate-active {
 .rsfh-element-list > ul > li > span {
 	display: block;
 	margin: 0;
-	padding: 1.5em 1em 0.25em;
+	padding: 1.5em 2em 0.25em 1em;
+	font-size: 16px;
 	font-weight: bold;
 	color: #91979c;
 	border-bottom: 1px solid #3a454d;

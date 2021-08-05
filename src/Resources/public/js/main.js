@@ -660,20 +660,23 @@ document.addEventListener('DOMContentLoaded', function() {
 				lightbox.className += ' is-popup';
 			}
 
-			var firstLoadEvent = true;
 			var iframe = document.createElement('iframe');
 			iframe.id = iframe.name = 'rsfh-lightbox-iframe';
 			lightbox.appendChild(iframe);
 
+			var lightboxToolbar = document.createElement('div');
+			lightboxToolbar.className = 'rsfh-lightbox-toolbar';
+			lightbox.appendChild(lightboxToolbar);
+
 			var lightboxCloseButton = document.createElement('a');
 			lightboxCloseButton.className = 'rsfh-lightbox-close';
-			lightboxCloseButton.innerHTML = 'X';
+			lightboxCloseButton.innerHTML = getLabel('close');
 			lightboxCloseButton.href = '';
 			addEvent(lightboxCloseButton, 'click', function(event) {
 				closeLightbox();
 				event.preventDefault();
 			});
-			lightbox.appendChild(lightboxCloseButton);
+			lightboxToolbar.appendChild(lightboxCloseButton);
 
 			var lightboxCancelButton = document.createElement('a');
 			lightboxCancelButton.className = 'rsfh-lightbox-cancel';
@@ -683,7 +686,7 @@ document.addEventListener('DOMContentLoaded', function() {
 				closeLightbox(true);
 				event.preventDefault();
 			});
-			lightbox.appendChild(lightboxCancelButton);
+			lightboxToolbar.appendChild(lightboxCancelButton);
 
 			if (lightboxIsPopup) {
 				if (window.localStorage && localStorage.rsfhLightboxWidth) {
