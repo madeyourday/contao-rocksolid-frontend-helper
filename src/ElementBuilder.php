@@ -41,6 +41,20 @@ class ElementBuilder
 			$elements = array_merge($elements, $provider->getElements($table));
 		}
 
+		foreach (array_keys($elements) as $type) {
+			$elements[$type] += [
+				'label' => $type,
+				'group' => '',
+				'insert' => false,
+				'showToolbar' => false,
+			];
+
+			// Enable live rendering by default for dynamically insertable elements
+			if (!isset($elements[$type]['renderLive'])) {
+				$elements[$type]['renderLive'] = $elements[$type]['insert'];
+			}
+		}
+
 		return $elements;
 	}
 

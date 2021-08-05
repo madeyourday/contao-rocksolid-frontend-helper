@@ -100,12 +100,10 @@ class ElementProvider implements ElementProviderInterface, FrameworkAwareInterfa
 					'label' => $this->getLabel($type),
 					'insert' => isset(static::$defaultValues[$type]) && $hasAccess,
 					'showToolbar' => $hasAccess,
-					'renderLive' =>
-						!in_array($type, $GLOBALS['TL_WRAPPERS']['start'])
-						&& !in_array($type, $GLOBALS['TL_WRAPPERS']['stop'])
-						&& !in_array($type, $GLOBALS['TL_WRAPPERS']['separator'])
-					,
 				];
+				if ($this->typeCanBeRenderedLive($type) !== $elements[$type]['insert']) {
+					$elements[$type]['renderLive'] = !$elements[$type]['insert'];
+				}
 			}
 		}
 
@@ -217,5 +215,18 @@ class ElementProvider implements ElementProviderInterface, FrameworkAwareInterfa
 		}
 
 		return [$key, ''];
+	}
+
+	private function typeCanBeRenderedLive(string $type): bool
+	{
+		if (
+			in_array($type, $GLOBALS['TL_WRAPPERS']['start'])
+			|| in_array($type, $GLOBALS['TL_WRAPPERS']['stop'])
+			|| in_array($type, $GLOBALS['TL_WRAPPERS']['separator'])
+		) {
+			return false;
+		}
+
+		return isset(static::$defaultValues[$type]);
 	}
 }
