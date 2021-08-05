@@ -9,6 +9,8 @@
 namespace MadeYourDay\RockSolidFrontendHelper;
 
 use MadeYourDay\RockSolidFrontendHelper\DependencyInjection\RockSolidFrontendHelperExtension;
+use MadeYourDay\RockSolidFrontendHelper\DependencyInjection\Compiler\ElementProviderPass;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
@@ -24,5 +26,15 @@ class RockSolidFrontendHelperBundle extends Bundle
     public function getContainerExtension()
     {
         return new RockSolidFrontendHelperExtension();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function build(ContainerBuilder $container)
+    {
+        parent::build($container);
+
+        $container->addCompilerPass(new ElementProviderPass());
     }
 }

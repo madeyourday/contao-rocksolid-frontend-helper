@@ -20,6 +20,16 @@ use Symfony\Component\Security\Core\User\UserInterface;
 class FrontendHooks
 {
 	/**
+	 * @var ElementBuilder
+	 */
+	private $elementBuilder;
+
+	/**
+	 * @var array
+	 */
+	private $elementTypeSettings = [];
+
+	/**
 	 * @var array
 	 */
 	private $backendModules = [];
@@ -27,10 +37,12 @@ class FrontendHooks
 	/**
 	 * @param array $backendModules Backend modules configuration array
 	 */
-	public function __construct(array $backendModules = [])
+	public function __construct(ElementBuilder $elementBuilder, array $backendModules = [])
 	{
+		$this->elementBuilder = $elementBuilder;
 		$this->backendModules = $backendModules;
 	}
+
 	/**
 	 * parseFrontendTemplate hook
 	 *
@@ -75,6 +87,9 @@ class FrontendHooks
 				}
 
 				if (in_array('contents', $permissions)) {
+
+					$data['container'] = 'tl_article:'.$matches2[2];
+					$data['table'] = 'tl_content';
 
 					\System::loadLanguageFile('tl_content');
 					$data['links']['pastenew'] = array(
@@ -270,10 +285,20 @@ class FrontendHooks
 			'activate' => $GLOBALS['TL_LANG']['rocksolid_frontend_helper']['activateLabel'],
 			'deactivate' => $GLOBALS['TL_LANG']['rocksolid_frontend_helper']['deactivateLabel'],
 			'cancel' => $GLOBALS['TL_LANG']['MSC']['cancelBT'],
+			'close' => $GLOBALS['TL_LANG']['MSC']['close'],
+			'contentElements' => $GLOBALS['TL_LANG']['rocksolid_frontend_helper']['contentElements'],
 		);
 
 		$data['config'] = array(
 			'lightbox' => (bool)FrontendHelperUser::getInstance()->rocksolidFrontendHelperLightbox,
+			'REQUEST_TOKEN' => REQUEST_TOKEN,
+			'pageId' => $GLOBALS['objPage']->id ?? null,
+			'routes' => [
+				'elements' => \Controller::getContainer()->get('router')->generate('rocksolid_frontend_helper_elements'),
+				'insert' => \Controller::getContainer()->get('router')->generate('rocksolid_frontend_helper_insert'),
+				'delete' => \Controller::getContainer()->get('router')->generate('rocksolid_frontend_helper_delete'),
+				'render' => \Controller::getContainer()->get('router')->generate('rocksolid_frontend_helper_render'),
+			],
 		);
 
 		if (
@@ -569,7 +594,11 @@ class FrontendHooks
 		}
 
 		$data = array(
-			'toolbar' => true,
+			'toolbar' => !empty($this->getElementTypeSettings('tl_content', $row->type)['showToolbar']),
+			'table' => 'tl_content',
+			'id' => $row->id,
+			'parent' => ($row->ptable ?: 'tl_article') . ':' . $row->pid,
+			'liveReload' => !empty($this->getElementTypeSettings('tl_content', $row->type)['liveReload']),
 		);
 
 		if (in_array('contents', $permissions)) {
@@ -604,8 +633,8 @@ class FrontendHooks
 
 			if ($editAllowed) {
 				$data['links']['edit'] = array(
-					'url' => static::getBackendURL($do, 'tl_content', $row->id),
-					'label' => sprintf(is_array($GLOBALS['TL_LANG']['tl_content']['edit']) ? $GLOBALS['TL_LANG']['tl_content']['edit'][1] : $GLOBALS['TL_LANG']['tl_content']['edit'], $row->id),
+					'url' => static::getBackendURL($do, 'tl_content', $row->id, 'edit', ['popup' => 1]),
+					'label' => sprintf(is_array($GLOBALS['TL_LANG']['tl_content']['edit']) ? $GLOBALS['TL_LANG']['tl_content']['edit'][1] : $GLOBALS['TL_LANG']['tl_content']['edit'], $row->id . ' (' . ($GLOBALS['TL_LANG']['CTE'][$row->type][0] ?? $row->type) . ')'),
 				);
 				$data['links']['delete'] = array(
 					'url' => static::getBackendURL($do, 'tl_content', $row->id, 'delete'),
@@ -889,5 +918,20 @@ class FrontendHooks
 		}
 
 		return '<span class="rsfh-dummy" data-frontend-helper="' . htmlspecialchars(json_encode($data)) . '"></span>' . $content;
+	}
+
+	/**
+	 * @param string $table
+	 * @param string $type
+	 *
+	 * @return array
+	 */
+	private function getElementTypeSettings($table, $type)
+	{
+		if (!isset($this->elementTypeSettings[$table])) {
+			$this->elementTypeSettings[$table] = $this->elementBuilder->getElements($table);
+		}
+
+		return $this->elementTypeSettings[$table][$type] ?? [];
 	}
 }

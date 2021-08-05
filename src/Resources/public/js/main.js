@@ -31,6 +31,22 @@ document.addEventListener('DOMContentLoaded', function() {
 			}
 		}
 	};
+	var removeEvent = function(element, events, func){
+		events = events.split(' ');
+		for (var i = 0; i < events.length; i++) {
+			if (element.removeEventListener) {
+				element.removeEventListener(events[i], func, false);
+			}
+			else {
+				element.detachEvent('on'+events[i], func);
+			}
+		}
+	};
+	var triggerEvent = function(element, eventName) {
+		var evt = document.createEvent('HTMLEvents');
+		evt.initEvent(eventName, true, true);
+		element.dispatchEvent(evt);
+	};
 	var addClass = function(element, className) {
 		if (!hasClass(element, className)) {
 			if (element.classList && element.classList.add) {
@@ -57,6 +73,17 @@ document.addEventListener('DOMContentLoaded', function() {
 		}
 		else {
 			return !!element.className.match('(?:^|\\s)' + className + '(?:$|\\s)');
+		}
+	};
+	var insertElementAt = function(element, reference, before) {
+		if (before) {
+			reference.parentNode.insertBefore(element, reference);
+		}
+		else if (reference.nextSibling) {
+			reference.parentNode.insertBefore(element, reference.nextSibling);
+		}
+		else {
+			reference.parentNode.appendChild(element);
 		}
 	};
 	var getBoundingClientRect = function(element) {
@@ -170,6 +197,239 @@ document.addEventListener('DOMContentLoaded', function() {
 		}
 		return data.labels[key];
 	};
+	var buildDropElements = function(container, containerData) {
+		var elements = [];
+		Array.prototype.forEach.call(container.querySelectorAll('*[data-frontend-helper]'), function(element) {
+			var data = getNodeData(element);
+			if (data.parent === containerData.container) {
+				elements.push({
+					element: element,
+					data: data,
+				});
+			}
+		});
+		return elements;
+	};
+	var destroyDropElements = function(dropElements) {
+		dropElements.length = 0;
+	};
+	var initDropArea = function(element, data) {
+		var dropping = 0;
+		var dropIndicator;
+		var dropElements = [];
+		var validateDragData = function(event) {
+			if (
+				!event.dataTransfer
+				|| !event.dataTransfer.types
+				|| event.dataTransfer.types.indexOf('text/rsfh-' + data.table) === -1
+			) {
+				return false;
+			}
+			return true;
+		};
+		var getDropElement = function(event) {
+			var currentDropElement;
+			dropElements.forEach(function(dropElement) {
+				var clientRect = getBoundingClientRect(dropElement.element);
+				if (!currentDropElement || (clientRect.width && clientRect.top < event.clientY && clientRect.left < event.clientX)) {
+					currentDropElement = {
+						element: dropElement.element,
+						data: dropElement.data,
+						clientRect: clientRect,
+						position: clientRect.top + (clientRect.height / 2) < event.clientY ? 'after' : 'before',
+					};
+				}
+			});
+			return currentDropElement;
+		};
+		addEvent(element, 'dragenter', function(event) {
+			if (validateDragData(event)) {
+				if (!dropping) {
+					dropElements = buildDropElements(element, data);
+					dropIndicator = document.createElement('div');
+					dropIndicator.className = 'rsfh-drop-indicator';
+					document.body.appendChild(dropIndicator);
+				}
+				dropping++;
+			}
+		});
+		addEvent(element, 'dragleave', function(event) {
+			if (dropping) {
+				dropping--;
+				if (!dropping) {
+					destroyDropElements(dropElements);
+					dropIndicator.parentNode.removeChild(dropIndicator);
+				}
+			}
+		});
+		addEvent(element, 'dragover', function(event) {
+			if (!validateDragData(event)) {
+				return;
+			}
+			event.preventDefault();
+			if (event.dataTransfer.effectAllowed === 'copy') {
+				event.dataTransfer.dropEffect = 'copy';
+			}
+			else {
+				event.dataTransfer.dropEffect = 'move';
+			}
+			var dropElement = getDropElement(event);
+			var clientRect = dropElement.clientRect;
+			dropIndicator.style.top = clientRect.top
+				+ (dropElement.position === 'before' ? 0 : clientRect.height)
+				+ window.pageYOffset + 'px';
+			dropIndicator.style.left = clientRect.left + window.pageXOffset + 'px';
+			dropIndicator.style.width = clientRect.width + 'px';
+		});
+		addEvent(element, 'drop', function(event) {
+			if (!validateDragData(event)) {
+				return;
+			}
+			if (dropping) {
+				dropping = 0;
+			}
+			var dropElement = getDropElement(event);
+			var dropData = dropElement.data;
+			var dragData = JSON.parse(event.dataTransfer.getData('text/rsfh-' + data.table));
+			event.stopPropagation();
+
+			destroyDropElements(dropElements);
+			dropIndicator.parentNode.removeChild(dropIndicator);
+
+			var formData = new FormData();
+			formData.append('REQUEST_TOKEN', config.REQUEST_TOKEN);
+			formData.append('table', data.table);
+			formData.append('act', dragData.act);
+			formData.append('type', dragData.type);
+			formData.append('ids', (dragData.ids || []).join(','));
+			formData.append('pid', dropData.id);
+			formData.append('parent', data.container);
+			formData.append('position', dropElement.position);
+
+			if (dragData.act === 'cut' && currentDragElement && dropElement.element) {
+				triggerEvent(currentDragElement, 'mouseout');
+				insertElementAt(currentDragElement, dropElement.element, dropElement.position === 'before');
+			}
+			else {
+				var placeholder = document.createElement('div');
+				placeholder.innerHTML = '…';
+				insertElementAt(placeholder, dropElement.element, dropElement.position === 'before');
+			}
+
+			fetch(config.routes.insert, {
+				method: 'POST',
+				credentials: 'include',
+				body: formData,
+			})
+				.then(function(response) {
+					return response.json();
+				})
+				.then(function(json) {
+					if (placeholder) {
+						if (json.table && json.id) {
+							renderElement(placeholder, json.table, json.id);
+						}
+						else {
+							setCookie('rsfh-scroll-position', Math.round(window.pageYOffset || document.documentElement.scrollTop) || 0);
+							document.location.reload();
+						}
+					}
+				})
+				.catch(function(error) {
+					throw error;
+				});
+
+		});
+	};
+	var initDragHandle = function(element, data, handle) {
+		handle.draggable = true;
+		addEvent(handle, 'dragstart', function(event) {
+			if (event.dataTransfer.addElement) {
+				event.dataTransfer.addElement(element);
+			}
+			currentDragElement = element;
+			event.dataTransfer.effectAllowed = 'move';
+			event.dataTransfer.setData('text/rsfh-' + data.table, JSON.stringify({
+				act: 'cut',
+				ids: data.allIds,
+			}));
+		});
+	};
+	var renderElement = function(element, table, id) {
+
+		var formData = new FormData();
+		formData.append('table', table);
+		formData.append('id', id);
+		formData.append('pageId', config.pageId);
+		formData.append('REQUEST_TOKEN', config.REQUEST_TOKEN);
+
+		element.style.setProperty('opacity', '0.25', 'important');
+
+		fetch(config.routes.render, {
+			method: 'POST',
+			credentials: 'include',
+			body: formData,
+		})
+			.then(function(response) {
+				return response.text();
+			})
+			.then(function(html) {
+				var htmlWrap = document.createElement('div');
+				var nodes = [];
+				htmlWrap.innerHTML = html;
+				while (htmlWrap.firstChild) {
+					nodes.push(htmlWrap.firstChild);
+					element.parentNode.insertBefore(htmlWrap.firstChild, element);
+				}
+				triggerEvent(element, 'mouseout');
+				element.parentNode.removeChild(element);
+				nodes.forEach(function(node) {
+					if (node.getAttribute && node.getAttribute('data-frontend-helper')) {
+						init(node);
+					}
+				});
+			})
+			.catch(function(error) {
+				throw error;
+			});
+
+	};
+	var deleteElement = function(element, data) {
+
+		element.style.setProperty('opacity', '0.25', 'important');
+
+		var formData = new FormData();
+		formData.append('table', data.table);
+		formData.append('parent', data.parent);
+		formData.append('REQUEST_TOKEN', config.REQUEST_TOKEN);
+
+		(data.allIds || [data.id]).forEach(function(id) {
+			formData.append('ids[]', id);
+		});
+
+		fetch(config.routes.delete, {
+			method: 'POST',
+			credentials: 'include',
+			body: formData,
+		})
+			.then(function(response) {
+				return response.json();
+			})
+			.then(function(json) {
+				if (json.success) {
+					triggerEvent(element, 'mouseout');
+					element.parentNode.removeChild(element);
+				}
+				else {
+					throw new Error();
+				}
+			})
+			.catch(function(error) {
+				element.style.opacity = '';
+				throw error;
+			});
+
+	};
 	var postFormRequest = function(url, data, isXmlHttpRequest, callback) {
 
 		var iframe = document.createElement('iframe');
@@ -216,8 +476,88 @@ document.addEventListener('DOMContentLoaded', function() {
 
 	var active = !!getCookie('rsfh-active');
 	var lightbox;
+	var lightboxIsPopup;
+	var renderOnClose;
 	var lightboxScrollPosition;
 	var config = {};
+	var currentDragElement;
+
+	var buildContentElementList = function(elements) {
+
+		var elementsByGroup = {};
+
+		Object.keys(elements).forEach(function(type) {
+			elementsByGroup[elements[type].group] = elementsByGroup[elements[type].group] || {};
+			elementsByGroup[elements[type].group][type] = elements[type];
+		});
+
+		var wrap = document.createElement('div');
+		wrap.className = 'rsfh-element-list is-closed';
+
+		var closeButton = document.createElement('a');
+		closeButton.className = 'rsfh-element-list-close';
+		closeButton.innerHTML = 'X';
+		closeButton.href = '';
+		addEvent(closeButton, 'click', function(event) {
+			event.preventDefault();
+			wrap.className += ' is-closed';
+			setTimeout(function() {
+				wrap.parentNode.removeChild(wrap);
+			}, 300);
+		});
+		wrap.appendChild(closeButton);
+
+		var wrapUl = document.createElement('ul');
+		wrap.appendChild(wrapUl);
+
+		Object.keys(elementsByGroup).forEach(function(group) {
+
+			var groupLi = document.createElement('li');
+			wrapUl.appendChild(groupLi);
+			var groupLabel = document.createElement('span');
+			groupLi.appendChild(groupLabel);
+			groupLabel.innerText = group;
+			var groupUl = document.createElement('ul');
+			groupLi.appendChild(groupUl);
+
+			Object.keys(elementsByGroup[group]).forEach(function(type) {
+				var elementLi = document.createElement('li');
+				groupUl.appendChild(elementLi);
+				elementLi.innerText = elementsByGroup[group][type].label[0] || type;
+				elementLi.draggable = true;
+				addEvent(elementLi, 'dragstart', function(event) {
+					event.dataTransfer.effectAllowed = 'copy';
+					event.dataTransfer.setData('text/rsfh-tl_content', JSON.stringify({
+						act: 'create',
+						type: type,
+					}));
+				});
+			});
+
+		});
+
+		document.body.appendChild(wrap);
+
+		// Trigger reflow to apply the styles
+		wrap.offsetWidth;
+		wrap.className = wrap.className.replace(' is-closed', '');
+
+	};
+
+	var initContentElementList = function() {
+		fetch(config.routes.elements + '?table=tl_content', {
+			credentials: 'include',
+		})
+			.then(function(response) {
+				return response.json();
+			})
+			.then(function(json) {
+				buildContentElementList(json);
+			})
+			.catch(function(error) {
+				throw error;
+			});
+	};
 
 	var init = function(element) {
 
@@ -264,52 +604,79 @@ document.addEventListener('DOMContentLoaded', function() {
 				}
 			}
 
+			if (targetLink.href.match(/[&?]act=delete(?:&|$)/) && data.table && data.id && data.parent) {
+				event.preventDefault();
+				deleteElement(element, data);
+				return;
+			}
+
+			lightboxIsPopup = !!targetLink.href.match(/[&?]popup=1(?:&|$)/);
+
 			if (
 				!config.lightbox
 				|| hasClass(event.target, 'rsfh-activate')
 				|| hasClass(event.target, 'rsfh-preview')
+				// Disable lightbox if users try to open links in a new tab
+				|| event.ctrlKey
+				|| event.shiftKey
+				|| event.metaKey
+				|| event.which === 2
 			) {
+				if (lightboxIsPopup) {
+					targetLink.href = targetLink.href.replace(/([&?])popup=1(?:&|$)/, '$1');
+					setTimeout(function() {
+						targetLink.href += '&popup=1';
+					}, 100);
+				}
 				return;
 			}
 
-			// Disable lightbox if users try to open links in a new tab
-			if (event.ctrlKey || event.shiftKey || event.metaKey || event.which === 2) {
-				return;
+			if (data.liveReload) {
+				renderOnClose = {
+					element: element,
+					table: data.table,
+					id: data.id,
+				};
+			}
+			else {
+				renderOnClose = undefined;
 			}
 
 			lightboxScrollPosition = Math.round(window.pageYOffset || document.documentElement.scrollTop) || 0;
 
-			document.documentElement.style.marginTop = -lightboxScrollPosition + 'px';
-			document.documentElement.style.height = (window.innerHeight || document.documentElement.clientHeight) + 'px';
-			document.documentElement.style.overflow = 'hidden';
-			window.scrollTo(0, 0);
+			if (!lightboxIsPopup) {
+				document.documentElement.style.marginTop = -lightboxScrollPosition + 'px';
+				document.documentElement.style.height = (window.innerHeight || document.documentElement.clientHeight) + 'px';
+				document.documentElement.style.overflow = 'hidden';
+				window.scrollTo(0, 0);
+			}
 
 			lightbox = lightbox || document.createElement('div');
-			lightbox.className = 'rsfh-lightbox';
+			lightbox.innerHTML = '';
+			lightbox.className = 'rsfh-lightbox is-closed';
+			lightbox.style.width = '';
 
-			var firstLoadEvent = true;
+			if (lightboxIsPopup) {
+				lightbox.className += ' is-popup';
+			}
+
 			var iframe = document.createElement('iframe');
 			iframe.id = iframe.name = 'rsfh-lightbox-iframe';
-			addEvent(iframe, 'load', function(event) {
-				if (firstLoadEvent) {
-					firstLoadEvent = false;
-					return;
-				}
-				if (iframe.contentWindow.location.href === 'about:blank') {
-					closeLightbox(true);
-				}
-			});
 			lightbox.appendChild(iframe);
+
+			var lightboxToolbar = document.createElement('div');
+			lightboxToolbar.className = 'rsfh-lightbox-toolbar';
+			lightbox.appendChild(lightboxToolbar);
 
 			var lightboxCloseButton = document.createElement('a');
 			lightboxCloseButton.className = 'rsfh-lightbox-close';
-			lightboxCloseButton.innerHTML = 'X';
+			lightboxCloseButton.innerHTML = getLabel('close');
 			lightboxCloseButton.href = '';
 			addEvent(lightboxCloseButton, 'click', function(event) {
 				closeLightbox();
 				event.preventDefault();
 			});
-			lightbox.appendChild(lightboxCloseButton);
+			lightboxToolbar.appendChild(lightboxCloseButton);
 
 			var lightboxCancelButton = document.createElement('a');
 			lightboxCancelButton.className = 'rsfh-lightbox-cancel';
@@ -319,9 +686,38 @@ document.addEventListener('DOMContentLoaded', function() {
 				closeLightbox(true);
 				event.preventDefault();
 			});
-			lightbox.appendChild(lightboxCancelButton);
+			lightboxToolbar.appendChild(lightboxCancelButton);
+
+			if (lightboxIsPopup) {
+				if (window.localStorage && localStorage.rsfhLightboxWidth) {
+					lightbox.style.width = localStorage.rsfhLightboxWidth;
+				}
+				var lightboxResizeHandle = document.createElement('span');
+				lightboxResizeHandle.className = 'rsfh-lightbox-resize-handle';
+				addEvent(lightboxResizeHandle, 'mousedown', function(event) {
+					event.preventDefault();
+					iframe.style.pointerEvents = 'none';
+					addEvent(window, 'mousemove', mouseMove);
+					addEvent(window, 'mouseup', mouseUp);
+					function mouseMove(event) {
+						lightbox.style.width = event.clientX + 5 + 'px';
+					}
+					function mouseUp(event) {
+						iframe.style.pointerEvents = '';
+						localStorage.rsfhLightboxWidth = lightbox.style.width;
+						removeEvent(window, 'mousemove', mouseMove);
+						removeEvent(window, 'mouseup', mouseUp);
+					}
+				});
+				lightbox.appendChild(lightboxResizeHandle);
+			}
 
 			document.body.appendChild(lightbox);
+
+			// Trigger reflow to apply the styles
+			lightbox.offsetWidth;
+			removeClass(lightbox, 'is-closed');
+
 			targetLink.target = 'rsfh-lightbox-iframe';
 
 		});
@@ -347,7 +743,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			link.href = data.links[key].url;
 			link.target = '_top';
 			link.className = 'rsfh-' + key;
-			link.innerHTML = link.title = data.links[key].label;
+			link.innerHTML = '<span class="rsfh-label">' + data.links[key].label;
 			if (data.links[key].icon) {
 				link.style.backgroundImage = 'url("' + data.links[key].icon + '")';
 			}
@@ -387,23 +783,54 @@ document.addEventListener('DOMContentLoaded', function() {
 					data.column.split('&').join('&amp;').split('<').join('&lt;') + '</div>';
 			}
 			infoHtml += '<div class="rsfh-templates-label">Templates:</div>';
+			infoHtml += '<div class="rsfh-templates-rows">';
 			for (var template in infoTemplates) {
-				infoHtml += '<div><b>' + template + ':</b> ';
+				infoHtml += '<div><b class="rsfh-templates-name">' + template + ':</b> ';
 				if (infoTemplates[template].url) {
-					infoHtml += '<a href="' + infoTemplates[template].url + '" title="' + infoTemplates[template].label.split('"').join('&quot;') + '">';
+					infoHtml += '<a class="rsfh-templates-path" href="' + infoTemplates[template].url + '" title="' + infoTemplates[template].label.split('"').join('&quot;') + '">';
+				}
+				else {
+					infoHtml += '<span class="rsfh-templates-path">'
 				}
 				infoHtml += infoTemplates[template].path;
 				if (infoTemplates[template].url) {
 					infoHtml += '</a>';
 				}
+				else {
+					infoHtml += '</span>'
+				}
 				infoHtml += '</div>';
 			}
+			infoHtml += '</div>';
 			infoHtml += '</div>';
 
 			var info = document.createElement('div');
 			info.className = 'rsfh-info';
 			info.innerHTML = infoHtml;
 			toolbar.appendChild(info);
+
+		}
+
+		if (data.container && data.table) {
+			initDropArea(element, data);
+		}
+
+		if (data.id && data.table && data.parent) {
+
+			var dragHandle = document.createElement('div');
+			dragHandle.className = 'rsfh-drag-handle';
+			toolbar.appendChild(dragHandle);
+
+			data.allIds = [data.id];
+
+			Array.prototype.forEach.call(element.querySelectorAll('*[data-frontend-helper]'), function(element) {
+				var childData = getNodeData(element);
+				if (childData.id && childData.table === data.table && childData.parent === data.parent) {
+					data.allIds.push(childData.id);
+				}
+			});
+
+			initDragHandle(element, data, dragHandle);
 
 		}
 
@@ -415,15 +842,19 @@ document.addEventListener('DOMContentLoaded', function() {
 			if (getCookie('rsfh-active')) {
 				addClass(activateLink, 'rsfh-activate-active');
 			}
-			activateLink.innerHTML = activateLink.title = active ?
+			activateLink.innerHTML = '<span class="rsfh-label">' + (
+				active ?
 				data.labels.deactivate :
-				data.labels.activate;
+				data.labels.activate
+			);
 			addEvent(activateLink, 'click', function (event) {
 				setCookie('rsfh-active', active ? null : '1');
 				active = !active;
-				this.innerHTML = this.title = active ?
+				this.innerHTML = this.title = '<span class="rsfh-label">' + (
+					active ?
 					data.labels.deactivate :
-					data.labels.activate;
+					data.labels.activate
+				);
 				if (active) {
 					addClass(activateLink, 'rsfh-activate-active');
 				}
@@ -463,6 +894,26 @@ document.addEventListener('DOMContentLoaded', function() {
 				(mainNavContents.querySelector('.rsfh-page') && mainNavContents.querySelector('.rsfh-page').nextSibling) ||
 				mainNavContents.childNodes[0]
 			);
+
+			var elementsLink = document.createElement('a');
+			elementsLink.href = document.location.href;
+			elementsLink.className = 'rsfh-elements';
+			elementsLink.innerHTML = elementsLink.title = getLabel('contentElements');
+			addEvent(elementsLink, 'click', function(event) {
+				initContentElementList();
+				event.stopPropagation();
+				event.preventDefault();
+			});
+			mainNavContents.insertBefore(
+				elementsLink,
+				mainNavContents.querySelector('.rsfh-backend')
+				|| mainNavContents.childNodes[0]
+			);
+			mainNavContents.insertBefore(
+				document.createElement('hr'),
+				elementsLink
+			);
+
 			if (
 				mainNavContents.querySelector('.rsfh-backend') &&
 				mainNavContents.querySelector('.rsfh-backend').previousSibling.nodeName.toLowerCase() !== 'hr'
@@ -541,6 +992,9 @@ document.addEventListener('DOMContentLoaded', function() {
 			timeout = setTimeout(function() {
 				isOver = false;
 				document.body.removeChild(toolbar);
+				if (overlay.parentNode === document.body) {
+					document.body.removeChild(overlay);
+				}
 			}, 400);
 			if (fromToolbar) {
 				clearTimeout(timeout2);
@@ -579,19 +1033,35 @@ document.addEventListener('DOMContentLoaded', function() {
 	};
 
 	var closeLightbox = function(withoutReload) {
-		if (lightbox) {
-			lightbox.innerHTML = '';
-		}
-		document.documentElement.style.marginTop = '';
-		document.documentElement.style.height = '';
-		document.documentElement.style.overflow = '';
-		window.scrollTo(0, lightboxScrollPosition);
-		if (!withoutReload) {
-			setCookie('rsfh-scroll-position', lightboxScrollPosition);
-			document.location.reload();
+		if (lightbox && lightboxIsPopup) {
+			lightbox.className += ' is-closed';
+			setTimeout(clean, 300);
 		}
 		else {
-			lightbox.parentNode.removeChild(lightbox);
+			clean();
+		}
+		if (!withoutReload) {
+			if (renderOnClose) {
+				renderElement(renderOnClose.element, renderOnClose.table, renderOnClose.id);
+			}
+			else {
+				setCookie('rsfh-scroll-position', lightboxScrollPosition);
+				document.location.reload();
+			}
+		}
+		function clean() {
+			if (lightbox) {
+				lightbox.innerHTML = '';
+			}
+			if (!lightboxIsPopup) {
+				document.documentElement.style.marginTop = '';
+				document.documentElement.style.height = '';
+				document.documentElement.style.overflow = '';
+				window.scrollTo(0, lightboxScrollPosition);
+			}
+			if (withoutReload) {
+				lightbox.parentNode.removeChild(lightbox);
+			}
 		}
 	};
 

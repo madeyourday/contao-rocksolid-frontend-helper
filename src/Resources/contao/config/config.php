@@ -26,3 +26,4 @@ $GLOBALS['TL_HOOKS']['loadDataContainer'][] = array('rocksolid_frontend_helper.b
 $GLOBALS['TL_HOOKS']['initializeSystem'][] = array('rocksolid_frontend_helper.backend_hooks', 'initializeSystemHook');
 
 $GLOBALS['TL_PERMISSIONS'][] = 'rocksolidFrontendHelperOperations';
+$GLOBALS['TL_PERMISSIONS'][] = 'rocksolidFrontendHelperContentElements';
