@@ -914,10 +914,10 @@ class FrontendHooks
 				$matches[0] = preg_replace('(\\sdata-frontend-helper="([^"]*)")is', '', $matches[0]);
 			}
 
-			return $matches[0] . ' data-frontend-helper="' . htmlspecialchars(json_encode($data)) . '"' . $content;
+			return $matches[0] . ' data-frontend-helper="' . str_replace(['{', '}'], ['&#123;', '&#125;'], htmlspecialchars(json_encode($data))) . '"' . $content;
 		}
 
-		return '<span class="rsfh-dummy" data-frontend-helper="' . htmlspecialchars(json_encode($data)) . '"></span>' . $content;
+		return '<span class="rsfh-dummy" data-frontend-helper="' . str_replace(['{', '}'], ['&#123;', '&#125;'], htmlspecialchars(json_encode($data))) . '"></span>' . $content;
 	}
 
 	/**
