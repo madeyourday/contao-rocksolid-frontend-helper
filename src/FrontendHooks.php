@@ -836,7 +836,7 @@ class FrontendHooks
 			return null;
 		}
 
-		$stylesheets = \StringUtil::deserialize($stylesheets);
+		$stylesheets = \StringUtil::deserialize($stylesheets, true);
 		foreach ($stylesheets as $stylesheet) {
 			$file = \FilesModel::findByUuid($stylesheet);
 			if ($file && $file->path && file_exists(TL_ROOT . '/' . $file->path . '.base')) {
