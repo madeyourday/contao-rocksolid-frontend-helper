@@ -9,6 +9,9 @@
 namespace MadeYourDay\RockSolidFrontendHelper;
 
 use Contao\CoreBundle\Util\PackageUtil;
+use Contao\StringUtil;
+use Contao\System;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -59,9 +62,22 @@ class FrontendHooks
 		$data = array();
 
 		if (in_array('infos', $permissions)) {
+			try {
+				if (
+					($twig = System::getContainer()->get('twig', ContainerInterface::NULL_ON_INVALID_REFERENCE))
+					&& $twig->getLoader()->exists($templateCandidate = "@Contao/$template.html.twig")
+				) {
+					$templatePath = StringUtil::stripRootDir($twig->getLoader()->getSourceContext($templateCandidate)->getPath());
+				}
+				else {
+					$templatePath = substr(\Controller::getTemplate($template), strlen(TL_ROOT) + 1);
+				}
+			} catch (\Throwable $exception) {
+				$templatePath = null;
+			}
 			$data = array(
 				'template' => $template,
-				'templatePath' => substr(\Controller::getTemplate($template), strlen(TL_ROOT) + 1),
+				'templatePath' => $templatePath,
 			);
 			if (in_array('tpl_editor', $permissions)) {
 				$data = static::addTemplateURL($data);
