@@ -11,6 +11,7 @@ namespace MadeYourDay\RockSolidFrontendHelper\Controller;
 use Contao\CoreBundle\Exception\RedirectResponseException;
 use Contao\CoreBundle\Framework\FrameworkAwareInterface;
 use Contao\CoreBundle\Framework\FrameworkAwareTrait;
+use Contao\DataContainer;
 use Doctrine\DBAL\Connection;
 use MadeYourDay\RockSolidFrontendHelper\ElementBuilder;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -99,7 +100,7 @@ class JsonApiController extends AbstractController implements FrameworkAwareInte
 				->findByPk($request->get('pid'))
 			;
 			$previousId = $connection
-				->fetchColumn('
+				->fetchOne('
 					SELECT id
 					FROM tl_content
 					WHERE pid = :pid
@@ -246,7 +247,7 @@ class JsonApiController extends AbstractController implements FrameworkAwareInte
 		$controller->loadDataContainer($table);
 		$GLOBALS['TL_DCA']['tl_content']['config']['ptable'] = $ptable;
 
-		$driver = 'DC_' . $GLOBALS['TL_DCA'][$table]['config']['dataContainer'];
+		$driver = DataContainer::getDriverForTable($table);
 		$dca = new $driver($table);
 		$newElementId = null;
 
