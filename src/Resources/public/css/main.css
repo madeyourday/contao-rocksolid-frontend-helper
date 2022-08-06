@@ -376,6 +376,7 @@ a.rsfh-activate.rsfh-activate-active {
 	margin-left: 0.5em;
 }
 .rsfh-lightbox-toolbar {
+	pointer-events: none;
 	box-sizing: border-box;
 	position: absolute;
 	top: 0;
@@ -386,6 +387,7 @@ a.rsfh-activate.rsfh-activate-active {
 }
 .rsfh-lightbox-toolbar > .rsfh-lightbox-close,
 .rsfh-lightbox-toolbar > .rsfh-lightbox-cancel {
+	pointer-events: auto;
 	float: right;
 	box-sizing: border-box;
 }
