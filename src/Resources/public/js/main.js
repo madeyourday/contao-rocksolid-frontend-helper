@@ -1059,7 +1059,7 @@ document.addEventListener('DOMContentLoaded', function() {
 				document.documentElement.style.overflow = '';
 				window.scrollTo(0, lightboxScrollPosition);
 			}
-			if (withoutReload) {
+			if (lightbox.parentNode) {
 				lightbox.parentNode.removeChild(lightbox);
 			}
 		}
