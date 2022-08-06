@@ -8,6 +8,11 @@
 
 namespace MadeYourDay\RockSolidFrontendHelper;
 
+use Contao\Environment;
+use Contao\Input;
+use Contao\System;
+use Symfony\Component\HttpFoundation\Request;
+
 /**
  * RockSolid Frontend Helper
  *
@@ -20,15 +25,18 @@ class BackendHooks
 	 */
 	public function initializeSystemHook()
 	{
-		if (TL_MODE !== 'BE' || !\Input::get('rsfhr')) {
+		if (
+			!Input::get('rsfhr')
+			|| !System::getContainer()->get('contao.routing.scope_matcher')->isBackendRequest(System::getContainer()->get('request_stack')->getCurrentRequest() ?? Request::create(''))
+		) {
 			return;
 		}
 
-		\Environment::set('queryString', preg_replace('(([&?])rsfhr=1(&|$))', '$1', \Environment::get('queryString')));
+		Environment::set('queryString', preg_replace('(([&?])rsfhr=1(&|$))', '$1', Environment::get('queryString')));
 
 		// Fix missing CURRENT_ID if rsfhr is set
-		if (\Input::get('act') === 'create' && \Input::get('id')) {
-			\System::getContainer()->get('session')->set('CURRENT_ID', \Input::get('id'));
+		if (Input::get('act') === 'create' && Input::get('id')) {
+			System::getContainer()->get('session')->set('CURRENT_ID', Input::get('id'));
 		}
 	}
 
@@ -42,16 +50,16 @@ class BackendHooks
 	 */
 	public function loadDataContainerHook($table)
 	{
-		if (TL_MODE !== 'BE') {
+		if (!System::getContainer()->get('contao.routing.scope_matcher')->isBackendRequest(System::getContainer()->get('request_stack')->getCurrentRequest() ?? Request::create(''))) {
 			return;
 		}
 
-		if (defined('TL_REFERER_ID') && \Input::get('ref')) {
-			$this->removeRsfhrParam(\Input::get('ref'));
+		if (System::getContainer()->get('request_stack')->getCurrentRequest()->get('_contao_referer_id') && Input::get('ref')) {
+			$this->removeRsfhrParam(Input::get('ref'));
 		}
 
 		// Only handle requests from the frontend helper
-		if (!\Input::get('rsfhr')) {
+		if (!Input::get('rsfhr')) {
 			return;
 		}
 
@@ -69,7 +77,7 @@ class BackendHooks
 	 */
 	private function removeRsfhrParam($ref)
 	{
-		$session = \System::getContainer()->get('session');
+		$session = System::getContainer()->get('session');
 		if (!$session->isStarted()) {
 			return;
 		}
@@ -86,18 +94,18 @@ class BackendHooks
 	 */
 	private function handleTemplateSelection()
 	{
-		if (\Input::get('key') !== 'new_tpl') {
+		if (Input::get('key') !== 'new_tpl') {
 			return;
 		}
 
-		if (\Input::get('original') && !\Input::post('original')) {
+		if (Input::get('original') && !Input::post('original')) {
 			// Preselect the original template
-			\Input::setPost('original', \Input::get('original'));
+			Input::setPost('original', Input::get('original'));
 		}
 
-		if (\Input::get('target') && !\Input::post('target')) {
+		if (Input::get('target') && !Input::post('target')) {
 			// Preselect the target template folder
-			\Input::setPost('target', \Input::get('target'));
+			Input::setPost('target', Input::get('target'));
 		}
 	}
 
@@ -106,10 +114,10 @@ class BackendHooks
 	 */
 	private function storeFrontendReferrer()
 	{
-		$base = \Environment::get('path');
-		$base .= \System::getContainer()->get('router')->generate('contao_backend');
+		$base = Environment::get('path');
+		$base .= System::getContainer()->get('router')->generate('contao_backend');
 
-		$referrer = parse_url(\Environment::get('httpReferer'));
+		$referrer = parse_url(Environment::get('httpReferer'));
 		$referrer = ($referrer['path'] ?? '') . (($referrer['query'] ?? null) ? '?' . $referrer['query'] : '');
 
 		// Stop if the referrer is a backend URL
@@ -126,30 +134,30 @@ class BackendHooks
 		}
 
 		// Make homepage possible as referrer
-		if ($referrer === \Environment::get('path') . '/') {
+		if ($referrer === Environment::get('path') . '/') {
 			$referrer .= '?';
 		}
 
-		$referrer = \Environment::get('path') . '/bundles/rocksolidfrontendhelper/html/referrer.html?referrer=' . rawurlencode($referrer);
+		$referrer = Environment::get('path') . '/bundles/rocksolidfrontendhelper/html/referrer.html?referrer=' . rawurlencode($referrer);
 
 		// set the frontend URL as referrer
 
-		$sessionKey = \Input::get('popup') ? 'popupReferer' : 'referer';
-		$referrerSession = \System::getContainer()->get('session')->get($sessionKey);
+		$sessionKey = Input::get('popup') ? 'popupReferer' : 'referer';
+		$referrerSession = System::getContainer()->get('session')->get($sessionKey);
 
-		if (defined('TL_REFERER_ID') && !\Input::get('ref')) {
+		if (System::getContainer()->get('request_stack')->getCurrentRequest()->get('_contao_referer_id') && !Input::get('ref')) {
 
-			$referrer = substr($referrer, strlen(TL_PATH) + 1);
-			$tlRefererId = substr(md5(TL_START - 1), 0, 8);
+			$referrer = substr($referrer, strlen(System::getContainer()->get('request_stack')->getCurrentRequest()->getBasePath()) + 1);
+			$tlRefererId = substr(md5(System::getContainer()->get('kernel')->getStartTime() - 1), 0, 8);
 			$referrerSession[$tlRefererId]['current'] = $referrer;
-			\Input::setGet('ref', $tlRefererId);
-			$requestUri = \Environment::get('requestUri');
+			Input::setGet('ref', $tlRefererId);
+			$requestUri = Environment::get('requestUri');
 			$requestUri .= (strpos($requestUri, '?') === false ? '?' : '&') . 'ref=' . $tlRefererId;
-			\Environment::set('requestUri', $requestUri);
-			\System::getContainer()->get('request_stack')->getCurrentRequest()->query->set('ref', $tlRefererId);
+			Environment::set('requestUri', $requestUri);
+			System::getContainer()->get('request_stack')->getCurrentRequest()->query->set('ref', $tlRefererId);
 
 		}
 
-		\System::getContainer()->get('session')->set($sessionKey, $referrerSession);
+		System::getContainer()->get('session')->set($sessionKey, $referrerSession);
 	}
 }

@@ -22,6 +22,8 @@ services:
         public: true
 
     MadeYourDay\RockSolidFrontendHelper\ElementProvider:
+        arguments:
+            - "%contao.image.valid_extensions%"
         public: false
         tags:
             - { name: rocksolid_frontend_helper.element_provider, priority: 192 }

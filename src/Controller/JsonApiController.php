@@ -8,10 +8,13 @@
 
 namespace MadeYourDay\RockSolidFrontendHelper\Controller;
 
+use Contao\ContentModel;
+use Contao\Controller;
 use Contao\CoreBundle\Exception\RedirectResponseException;
 use Contao\CoreBundle\Framework\FrameworkAwareInterface;
 use Contao\CoreBundle\Framework\FrameworkAwareTrait;
 use Contao\DataContainer;
+use Contao\Input;
 use Doctrine\DBAL\Connection;
 use MadeYourDay\RockSolidFrontendHelper\ElementBuilder;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -96,7 +99,7 @@ class JsonApiController extends AbstractController implements FrameworkAwareInte
 
 		if ($request->get('position') === 'before') {
 			$content = $this->framework
-				->getAdapter('ContentModel')
+				->getAdapter(ContentModel::class)
 				->findByPk($request->get('pid'))
 			;
 			$previousId = $connection
@@ -163,7 +166,7 @@ class JsonApiController extends AbstractController implements FrameworkAwareInte
 			throw new NotFoundHttpException();
 		}
 
-		$input = $this->framework->getAdapter('Input');
+		$input = $this->framework->getAdapter(Input::class);
 		$params = [
 			'act' => 'delete',
 			'rt' => $request->get('REQUEST_TOKEN'),
@@ -213,7 +216,7 @@ class JsonApiController extends AbstractController implements FrameworkAwareInte
 			}
 		}
 
-		$input = $this->framework->getAdapter('Input');
+		$input = $this->framework->getAdapter(Input::class);
 
 		foreach ($params as $key => $value) {
 			$input->setGet($key, $value);
@@ -236,8 +239,8 @@ class JsonApiController extends AbstractController implements FrameworkAwareInte
 	 */
 	private function callDcaMethod($act, $table, $ptable = null, $id = null)
 	{
-		$input = $this->framework->getAdapter('Input');
-		$controller = $this->framework->getAdapter('Controller');
+		$input = $this->framework->getAdapter(Input::class);
+		$controller = $this->framework->getAdapter(Controller::class);
 
 		if ($id) {
 			$input->setGet('id', (string) $id);

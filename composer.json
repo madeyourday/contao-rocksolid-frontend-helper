@@ -18,8 +18,8 @@
 		"source":"https://github.com/madeyourday/contao-rocksolid-frontend-helper"
 	},
 	"require":{
-		"php":">=7.2",
-		"contao/core-bundle":"^4.9.17 < 4.10 || ^4.11.6",
+		"php":">=7.4",
+		"contao/core-bundle":"^4.13 || ^5.0",
 		"doctrine/dbal": "^2.11 || ^3.3",
 		"symfony/dependency-injection": "^4.4 || ^5.2",
 		"symfony/framework-bundle": "^4.4 || ^5.2",

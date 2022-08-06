@@ -8,8 +8,10 @@
 
 namespace MadeYourDay\RockSolidFrontendHelper\Controller;
 
+use Contao\Controller;
 use Contao\CoreBundle\Framework\FrameworkAwareInterface;
 use Contao\CoreBundle\Framework\FrameworkAwareTrait;
+use Contao\CoreBundle\InsertTag\InsertTagParser;
 use Contao\Environment;
 use Contao\InsertTags;
 use Contao\PageModel;
@@ -85,7 +87,7 @@ class RenderElementController extends AbstractController implements FrameworkAwa
 		}
 
 		$html = $this->renderElement((int) $request->get('id'), $request->get('table'));
-		$html = $this->framework->createInstance(InsertTags::class)->replace($html);
+		$html = $this->container->get('contao.insert_tag.parser')->replaceInline($html);
 
 		return new Response($html);
 	}
@@ -108,11 +110,11 @@ class RenderElementController extends AbstractController implements FrameworkAwa
 		if (!defined('BE_USER_LOGGED_IN') && !defined('FE_USER_LOGGED_IN') && $this->has('contao.security.token_checker')) {
 			$tokenChecker = $this->get('contao.security.token_checker');
 			define('FE_USER_LOGGED_IN', $tokenChecker->hasFrontendUser());
-			define('BE_USER_LOGGED_IN', $tokenChecker->hasBackendUser() && $tokenChecker->isPreviewMode());
+			define('BE_USER_LOGGED_IN', $tokenChecker->isPreviewMode());
 		}
 
 		return $this->framework
-			->getAdapter('Controller')
+			->getAdapter(Controller::class)
 			->getContentElement($id)
 		;
 	}

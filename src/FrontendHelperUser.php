@@ -8,6 +8,9 @@
 
 namespace MadeYourDay\RockSolidFrontendHelper;
 
+use Contao\BackendUser;
+use Contao\StringUtil;
+use Contao\User;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
@@ -18,7 +21,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
  *
  * @author Martin Auswöger <martin@madeyourday.net>
  */
-class FrontendHelperUser extends \BackendUser
+class FrontendHelperUser extends BackendUser
 {
 	/**
 	 * @var FrontendHelperUser Singelton instance
@@ -26,7 +29,7 @@ class FrontendHelperUser extends \BackendUser
 	protected static $objInstance;
 
 	/**
-	 * @var boolean|null Caches the result of \User::authenticate()
+	 * @var boolean|null Caches the result of User::authenticate()
 	 */
 	protected $frontendHelperUserAuthenticated = null;
 
@@ -38,7 +41,7 @@ class FrontendHelperUser extends \BackendUser
 		// Backwards compatibility for Contao 4.4
 		if (!$this instanceof UserInterface) {
 			if ($this->frontendHelperUserAuthenticated === null) {
-				$this->frontendHelperUserAuthenticated = \User::authenticate();
+				$this->frontendHelperUserAuthenticated = User::authenticate();
 			}
 			return $this->frontendHelperUserAuthenticated;
 		}
@@ -60,7 +63,7 @@ class FrontendHelperUser extends \BackendUser
 
 		foreach ($this->arrData as $key => $value) {
 			if (! is_numeric($value)) {
-				$this->$key = \StringUtil::deserialize($value);
+				$this->$key = StringUtil::deserialize($value);
 			}
 		}
 
@@ -89,7 +92,7 @@ class FrontendHelperUser extends \BackendUser
 
 			if ($objGroup->numRows > 0) {
 				foreach ($inherit as $field) {
-					$value = \StringUtil::deserialize($objGroup->$field, true);
+					$value = StringUtil::deserialize($objGroup->$field, true);
 					if (!empty($value)) {
 						$this->$field = array_merge((is_array($this->$field) ? $this->$field : (($this->$field != '') ? array($this->$field) : array())), $value);
 						$this->$field = array_unique($this->$field);

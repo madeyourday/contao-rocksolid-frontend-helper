@@ -8,10 +8,23 @@
 
 namespace MadeYourDay\RockSolidFrontendHelper;
 
+use Contao\Controller;
 use Contao\CoreBundle\Util\PackageUtil;
+use Contao\Database;
+use Contao\Environment;
+use Contao\Events;
+use Contao\FilesModel;
+use Contao\FrontendTemplate;
+use Contao\Image;
+use Contao\Module;
+use Contao\ModuleModel;
+use Contao\ModuleNews;
 use Contao\StringUtil;
 use Contao\System;
+use Contao\Template;
+use Contao\Widget;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -70,7 +83,7 @@ class FrontendHooks
 					$templatePath = StringUtil::stripRootDir($twig->getLoader()->getSourceContext($templateCandidate)->getPath());
 				}
 				else {
-					$templatePath = substr(\Controller::getTemplate($template), strlen(TL_ROOT) + 1);
+					$templatePath = substr(Controller::getTemplate($template), strlen(System::getContainer()->getParameter('kernel.project_dir')) + 1);
 				}
 			} catch (\Throwable $exception) {
 				$templatePath = null;
@@ -95,7 +108,7 @@ class FrontendHooks
 				$content = str_replace($matches2[0], $matches2[1] . $matches2[4], $content);
 
 				if (in_array('articles', $permissions)) {
-					\System::loadLanguageFile('tl_article');
+					System::loadLanguageFile('tl_article');
 					$data['links']['article'] = array(
 						'url' => static::getBackendURL('article', 'tl_content', $matches2[2], false),
 						'label' => sprintf(is_array($GLOBALS['TL_LANG']['tl_article']['edit']) ? $GLOBALS['TL_LANG']['tl_article']['edit'][1] : $GLOBALS['TL_LANG']['tl_article']['edit'], $matches2[2]),
@@ -107,13 +120,13 @@ class FrontendHooks
 					$data['container'] = 'tl_article:'.$matches2[2];
 					$data['table'] = 'tl_content';
 
-					\System::loadLanguageFile('tl_content');
+					System::loadLanguageFile('tl_content');
 					$data['links']['pastenew'] = array(
 						'url' => static::getBackendURL('article', 'tl_content', $matches2[2], 'create', array('mode' => 2, 'pid' => $matches2[2])),
 						'label' => $GLOBALS['TL_LANG']['tl_content']['pastenew'][0],
 					);
 
-					$lastContentElement = \Database::getInstance()
+					$lastContentElement = Database::getInstance()
 						->prepare("SELECT id FROM tl_content WHERE pid=? AND (ptable IS NULL OR ptable = '' OR ptable = 'tl_article') ORDER BY sorting DESC")
 						->limit(1)
 						->execute($matches2[2]);
@@ -124,7 +137,7 @@ class FrontendHooks
 						);
 					}
 
-					\System::loadLanguageFile('rocksolid_frontend_helper');
+					System::loadLanguageFile('rocksolid_frontend_helper');
 					$data['columnLabel'] = $GLOBALS['TL_LANG']['rocksolid_frontend_helper']['column'];
 					$data['column'] = pack("H*" , $matches2[3]);
 					if (isset($GLOBALS['TL_LANG']['COLS'][$data['column']])) {
@@ -143,11 +156,11 @@ class FrontendHooks
 				$content = str_replace($matches2[0], $matches2[1] . $matches2[3], $content);
 
 				if (in_array('beModules', $permissions)) {
-					\System::loadLanguageFile('tl_news');
+					System::loadLanguageFile('tl_news');
 					$data['links']['be-module'] = array(
 						'url' => static::getBackendURL('news', 'tl_content', $matches2[2], false),
 						'label' => sprintf(is_array($GLOBALS['TL_LANG']['tl_news']['edit']) ? $GLOBALS['TL_LANG']['tl_news']['edit'][1] : $GLOBALS['TL_LANG']['tl_news']['edit'], $matches2[2]),
-						'icon' => \Image::getPath('news.svg'),
+						'icon' => Image::getPath('news.svg'),
 					);
 				}
 
@@ -161,11 +174,11 @@ class FrontendHooks
 				$content = str_replace($matches2[0], $matches2[1] . $matches2[3], $content);
 
 				if (in_array('beModules', $permissions)) {
-					\System::loadLanguageFile('tl_calendar_events');
+					System::loadLanguageFile('tl_calendar_events');
 					$data['links']['be-module'] = array(
 						'url' => static::getBackendURL('calendar', 'tl_content', $matches2[2], false),
 						'label' => sprintf(is_array($GLOBALS['TL_LANG']['tl_calendar_events']['edit']) ? $GLOBALS['TL_LANG']['tl_calendar_events']['edit'][1] : $GLOBALS['TL_LANG']['tl_calendar_events']['edit'], $matches2[2]),
-						'icon' => \Image::getPath('settings.svg'),
+						'icon' => Image::getPath('settings.svg'),
 					);
 				}
 
@@ -179,11 +192,11 @@ class FrontendHooks
 				$content = str_replace($matches2[0], $matches2[1] . $matches2[3], $content);
 
 				if (in_array('beModules', $permissions)) {
-					\System::loadLanguageFile('tl_comments');
+					System::loadLanguageFile('tl_comments');
 					$data['links']['be-module'] = array(
 						'url' => static::getBackendURL('comments', null, $matches2[2]),
 						'label' => sprintf(is_array($GLOBALS['TL_LANG']['tl_comments']['edit']) ? $GLOBALS['TL_LANG']['tl_comments']['edit'][1] : $GLOBALS['TL_LANG']['tl_comments']['edit'], $matches2[2]),
-						'icon' => \Image::getPath('settings.svg'),
+						'icon' => Image::getPath('settings.svg'),
 					);
 				}
 
@@ -197,7 +210,7 @@ class FrontendHooks
 				$content = str_replace($matches2[0], $matches2[1] . $matches2[3], $content);
 
 				if (in_array('beModules', $permissions)) {
-					\System::loadLanguageFile('tl_rocksolid_mega_menu');
+					System::loadLanguageFile('tl_rocksolid_mega_menu');
 					$data['links']['be-module'] = array(
 						'url' => static::getBackendURL('rocksolid_mega_menu', 'tl_rocksolid_mega_menu_column', $matches2[2], false),
 						'label' => sprintf($GLOBALS['TL_LANG']['tl_rocksolid_mega_menu']['edit'][1], $matches2[2]),
@@ -233,10 +246,10 @@ class FrontendHooks
 			'toolbar' => true,
 		);
 
-		\System::loadLanguageFile('rocksolid_frontend_helper');
+		System::loadLanguageFile('rocksolid_frontend_helper');
 
 		if (in_array('pages', $permissions)) {
-			\System::loadLanguageFile('tl_page');
+			System::loadLanguageFile('tl_page');
 			$data['links']['page'] = array(
 				'url' => static::getBackendURL('page', null, $GLOBALS['objPage']->id),
 				'label' => sprintf(is_array($GLOBALS['TL_LANG']['tl_page']['edit']) ? $GLOBALS['TL_LANG']['tl_page']['edit'][1] : $GLOBALS['TL_LANG']['tl_page']['edit'], $GLOBALS['objPage']->id),
@@ -244,7 +257,7 @@ class FrontendHooks
 		}
 
 		if (in_array('articles', $permissions)) {
-			\System::loadLanguageFile('tl_page');
+			System::loadLanguageFile('tl_page');
 			$data['links']['article'] = array(
 				'url' => static::getBackendURL('article', null, null, null, array(
 					'pn' => $GLOBALS['objPage']->id,
@@ -254,7 +267,7 @@ class FrontendHooks
 		}
 
 		if (in_array('feModules', $permissions)) {
-			\System::loadLanguageFile('tl_layout');
+			System::loadLanguageFile('tl_layout');
 			$data['links']['layout'] = array(
 				'url' => static::getBackendURL('themes', 'tl_layout', $GLOBALS['objPage']->layout),
 				'label' => sprintf(is_array($GLOBALS['TL_LANG']['tl_layout']['edit']) ? $GLOBALS['TL_LANG']['tl_layout']['edit'][1] : $GLOBALS['TL_LANG']['tl_layout']['edit'], $GLOBALS['objPage']->layout),
@@ -263,7 +276,7 @@ class FrontendHooks
 				if ($GLOBALS['objPage']->getRelated('layout')->name) {
 					$data['links']['layout']['label'] .= ' (' . $GLOBALS['objPage']->getRelated('layout')->name . ')';
 				}
-				\System::loadLanguageFile('tl_theme');
+				System::loadLanguageFile('tl_theme');
 				$data['links']['fe-module'] = array(
 					'url' => static::getBackendURL('themes', 'tl_module', $GLOBALS['objPage']->getRelated('layout')->pid, null),
 					'label' => sprintf(is_array($GLOBALS['TL_LANG']['tl_theme']['modules']) ? $GLOBALS['TL_LANG']['tl_theme']['modules'][1] : $GLOBALS['TL_LANG']['tl_theme']['modules'], $GLOBALS['objPage']->getRelated('layout')->pid),
@@ -274,7 +287,7 @@ class FrontendHooks
 				);
 				if (
 					$GLOBALS['objPage']->getRelated('layout')->stylesheet &&
-					count(\StringUtil::deserialize($GLOBALS['objPage']->getRelated('layout')->stylesheet))
+					count(StringUtil::deserialize($GLOBALS['objPage']->getRelated('layout')->stylesheet))
 				) {
 					// Only show a stylesheets link if stylesheets are used
 					$data['links']['stylesheet'] = array(
@@ -307,29 +320,29 @@ class FrontendHooks
 
 		$data['config'] = array(
 			'lightbox' => (bool)FrontendHelperUser::getInstance()->rocksolidFrontendHelperLightbox,
-			'REQUEST_TOKEN' => REQUEST_TOKEN,
+			'REQUEST_TOKEN' => System::getContainer()->get('contao.csrf.token_manager')->getDefaultTokenValue(),
 			'pageId' => $GLOBALS['objPage']->id ?? null,
 			'routes' => [
-				'elements' => \Controller::getContainer()->get('router')->generate('rocksolid_frontend_helper_elements'),
-				'insert' => \Controller::getContainer()->get('router')->generate('rocksolid_frontend_helper_insert'),
-				'delete' => \Controller::getContainer()->get('router')->generate('rocksolid_frontend_helper_delete'),
-				'render' => \Controller::getContainer()->get('router')->generate('rocksolid_frontend_helper_render'),
+				'elements' => Controller::getContainer()->get('router')->generate('rocksolid_frontend_helper_elements'),
+				'insert' => Controller::getContainer()->get('router')->generate('rocksolid_frontend_helper_insert'),
+				'delete' => Controller::getContainer()->get('router')->generate('rocksolid_frontend_helper_delete'),
+				'render' => Controller::getContainer()->get('router')->generate('rocksolid_frontend_helper_render'),
 			],
 		);
 
 		if (
 			!is_callable([PackageUtil::class, 'getContaoVersion'])
 			|| version_compare(PackageUtil::getContaoVersion(), '4.8', '<')
-			|| \System::getContainer()->getParameter('contao.preview_script') === \Environment::get('scriptName')
+			|| System::getContainer()->getParameter('contao.preview_script') === Environment::get('scriptName')
 		) {
 			try {
-				$previewEnabled = \defined('BE_USER_LOGGED_IN') && BE_USER_LOGGED_IN;
+				$previewEnabled = System::getContainer()->get('contao.security.token_checker')->isPreviewMode();
 				$data['config']['beSwitch'] = array(
 					'label' => $GLOBALS['TL_LANG']['MSC']['hiddenElements'] . ': ' . $GLOBALS['TL_LANG']['MSC'][$previewEnabled ? 'hiddenHide' : 'hiddenShow'],
-					'url' => \System::getContainer()->get('router')->generate('contao_backend_switch'),
+					'url' => System::getContainer()->get('router')->generate('contao_backend_switch'),
 					'data' => array(
 						'FORM_SUBMIT' => 'tl_switch',
-						'REQUEST_TOKEN' => REQUEST_TOKEN,
+						'REQUEST_TOKEN' => System::getContainer()->get('contao.csrf.token_manager')->getDefaultTokenValue(),
 						'unpublished' => $previewEnabled ? 'hide' : 'show',
 					),
 					'isXmlHttpRequest' =>
@@ -375,7 +388,7 @@ class FrontendHooks
 	/**
 	 * parseTemplate hook
 	 *
-	 * @param  \Template $template
+	 * @param  Template $template
 	 * @return void
 	 */
 	public function parseTemplateHook($template)
@@ -407,7 +420,7 @@ class FrontendHooks
 	 * parseWidget hook
 	 *
 	 * @param  string  $content html content
-	 * @param  \Widget $widget  widget object
+	 * @param  Widget  $widget  widget object
 	 * @return string           modified $content
 	 */
 	public function parseWidgetHook($content, $widget)
@@ -421,7 +434,7 @@ class FrontendHooks
 		);
 
 		if (in_array('contents', $permissions) && is_numeric($widget->id) && is_numeric($widget->pid)) {
-			\System::loadLanguageFile('tl_form_field');
+			System::loadLanguageFile('tl_form_field');
 			$data['links']['edit'] = array(
 				'url' => static::getBackendURL('form', 'tl_form_field', $widget->id),
 				'label' => sprintf(is_array($GLOBALS['TL_LANG']['tl_form_field']['edit']) ? $GLOBALS['TL_LANG']['tl_form_field']['edit'][1] : $GLOBALS['TL_LANG']['tl_form_field']['edit'], $widget->id),
@@ -443,7 +456,7 @@ class FrontendHooks
 			&& $widget->template !== 'form_rs_columns_plain'
 		) {
 			$data['template'] = $widget->template;
-			$data['templatePath'] = substr($widget->getTemplate($widget->template), strlen(TL_ROOT) + 1);
+			$data['templatePath'] = substr($widget->getTemplate($widget->template), strlen(System::getContainer()->getParameter('kernel.project_dir')) + 1);
 			if (in_array('tpl_editor', $permissions)) {
 				$data = static::addTemplateURL($data);
 			}
@@ -455,9 +468,9 @@ class FrontendHooks
 	/**
 	 * parseArticles hook
 	 *
-	 * @param  \FrontendTemplate $template
-	 * @param  \Widget           $row
-	 * @param  \ModuleNews       $module
+	 * @param  FrontendTemplate $template
+	 * @param  Widget           $row
+	 * @param  ModuleNews       $module
 	 * @return void
 	 */
 	public function parseArticlesHook($template, $row, $module)
@@ -475,7 +488,7 @@ class FrontendHooks
 	 * @param  array   $calendars
 	 * @param  int     $start
 	 * @param  int     $end
-	 * @param  \Events $module
+	 * @param  Events $module
 	 * @return array              Modified $allEvents array
 	 */
 	public function getAllEventsHook($allEvents, $calendars, $start, $end, $module)
@@ -500,7 +513,7 @@ class FrontendHooks
 	/**
 	 * Controller::getArticle hook
 	 *
-	 * @param  \Database_Result $row module database result
+	 * @param  object $row module database result
 	 * @return void
 	 */
 	public static function getArticleHook($row)
@@ -509,7 +522,7 @@ class FrontendHooks
 			return;
 		}
 
-		$cssId = \StringUtil::deserialize($row->cssID, true) + array('', '');
+		$cssId = StringUtil::deserialize($row->cssID, true) + array('', '');
 		$cssId[1] = trim($cssId[1] . ' rsfh-article-' . $row->id . '-' . bin2hex($row->inColumn ?: ''));
 		$row->cssID = serialize($cssId);
 	}
@@ -517,9 +530,9 @@ class FrontendHooks
 	/**
 	 * Controller::getFrontendModule hook
 	 *
-	 * @param  \Database_Result $row     module database result
-	 * @param  string           $content html content
-	 * @param  \Module          $module  module instance
+	 * @param  object $row     module database result
+	 * @param  string $content html content
+	 * @param  Module $module  module instance
 	 * @return string                    modified $content
 	 */
 	public function getFrontendModuleHook($row, $content, $module = null)
@@ -539,17 +552,17 @@ class FrontendHooks
 			isset($module->Template->inColumn) &&
 			$module->Template->inColumn
 		) {
-			\System::loadLanguageFile('rocksolid_frontend_helper');
+			System::loadLanguageFile('rocksolid_frontend_helper');
 			$data['columnLabel'] = $GLOBALS['TL_LANG']['rocksolid_frontend_helper']['column'];
 			$data['column'] = $module->Template->inColumn;
-			\System::loadLanguageFile('tl_article');
+			System::loadLanguageFile('tl_article');
 			if (isset($GLOBALS['TL_LANG']['COLS'][$data['column']])) {
 				$data['column'] = $GLOBALS['TL_LANG']['COLS'][$data['column']];
 			}
 		}
 
 		if (in_array('feModules', $permissions)) {
-			\System::loadLanguageFile('tl_module');
+			System::loadLanguageFile('tl_module');
 			$data['links']['fe-module'] = array(
 				'url' => static::getBackendURL('themes', 'tl_module', $row->id),
 				'label' => sprintf(is_array($GLOBALS['TL_LANG']['tl_module']['edit']) ? $GLOBALS['TL_LANG']['tl_module']['edit'][1] : $GLOBALS['TL_LANG']['tl_module']['edit'], $row->id . ' (' . $row->name . ')'),
@@ -570,7 +583,7 @@ class FrontendHooks
 					if (! empty($config['column']) && ! empty($row->{$config['column']})) {
 						$id = $row->{$config['column']};
 						if (isset($config['column_type']) && $config['column_type'] === 'serialized') {
-							$id = \StringUtil::deserialize($id, true);
+							$id = StringUtil::deserialize($id, true);
 							if (empty($id[1])) {
 								$id = $id[0];
 							}
@@ -587,7 +600,7 @@ class FrontendHooks
 							!empty($config['act']) && $id ? $config['act'] : false
 						),
 						'label' => $this->getBackendModuleLabel($config, $id, empty($config['act']) || !$id),
-						'icon' => empty($config['icon']) ? '' : \Image::getPath($config['icon']),
+						'icon' => empty($config['icon']) ? '' : Image::getPath($config['icon']),
 					);
 				}
 			}
@@ -645,7 +658,7 @@ class FrontendHooks
 				$editAllowed = false;
 			}
 
-			\System::loadLanguageFile('tl_content');
+			System::loadLanguageFile('tl_content');
 
 			if ($editAllowed) {
 				$data['links']['edit'] = array(
@@ -667,7 +680,7 @@ class FrontendHooks
 		}
 
 		if ($row->type === 'module' && $row->module) {
-			$moduleRow = \ModuleModel::findByPk($row->module);
+			$moduleRow = ModuleModel::findByPk($row->module);
 			if ($moduleRow) {
 				$content = $this->getFrontendModuleHook($moduleRow, $content);
 			}
@@ -686,7 +699,7 @@ class FrontendHooks
 					if (! empty($config['ce_column']) && ! empty($row->{$config['ce_column']})) {
 						$id = $row->{$config['ce_column']};
 						if (isset($config['ce_column_type']) && $config['ce_column_type'] === 'serialized') {
-							$id = \StringUtil::deserialize($id, true);
+							$id = StringUtil::deserialize($id, true);
 							if (empty($id[1])) {
 								$id = $id[0];
 							}
@@ -703,7 +716,7 @@ class FrontendHooks
 							! empty($config['act']) && $id ? $config['act'] : false
 						),
 						'label' => $this->getBackendModuleLabel($config, $id, empty($config['act']) || !$id),
-						'icon' => empty($config['icon']) ? '' : \Image::getPath($config['icon']),
+						'icon' => empty($config['icon']) ? '' : Image::getPath($config['icon']),
 					);
 				}
 			}
@@ -720,12 +733,12 @@ class FrontendHooks
 	public static function checkLogin()
 	{
 		// Only try to authenticate in the front end
-		if (TL_MODE !== 'FE') {
+		if (!System::getContainer()->get('contao.routing.scope_matcher')->isFrontendRequest(System::getContainer()->get('request_stack')->getCurrentRequest() ?? Request::create(''))) {
 			return false;
 		}
 
 		// Do not create a user instance if there is no authentication cookie
-		if (! is_subclass_of('BackendUser', UserInterface::class) && ! \Input::cookie('BE_USER_AUTH')) {
+		if (!(System::getContainer()->get('request_stack')->getCurrentRequest() ?? Request::create(''))->hasPreviousSession()) {
 			return false;
 		}
 
@@ -772,10 +785,10 @@ class FrontendHooks
 	public function getBackendModuleLabel($config, $id = null, $withParentTable = false)
 	{
 		if ($withParentTable) {
-			\Controller::loadDataContainer($config['table']);
+			Controller::loadDataContainer($config['table']);
 			if (!empty($GLOBALS['TL_DCA'][$config['table']]['config']['ptable'])) {
 				$ptable = $GLOBALS['TL_DCA'][$config['table']]['config']['ptable'];
-				\System::loadLanguageFile($ptable);
+				System::loadLanguageFile($ptable);
 				if ($id && !empty($GLOBALS['TL_LANG'][$ptable]['edit'][1])) {
 					return sprintf(is_array($GLOBALS['TL_LANG'][$ptable]['edit']) ? $GLOBALS['TL_LANG'][$ptable]['edit'][1] : $GLOBALS['TL_LANG'][$ptable]['edit'], $id);
 				}
@@ -790,7 +803,7 @@ class FrontendHooks
 				}
 			}
 		}
-		\System::loadLanguageFile($config['table']);
+		System::loadLanguageFile($config['table']);
 		if (!empty($GLOBALS['TL_LANG'][$config['table']]['editheader'][0])) {
 			return is_array($GLOBALS['TL_LANG'][$config['table']]['editheader']) ? $GLOBALS['TL_LANG'][$config['table']]['editheader'][0] : $GLOBALS['TL_LANG'][$config['table']]['editheader'];
 		}
@@ -818,7 +831,7 @@ class FrontendHooks
 
 			$data['templateURL'] = static::getBackendURL('tpl_editor', null, $data['templatePath'], 'source');
 
-			\System::loadLanguageFile('tl_files');
+			System::loadLanguageFile('tl_files');
 			$data['templateLabel'] = sprintf(is_array($GLOBALS['TL_LANG']['tl_files']['source']) ? $GLOBALS['TL_LANG']['tl_files']['source'][1] : $GLOBALS['TL_LANG']['tl_files']['source'], basename($data['templatePath']));
 
 		}
@@ -830,7 +843,7 @@ class FrontendHooks
 				'target' => $GLOBALS['objPage']->templateGroup ?: 'templates',
 			));
 
-			\System::loadLanguageFile('tl_templates');
+			System::loadLanguageFile('tl_templates');
 			$data['templateLabel'] = $GLOBALS['TL_LANG']['tl_templates']['new_tpl'][1];
 
 		}
@@ -852,10 +865,10 @@ class FrontendHooks
 			return null;
 		}
 
-		$stylesheets = \StringUtil::deserialize($stylesheets, true);
+		$stylesheets = StringUtil::deserialize($stylesheets, true);
 		foreach ($stylesheets as $stylesheet) {
-			$file = \FilesModel::findByUuid($stylesheet);
-			if ($file && $file->path && file_exists(TL_ROOT . '/' . $file->path . '.base')) {
+			$file = FilesModel::findByUuid($stylesheet);
+			if ($file && $file->path && file_exists(System::getContainer()->getParameter('kernel.project_dir') . '/' . $file->path . '.base')) {
 				return $file->path . '.base';
 			}
 		}
@@ -885,10 +898,10 @@ class FrontendHooks
 		// E.g. `?node=2&do=article` doesn’t work while `?do=article&node=2` does.
 		$params = array_merge($addParams, $params);
 
-		$params['rt'] = REQUEST_TOKEN;
+		$params['rt'] = System::getContainer()->get('contao.csrf.token_manager')->getDefaultTokenValue();
 		$params['rsfhr'] = 1;
 
-		$url = \System::getContainer()->get('router')->generate('contao_backend');
+		$url = System::getContainer()->get('router')->generate('contao_backend');
 
 		// Third parameter is required because of arg_separator.output
 		$url .= '?' . http_build_query($params, null, '&');

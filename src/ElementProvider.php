@@ -8,8 +8,11 @@
 
 namespace MadeYourDay\RockSolidFrontendHelper;
 
+use Contao\Config;
 use Contao\CoreBundle\Framework\FrameworkAwareInterface;
 use Contao\CoreBundle\Framework\FrameworkAwareTrait;
+use Contao\FilesModel;
+use Contao\System;
 
 /**
  * @author Martin Auswöger <martin@madeyourday.net>
@@ -17,6 +20,8 @@ use Contao\CoreBundle\Framework\FrameworkAwareTrait;
 class ElementProvider implements ElementProviderInterface, FrameworkAwareInterface
 {
 	use FrameworkAwareTrait;
+
+	private array $validImageExtensions = [];
 
 	/**
 	 * @var array
@@ -71,6 +76,11 @@ class ElementProvider implements ElementProviderInterface, FrameworkAwareInterfa
 		'download' => [],
 		'downloads' => [],
 	];
+
+	public function __construct(array $validImageExtensions = [])
+	{
+		$this->validImageExtensions = $validImageExtensions;
+	}
 
 	/**
 	 * {@inheritdoc}
@@ -144,12 +154,12 @@ class ElementProvider implements ElementProviderInterface, FrameworkAwareInterfa
 	{
 		if ($type === 'image') {
 			$values['singleSRC'] = $this->getUuidByExtensions(
-				$this->framework->getAdapter('Config')->get('validImageTypes')
+				$this->validImageExtensions
 			);
 		}
 		elseif ($type === 'gallery') {
 			$values['multiSRC'] = [$this->getUuidByExtensions(
-				$this->framework->getAdapter('Config')->get('validImageTypes')
+				$this->validImageExtensions
 			)];
 		}
 		elseif ($type === 'player') {
@@ -159,12 +169,12 @@ class ElementProvider implements ElementProviderInterface, FrameworkAwareInterfa
 		}
 		elseif ($type === 'download') {
 			$values['singleSRC'] = $this->getUuidByExtensions(
-				$this->framework->getAdapter('Config')->get('allowedDownload')
+				$this->framework->getAdapter(Config::class)->get('allowedDownload')
 			);
 		}
 		elseif ($type === 'downloads') {
 			$values['multiSRC'] = [$this->getUuidByExtensions(
-				$this->framework->getAdapter('Config')->get('allowedDownload')
+				$this->framework->getAdapter(Config::class)->get('allowedDownload')
 			)];
 		}
 
@@ -180,7 +190,7 @@ class ElementProvider implements ElementProviderInterface, FrameworkAwareInterfa
 	 */
 	private function getUuidByExtensions($extensions)
 	{
-		$adapter = $this->framework->getAdapter('FilesModel');
+		$adapter = $this->framework->getAdapter(FilesModel::class);
 
 		if (is_array($extensions)) {
 			$extensions = implode(',', $extensions);
@@ -208,7 +218,7 @@ class ElementProvider implements ElementProviderInterface, FrameworkAwareInterfa
 	 */
 	private function getLabel($key)
 	{
-		$this->framework->getAdapter('System')->loadLanguageFile('default');
+		$this->framework->getAdapter(System::class)->loadLanguageFile('default');
 
 		if (isset($GLOBALS['TL_LANG']['CTE'][$key])) {
 			return $GLOBALS['TL_LANG']['CTE'][$key];
