@@ -36,7 +36,7 @@ class BackendHooks
 
 		// Fix missing CURRENT_ID if rsfhr is set
 		if (Input::get('act') === 'create' && Input::get('id')) {
-			System::getContainer()->get('session')->set('CURRENT_ID', Input::get('id'));
+			System::getContainer()->get('request_stack')->getSession()->set('CURRENT_ID', Input::get('id'));
 		}
 	}
 
@@ -77,7 +77,7 @@ class BackendHooks
 	 */
 	private function removeRsfhrParam($ref)
 	{
-		$session = System::getContainer()->get('session');
+		$session = System::getContainer()->get('request_stack')->getSession();
 		if (!$session->isStarted()) {
 			return;
 		}
@@ -143,7 +143,7 @@ class BackendHooks
 		// set the frontend URL as referrer
 
 		$sessionKey = Input::get('popup') ? 'popupReferer' : 'referer';
-		$referrerSession = System::getContainer()->get('session')->get($sessionKey);
+		$referrerSession = System::getContainer()->get('request_stack')->getSession()->get($sessionKey);
 
 		if (System::getContainer()->get('request_stack')->getCurrentRequest()->get('_contao_referer_id') && !Input::get('ref')) {
 
@@ -158,6 +158,6 @@ class BackendHooks
 
 		}
 
-		System::getContainer()->get('session')->set($sessionKey, $referrerSession);
+		System::getContainer()->get('request_stack')->getSession()->set($sessionKey, $referrerSession);
 	}
 }

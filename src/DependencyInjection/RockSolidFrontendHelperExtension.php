@@ -25,7 +25,7 @@ class RockSolidFrontendHelperExtension extends Extension
 	/**
 	 * {@inheritdoc}
 	 */
-	public function getAlias()
+	public function getAlias(): string
 	{
 		return 'rocksolid_frontend_helper';
 	}
