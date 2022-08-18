@@ -107,8 +107,8 @@ class RenderElementController extends AbstractController implements FrameworkAwa
 			throw new \InvalidArgumentException('Table "'.$act.'" is not supported');
 		}
 
-		if (!defined('BE_USER_LOGGED_IN') && !defined('FE_USER_LOGGED_IN') && $this->has('contao.security.token_checker')) {
-			$tokenChecker = $this->get('contao.security.token_checker');
+		if (!defined('BE_USER_LOGGED_IN') && !defined('FE_USER_LOGGED_IN') && $this->container->has('contao.security.token_checker')) {
+			$tokenChecker = $this->container->get('contao.security.token_checker');
 			define('FE_USER_LOGGED_IN', $tokenChecker->hasFrontendUser());
 			define('BE_USER_LOGGED_IN', $tokenChecker->isPreviewMode());
 		}
