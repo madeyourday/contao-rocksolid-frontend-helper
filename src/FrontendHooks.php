@@ -323,10 +323,10 @@ class FrontendHooks
 			'REQUEST_TOKEN' => System::getContainer()->get('contao.csrf.token_manager')->getDefaultTokenValue(),
 			'pageId' => $GLOBALS['objPage']->id ?? null,
 			'routes' => [
-				'elements' => Controller::getContainer()->get('router')->generate('rocksolid_frontend_helper_elements'),
-				'insert' => Controller::getContainer()->get('router')->generate('rocksolid_frontend_helper_insert'),
-				'delete' => Controller::getContainer()->get('router')->generate('rocksolid_frontend_helper_delete'),
-				'render' => Controller::getContainer()->get('router')->generate('rocksolid_frontend_helper_render'),
+				'elements' => self::route('rocksolid_frontend_helper_elements'),
+				'insert' => self::route('rocksolid_frontend_helper_insert'),
+				'delete' => self::route('rocksolid_frontend_helper_delete'),
+				'render' => self::route('rocksolid_frontend_helper_render'),
 			],
 		);
 
@@ -339,7 +339,7 @@ class FrontendHooks
 				$previewEnabled = System::getContainer()->get('contao.security.token_checker')->isPreviewMode();
 				$data['config']['beSwitch'] = array(
 					'label' => $GLOBALS['TL_LANG']['MSC']['hiddenElements'] . ': ' . $GLOBALS['TL_LANG']['MSC'][$previewEnabled ? 'hiddenHide' : 'hiddenShow'],
-					'url' => System::getContainer()->get('router')->generate('contao_backend_switch'),
+					'url' => self::route('contao_backend_switch'),
 					'data' => array(
 						'FORM_SUBMIT' => 'tl_switch',
 						'REQUEST_TOKEN' => System::getContainer()->get('contao.csrf.token_manager')->getDefaultTokenValue(),
@@ -901,7 +901,7 @@ class FrontendHooks
 		$params['rt'] = System::getContainer()->get('contao.csrf.token_manager')->getDefaultTokenValue();
 		$params['rsfhr'] = 1;
 
-		$url = System::getContainer()->get('router')->generate('contao_backend');
+		$url = self::route('contao_backend');
 
 		// Third parameter is required because of arg_separator.output
 		$url .= '?' . http_build_query($params, null, '&');
@@ -962,5 +962,18 @@ class FrontendHooks
 		}
 
 		return $this->elementTypeSettings[$table][$type] ?? [];
+	}
+
+	private static function route(string $routeName): string
+	{
+		$container = System::getContainer();
+		$url = $container->get('router')->generate($routeName);
+		$previewScript = $container->getParameter('contao.preview_script');
+
+		if ($previewScript && substr($url, 0, \strlen($previewScript) + 1) === "$previewScript/") {
+			$url = substr($url, \strlen($previewScript));
+		}
+
+		return $url;
 	}
 }
