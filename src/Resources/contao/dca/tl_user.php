@@ -13,11 +13,11 @@
  */
 
 \Contao\CoreBundle\DataContainer\PaletteManipulator::create()
-    ->addLegend('rocksolid_frontend_helper_legend', 'forms_legend')
-    ->addField('rocksolidFrontendHelperOperations', 'rocksolid_frontend_helper_legend', \Contao\CoreBundle\DataContainer\PaletteManipulator::POSITION_APPEND)
-    ->addField('rocksolidFrontendHelperContentElements', 'rocksolid_frontend_helper_legend', \Contao\CoreBundle\DataContainer\PaletteManipulator::POSITION_APPEND)
-    ->applyToPalette('extend', 'tl_user')
-    ->applyToPalette('custom', 'tl_user')
+	->addLegend('rocksolid_frontend_helper_legend', 'forms_legend')
+	->addField('rocksolidFrontendHelperOperations', 'rocksolid_frontend_helper_legend', \Contao\CoreBundle\DataContainer\PaletteManipulator::POSITION_APPEND)
+	->addField('rocksolidFrontendHelperContentElements', 'rocksolid_frontend_helper_legend', \Contao\CoreBundle\DataContainer\PaletteManipulator::POSITION_APPEND)
+	->applyToPalette('extend', 'tl_user')
+	->applyToPalette('custom', 'tl_user')
 ;
 
 $GLOBALS['TL_DCA']['tl_user']['palettes']['admin'] = preg_replace('(([,;}]useCE)([,;{]))i', '$1,rocksolidFrontendHelper,rocksolidFrontendHelperLightbox$2', $GLOBALS['TL_DCA']['tl_user']['palettes']['admin']);
