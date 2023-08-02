@@ -12,7 +12,12 @@
  * @author Martin Auswöger <martin@madeyourday.net>
  */
 
-$GLOBALS['TL_DCA']['tl_user_group']['palettes']['default'] = str_replace('formp;', 'formp;{rocksolid_frontend_helper_legend},rocksolidFrontendHelperOperations,rocksolidFrontendHelperContentElements;', $GLOBALS['TL_DCA']['tl_user_group']['palettes']['default']);
+\Contao\CoreBundle\DataContainer\PaletteManipulator::create()
+	->addLegend('rocksolid_frontend_helper_legend', 'forms_legend')
+	->addField('rocksolidFrontendHelperOperations', 'rocksolid_frontend_helper_legend', \Contao\CoreBundle\DataContainer\PaletteManipulator::POSITION_APPEND)
+	->addField('rocksolidFrontendHelperContentElements', 'rocksolid_frontend_helper_legend', \Contao\CoreBundle\DataContainer\PaletteManipulator::POSITION_APPEND)
+	->applyToPalette('default', 'tl_user_group')
+;
 
 $GLOBALS['TL_DCA']['tl_user_group']['fields']['rocksolidFrontendHelperOperations'] = array(
 	'label' => &$GLOBALS['TL_LANG']['tl_user']['rocksolidFrontendHelperOperations'],
