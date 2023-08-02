@@ -9,6 +9,7 @@
 namespace MadeYourDay\RockSolidFrontendHelper;
 
 use Contao\BackendUser;
+use Contao\Database;
 use Contao\StringUtil;
 use Contao\User;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -85,7 +86,7 @@ class FrontendHelperUser extends BackendUser
 
 		foreach ((array) $this->groups as $id) {
 
-			$objGroup = $this->Database
+			$objGroup = Database::getInstance()
 				->prepare("SELECT * FROM tl_user_group WHERE id=? AND disable!=1 AND (start='' OR start<$time) AND (stop='' OR stop>$time)")
 				->limit(1)
 				->execute($id);
