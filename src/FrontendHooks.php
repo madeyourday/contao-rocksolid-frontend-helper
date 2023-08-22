@@ -840,7 +840,7 @@ class FrontendHooks
 			$data['templateURL'] = static::getBackendURL('tpl_editor', null, null, null, array(
 				'key' => 'new_tpl',
 				'original' => $data['templatePath'],
-				'target' => $GLOBALS['objPage']->templateGroup ?: 'templates',
+				'target' => (isset($GLOBALS['objPage']) && $GLOBALS['objPage']->templateGroup) ? $GLOBALS['objPage']->templateGroup : 'templates',
 			));
 
 			System::loadLanguageFile('tl_templates');
