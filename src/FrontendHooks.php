@@ -742,7 +742,9 @@ class FrontendHooks
 			return false;
 		}
 
-		$User = FrontendHelperUser::getInstance();
+		if (!$User = FrontendHelperUser::getInstance()) {
+			return false;
+		}
 
 		if (! $User->authenticate()) {
 			return false;
