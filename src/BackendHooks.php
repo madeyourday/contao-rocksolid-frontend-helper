@@ -33,6 +33,7 @@ class BackendHooks
 		}
 
 		Environment::set('queryString', preg_replace('(([&?])rsfhr=1(&|$))', '$1', Environment::get('queryString')));
+		Environment::set('requestUri', preg_replace('(([&?])rsfhr=1(&|$))', '$1', Environment::get('requestUri')));
 
 		// Fix missing CURRENT_ID if rsfhr is set
 		if (Input::get('act') === 'create' && Input::get('id')) {
@@ -59,7 +60,7 @@ class BackendHooks
 		}
 
 		// Only handle requests from the frontend helper
-		if (!Input::get('rsfhr')) {
+		if (!Input::get('rsfhr') || Input::isPost()) {
 			return;
 		}
 
