@@ -20,7 +20,7 @@ rocksolid_frontend_helper:
             table: tl_news
             column: news_archives
             column_type: serialized
-            icon: news.svg
+            icon: bundles/contaonews/news.svg
             fe_modules:
                 - newslist
                 - newsreader
@@ -31,7 +31,7 @@ rocksolid_frontend_helper:
             table: tl_calendar_events
             column: cal_calendar
             column_type: serialized
-            icon: settings.svg
+            icon: bundles/contaocalendar/calendar.svg
             fe_modules:
                 - calendar
                 - eventreader
@@ -42,7 +42,7 @@ rocksolid_frontend_helper:
             table: tl_newsletter
             column: nl_channels
             column_type: serialized
-            icon: bundles/contaonewsletter/icon.svg
+            icon: bundles/contaonewsletter/send.svg
             fe_modules:
                 - nl_list
                 - nl_reader
@@ -63,7 +63,7 @@ rocksolid_frontend_helper:
             table: tl_faq
             column: faq_categories
             column_type: serialized
-            icon: settings.svg
+            icon: bundles/contaofaq/faq.svg
             fe_modules:
                 - faqlist
                 - faqreader
