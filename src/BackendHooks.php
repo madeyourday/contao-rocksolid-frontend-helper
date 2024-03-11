@@ -60,7 +60,7 @@ class BackendHooks
 		}
 
 		// Only handle requests from the frontend helper
-		if (!Input::get('rsfhr') || Input::isPost()) {
+		if (!Input::get('rsfhr') || System::getContainer()->get('request_stack')->getCurrentRequest()->isMethod('POST')) {
 			return;
 		}
 
