@@ -149,7 +149,7 @@ class BackendHooks
 		if (System::getContainer()->get('request_stack')->getCurrentRequest()->get('_contao_referer_id') && !Input::get('ref')) {
 
 			$referrer = substr($referrer, strlen(System::getContainer()->get('request_stack')->getCurrentRequest()->getBasePath()) + 1);
-			$tlRefererId = substr(md5(System::getContainer()->get('kernel')->getStartTime() - 1), 0, 8);
+			$tlRefererId = System::getContainer()->get('request_stack')->getCurrentRequest()->attributes->get('_contao_referer_id');
 			$referrerSession[$tlRefererId]['current'] = $referrer;
 			Input::setGet('ref', $tlRefererId);
 			$requestUri = Environment::get('requestUri');
