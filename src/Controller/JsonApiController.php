@@ -15,6 +15,7 @@ use Contao\CoreBundle\Framework\FrameworkAwareInterface;
 use Contao\CoreBundle\Framework\FrameworkAwareTrait;
 use Contao\DataContainer;
 use Contao\Input;
+use Contao\System;
 use Doctrine\DBAL\Connection;
 use MadeYourDay\RockSolidFrontendHelper\ElementBuilder;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -241,12 +242,15 @@ class JsonApiController extends AbstractController implements FrameworkAwareInte
 	{
 		$input = $this->framework->getAdapter(Input::class);
 		$controller = $this->framework->getAdapter(Controller::class);
+		$system = $this->framework->getAdapter(System::class);
 
 		if ($id) {
 			$input->setGet('id', (string) $id);
 		}
 
 		$input->setGet('table', $table);
+		$system->loadLanguageFile('default');
+		$system->loadLanguageFile($table);
 		$controller->loadDataContainer($table);
 		$GLOBALS['TL_DCA']['tl_content']['config']['ptable'] = $ptable;
 
