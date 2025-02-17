@@ -631,7 +631,7 @@ document.addEventListener('DOMContentLoaded', function() {
 				return;
 			}
 
-			if (data.liveReload) {
+			if (data.liveReload && !targetLink.href.match(/[&?]act=create(?:&|$)/)) {
 				renderOnClose = {
 					element: element,
 					table: data.table,
