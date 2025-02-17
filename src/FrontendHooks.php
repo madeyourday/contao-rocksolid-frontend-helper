@@ -9,7 +9,6 @@
 namespace MadeYourDay\RockSolidFrontendHelper;
 
 use Contao\Controller;
-use Contao\CoreBundle\Util\PackageUtil;
 use Contao\Database;
 use Contao\Environment;
 use Contao\Events;
@@ -331,9 +330,7 @@ class FrontendHooks
 		);
 
 		if (
-			!is_callable([PackageUtil::class, 'getContaoVersion'])
-			|| version_compare(PackageUtil::getContaoVersion(), '4.8', '<')
-			|| System::getContainer()->getParameter('contao.preview_script') === Environment::get('scriptName')
+			System::getContainer()->getParameter('contao.preview_script') === Environment::get('scriptName')
 		) {
 			try {
 				$previewEnabled = System::getContainer()->get('contao.security.token_checker')->isPreviewMode();
@@ -345,9 +342,7 @@ class FrontendHooks
 						'REQUEST_TOKEN' => System::getContainer()->get('contao.csrf.token_manager')->getDefaultTokenValue(),
 						'unpublished' => $previewEnabled ? 'hide' : 'show',
 					),
-					'isXmlHttpRequest' =>
-						is_callable([PackageUtil::class, 'getContaoVersion'])
-						&& version_compare(PackageUtil::getContaoVersion(), '4.9', '>='),
+					'isXmlHttpRequest' => true,
 				);
 			}
 			catch(RouteNotFoundException $exception) {
