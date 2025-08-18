@@ -122,7 +122,7 @@ class FrontendHooks
 					System::loadLanguageFile('tl_content');
 					$data['links']['pastenew'] = array(
 						'url' => static::getBackendURL('article', 'tl_content', $matches2[2], 'create', array('mode' => 2, 'pid' => $matches2[2])),
-						'label' => $GLOBALS['TL_LANG']['tl_content']['pastenew'][0],
+						'label' => $GLOBALS['TL_LANG']['tl_content']['pastenewtop'][1] ?? $GLOBALS['TL_LANG']['DCA']['pastenewtop'][1] ?? $GLOBALS['TL_LANG']['tl_content']['pastenew'][0],
 					);
 
 					$lastContentElement = Database::getInstance()
@@ -132,7 +132,7 @@ class FrontendHooks
 					if ($lastContentElement && $lastContentElement->id) {
 						$data['links']['pastebottom'] = array(
 							'url' => static::getBackendURL('article', 'tl_content', $matches2[2], 'create', array('mode' => 1, 'pid' => $lastContentElement->id)),
-							'label' => sprintf($GLOBALS['TL_LANG']['tl_content']['pastenew'][1], $lastContentElement->id),
+							'label' => sprintf($GLOBALS['TL_LANG']['tl_content']['pastenewafter'][1] ?? $GLOBALS['TL_LANG']['DCA']['pastenewafter'][1] ?? $GLOBALS['TL_LANG']['tl_content']['pastenew'][1], $lastContentElement->id),
 						);
 					}
 
@@ -441,7 +441,7 @@ class FrontendHooks
 			);
 			$data['links']['pastenew'] = array(
 				'url' => static::getBackendURL('form', 'tl_form_field', $widget->pid, 'create', array('mode' => 1, 'pid' => $widget->id)),
-				'label' => sprintf($GLOBALS['TL_LANG']['tl_form_field']['pastenew'][1], $widget->id),
+				'label' => sprintf($GLOBALS['TL_LANG']['tl_form_field']['pastenewafter'][1] ?? $GLOBALS['TL_LANG']['DCA']['pastenewafter'][1] ?? $GLOBALS['TL_LANG']['tl_form_field']['pastenew'][1], $widget->id),
 			);
 		}
 
@@ -669,7 +669,7 @@ class FrontendHooks
 
 			$data['links']['pastenew'] = array(
 				'url' => static::getBackendURL($do, 'tl_content', $row->pid, 'create', array('mode' => 1, 'pid' => $row->id)),
-				'label' => sprintf($GLOBALS['TL_LANG']['tl_content']['pastenew'][1], $row->id),
+				'label' => sprintf($GLOBALS['TL_LANG']['tl_content']['pastenewafter'][1] ?? $GLOBALS['TL_LANG']['DCA']['pastenewafter'][1] ?? $GLOBALS['TL_LANG']['tl_content']['pastenew'][1], $row->id),
 			);
 
 		}
