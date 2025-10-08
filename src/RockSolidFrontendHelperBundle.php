@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /*
  * Copyright MADE/YOUR/DAY OG <mail@madeyourday.net>
  *
@@ -8,16 +11,14 @@
 
 namespace MadeYourDay\RockSolidFrontendHelper;
 
-use MadeYourDay\RockSolidFrontendHelper\DependencyInjection\RockSolidFrontendHelperExtension;
 use MadeYourDay\RockSolidFrontendHelper\DependencyInjection\Compiler\ElementProviderPass;
+use MadeYourDay\RockSolidFrontendHelper\DependencyInjection\RockSolidFrontendHelperExtension;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
  * Configures the RockSolid Frontend Helper bundle.
- *
- * @author Martin Auswöger <martin@madeyourday.net>
  */
 class RockSolidFrontendHelperBundle extends Bundle
 {
@@ -26,18 +27,12 @@ class RockSolidFrontendHelperBundle extends Bundle
         return \dirname(__DIR__);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-	public function getContainerExtension(): ?ExtensionInterface
+    public function getContainerExtension(): ExtensionInterface|null
     {
         return new RockSolidFrontendHelperExtension();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function build(ContainerBuilder $container)
+    public function build(ContainerBuilder $container): void
     {
         parent::build($container);
 

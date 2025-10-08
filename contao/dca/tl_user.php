@@ -6,18 +6,20 @@
  * file that was distributed with this source code.
  */
 
-/**
+use Contao\CoreBundle\DataContainer\PaletteManipulator;
+
+/*
  * RockSolid Frontend Helper user DCA
  *
  * @author Martin Auswöger <martin@madeyourday.net>
  */
 
-\Contao\CoreBundle\DataContainer\PaletteManipulator::create()
-	->addLegend('rocksolid_frontend_helper_legend', 'forms_legend')
-	->addField('rocksolidFrontendHelperOperations', 'rocksolid_frontend_helper_legend', \Contao\CoreBundle\DataContainer\PaletteManipulator::POSITION_APPEND)
-	->addField('rocksolidFrontendHelperContentElements', 'rocksolid_frontend_helper_legend', \Contao\CoreBundle\DataContainer\PaletteManipulator::POSITION_APPEND)
-	->applyToPalette('extend', 'tl_user')
-	->applyToPalette('custom', 'tl_user')
+PaletteManipulator::create()
+    ->addLegend('rocksolid_frontend_helper_legend', 'forms_legend')
+    ->addField('rocksolidFrontendHelperOperations', 'rocksolid_frontend_helper_legend', PaletteManipulator::POSITION_APPEND)
+    ->addField('rocksolidFrontendHelperContentElements', 'rocksolid_frontend_helper_legend', PaletteManipulator::POSITION_APPEND)
+    ->applyToPalette('extend', 'tl_user')
+    ->applyToPalette('custom', 'tl_user')
 ;
 
 $GLOBALS['TL_DCA']['tl_user']['palettes']['admin'] = preg_replace('(([,;}]useCE)([,;{]))i', '$1,rocksolidFrontendHelper,rocksolidFrontendHelperLightbox$2', (string) $GLOBALS['TL_DCA']['tl_user']['palettes']['admin']);
@@ -28,45 +30,47 @@ $GLOBALS['TL_DCA']['tl_user']['palettes']['custom'] = preg_replace('(([,;}]useCE
 $GLOBALS['TL_DCA']['tl_user']['palettes']['login'] = preg_replace('(([,;}]useCE)([,;{]))i', '$1,rocksolidFrontendHelper,rocksolidFrontendHelperLightbox$2', (string) $GLOBALS['TL_DCA']['tl_user']['palettes']['login']);
 
 $GLOBALS['TL_DCA']['tl_user']['fields']['rocksolidFrontendHelperOperations'] = [
-	'label' => &$GLOBALS['TL_LANG']['tl_user']['rocksolidFrontendHelperOperations'],
-	'exclude' => true,
-	'inputType' => 'checkbox',
-	'options' => ['feModules', 'beModules', 'pages', 'articles', 'contents', 'infos'],
-	'reference' => &$GLOBALS['TL_LANG']['tl_user']['rocksolidFrontendHelperOperationsValues'],
-	'eval' => ['multiple' => true],
-	'sql' => "blob NULL",
+    'label' => &$GLOBALS['TL_LANG']['tl_user']['rocksolidFrontendHelperOperations'],
+    'exclude' => true,
+    'inputType' => 'checkbox',
+    'options' => ['feModules', 'beModules', 'pages', 'articles', 'contents', 'infos'],
+    'reference' => &$GLOBALS['TL_LANG']['tl_user']['rocksolidFrontendHelperOperationsValues'],
+    'eval' => ['multiple' => true],
+    'sql' => 'blob NULL',
 ];
 
 $GLOBALS['TL_DCA']['tl_user']['fields']['rocksolidFrontendHelperContentElements'] = [
-	'label' => &$GLOBALS['TL_LANG']['tl_user']['rocksolidFrontendHelperContentElements'],
-	'exclude' => true,
-	'inputType' => 'checkbox',
-	'options_callback' => function() {
-		$groups = [];
-		foreach ($GLOBALS['TL_CTE'] as $k => $v) {
-			foreach (array_keys($v) as $kk) {
-				$groups[$k][] = $kk;
-			}
-		}
-		return $groups;
-	},
-	'reference' => &$GLOBALS['TL_LANG']['CTE'],
-	'eval' => ['multiple' => true],
-	'sql' => "blob NULL",
+    'label' => &$GLOBALS['TL_LANG']['tl_user']['rocksolidFrontendHelperContentElements'],
+    'exclude' => true,
+    'inputType' => 'checkbox',
+    'options_callback' => static function () {
+        $groups = [];
+
+        foreach ($GLOBALS['TL_CTE'] as $k => $v) {
+            foreach (array_keys($v) as $kk) {
+                $groups[$k][] = $kk;
+            }
+        }
+
+        return $groups;
+    },
+    'reference' => &$GLOBALS['TL_LANG']['CTE'],
+    'eval' => ['multiple' => true],
+    'sql' => 'blob NULL',
 ];
 
 $GLOBALS['TL_DCA']['tl_user']['fields']['rocksolidFrontendHelper'] = [
-	'label' => &$GLOBALS['TL_LANG']['tl_user']['rocksolidFrontendHelper'],
-	'exclude' => true,
-	'inputType' => 'checkbox',
-	'eval' => ['tl_class' => 'clr w50'],
-	'sql' => "char(1) NOT NULL default '1'",
+    'label' => &$GLOBALS['TL_LANG']['tl_user']['rocksolidFrontendHelper'],
+    'exclude' => true,
+    'inputType' => 'checkbox',
+    'eval' => ['tl_class' => 'clr w50'],
+    'sql' => "char(1) NOT NULL default '1'",
 ];
 
 $GLOBALS['TL_DCA']['tl_user']['fields']['rocksolidFrontendHelperLightbox'] = [
-	'label' => &$GLOBALS['TL_LANG']['tl_user']['rocksolidFrontendHelperLightbox'],
-	'exclude' => true,
-	'inputType' => 'checkbox',
-	'eval' => ['tl_class' => 'w50'],
-	'sql' => "char(1) NOT NULL default '1'",
+    'label' => &$GLOBALS['TL_LANG']['tl_user']['rocksolidFrontendHelperLightbox'],
+    'exclude' => true,
+    'inputType' => 'checkbox',
+    'eval' => ['tl_class' => 'w50'],
+    'sql' => "char(1) NOT NULL default '1'",
 ];
