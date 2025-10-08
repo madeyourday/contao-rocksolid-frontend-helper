@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /*
  * Copyright MADE/YOUR/DAY OG <mail@madeyourday.net>
  *
@@ -8,72 +11,66 @@
 
 namespace MadeYourDay\RockSolidFrontendHelper;
 
-/**
- * @author Martin Auswöger <martin@madeyourday.net>
- */
 class ElementBuilder
 {
-	/**
-	 * @var ElementProviderInterface[]
-	 */
-	private $providers = [];
+    /**
+     * @var array<ElementProviderInterface>
+     */
+    private $providers = [];
 
-	/**
-	 * @param ElementProviderInterface $provider
-	 */
-	public function addProvider(ElementProviderInterface $provider)
-	{
-		$this->providers[] = $provider;
-	}
+    public function addProvider(ElementProviderInterface $provider): void
+    {
+        $this->providers[] = $provider;
+    }
 
-	/**
-	 * Get elements by table name
-	 *
-	 * @param string $table
-	 *
-	 * @return array Elements indexed by type name
-	 */
-	public function getElements($table)
-	{
-		$elements = [];
+    /**
+     * Get elements by table name.
+     *
+     * @param string $table
+     *
+     * @return array Elements indexed by type name
+     */
+    public function getElements($table)
+    {
+        $elements = [];
 
-		foreach ($this->providers as $provider) {
-			$elements = array_merge($elements, $provider->getElements($table));
-		}
+        foreach ($this->providers as $provider) {
+            $elements = array_merge($elements, $provider->getElements($table));
+        }
 
-		foreach (array_keys($elements) as $type) {
-			$elements[$type] += [
-				'label' => $type,
-				'group' => '',
-				'insert' => false,
-				'showToolbar' => false,
-			];
+        foreach (array_keys($elements) as $type) {
+            $elements[$type] += [
+                'label' => $type,
+                'group' => '',
+                'insert' => false,
+                'showToolbar' => false,
+            ];
 
-			// Enable live reloading by default for dynamically insertable elements
-			if (!isset($elements[$type]['liveReload'])) {
-				$elements[$type]['liveReload'] = $elements[$type]['insert'];
-			}
-		}
+            // Enable live reloading by default for dynamically insertable elements
+            if (!isset($elements[$type]['liveReload'])) {
+                $elements[$type]['liveReload'] = $elements[$type]['insert'];
+            }
+        }
 
-		return $elements;
-	}
+        return $elements;
+    }
 
-	/**
-	 * Get default values by table name and type
-	 *
-	 * @param string $table
-	 * @param string $type
-	 *
-	 * @return array
-	 */
-	public function getDefaultValues($table, $type)
-	{
-		$values = [];
+    /**
+     * Get default values by table name and type.
+     *
+     * @param string $table
+     * @param string $type
+     *
+     * @return array
+     */
+    public function getDefaultValues($table, $type)
+    {
+        $values = [];
 
-		foreach ($this->providers as $provider) {
-			$values = array_merge($values, $provider->getDefaultValues($table, $type));
-		}
+        foreach ($this->providers as $provider) {
+            $values = array_merge($values, $provider->getDefaultValues($table, $type));
+        }
 
-		return $values;
-	}
+        return $values;
+    }
 }

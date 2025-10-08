@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /*
  * Copyright MADE/YOUR/DAY OG <mail@madeyourday.net>
  *
@@ -14,27 +17,22 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 /**
  * Registers the content element providers.
- *
- * @author Martin Auswöger <martin@madeyourday.net>
  */
 class ElementProviderPass implements CompilerPassInterface
 {
-	use PriorityTaggedServiceTrait;
+    use PriorityTaggedServiceTrait;
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function process(ContainerBuilder $container)
-	{
-		if (!$container->has('rocksolid_frontend_helper.element_builder')) {
-			return;
-		}
+    public function process(ContainerBuilder $container): void
+    {
+        if (!$container->has('rocksolid_frontend_helper.element_builder')) {
+            return;
+        }
 
-		$definition = $container->findDefinition('rocksolid_frontend_helper.element_builder');
-		$references = $this->findAndSortTaggedServices('rocksolid_frontend_helper.element_provider', $container);
+        $definition = $container->findDefinition('rocksolid_frontend_helper.element_builder');
+        $references = $this->findAndSortTaggedServices('rocksolid_frontend_helper.element_provider', $container);
 
-		foreach ($references as $reference) {
-			$definition->addMethodCall('addProvider', [$reference]);
-		}
-	}
+        foreach ($references as $reference) {
+            $definition->addMethodCall('addProvider', [$reference]);
+        }
+    }
 }
