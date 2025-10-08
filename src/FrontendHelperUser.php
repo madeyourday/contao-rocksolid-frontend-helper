@@ -68,8 +68,8 @@ class FrontendHelperUser extends BackendUser
 			}
 		}
 
-		$always = array('alexf');
-		$depends = array();
+		$always = ['alexf'];
+		$depends = [];
 
 		if (!empty($GLOBALS['TL_PERMISSIONS']) && is_array($GLOBALS['TL_PERMISSIONS'])) {
 			$depends = array_merge($depends, $GLOBALS['TL_PERMISSIONS']);
@@ -77,11 +77,11 @@ class FrontendHelperUser extends BackendUser
 
 		if ($this->inherit == 'group') {
 			foreach ($depends as $field) {
-				$this->$field = array();
+				$this->$field = [];
 			}
 		}
 
-		$inherit = in_array($this->inherit, array('group', 'extend')) ? array_merge($always, $depends) : $always;
+		$inherit = in_array($this->inherit, ['group', 'extend']) ? array_merge($always, $depends) : $always;
 		$time = time();
 
 		foreach ((array) $this->groups as $id) {
@@ -95,7 +95,7 @@ class FrontendHelperUser extends BackendUser
 				foreach ($inherit as $field) {
 					$value = StringUtil::deserialize($objGroup->$field, true);
 					if (!empty($value)) {
-						$this->$field = array_merge((is_array($this->$field) ? $this->$field : (($this->$field != '') ? array($this->$field) : array())), $value);
+						$this->$field = array_merge((is_array($this->$field) ? $this->$field : (($this->$field != '') ? [$this->$field] : [])), $value);
 						$this->$field = array_unique($this->$field);
 					}
 				}

@@ -36,14 +36,9 @@ class JsonApiController extends AbstractController implements FrameworkAwareInte
 	use FrameworkAwareTrait;
 
 	/**
-	 * @param Request        $request
-	 * @param ElementBuilder $elementBuilder
-	 *
-	 * @return Response
-	 *
-	 * @Route("/elements", name="rocksolid_frontend_helper_elements")
-	 */
-	public function elementsAction(Request $request, ElementBuilder $elementBuilder)
+     * @Route("/elements", name="rocksolid_frontend_helper_elements")
+     */
+    public function elementsAction(Request $request, ElementBuilder $elementBuilder): Response
 	{
 		if (!is_string($request->get('table'))) {
 			throw new NotFoundHttpException();
@@ -59,29 +54,21 @@ class JsonApiController extends AbstractController implements FrameworkAwareInte
 		return $this->json(
 			array_filter(
 				$elementBuilder->getElements($request->get('table')),
-				function($element) {
-					return !empty($element['insert']);
-				}
+				fn($element) => !empty($element['insert'])
 			)
 		);
 	}
 
 	/**
-	 * @param  Request        $request
-	 * @param  ElementBuilder $elementBuilder
-	 * @param  Connection     $connection
-	 *
-	 * @return Response
-	 *
-	 * @Route("/insert", name="rocksolid_frontend_helper_insert", methods={"POST"})
-	 */
-	public function insertAction(Request $request, ElementBuilder $elementBuilder, Connection $connection)
+     * @Route("/insert", name="rocksolid_frontend_helper_insert", methods={"POST"})
+     */
+    public function insertAction(Request $request, ElementBuilder $elementBuilder, Connection $connection): Response
 	{
 		$this->framework->initialize();
 
 		$table = $request->get('table');
 		$act = $request->get('act');
-		$parent = explode(':', $request->get('parent'));
+		$parent = explode(':', (string) $request->get('parent'));
 
 		if (!is_string($table) || !is_string($act) || !is_array($parent)) {
 			throw new \InvalidArgumentException();
@@ -135,7 +122,7 @@ class JsonApiController extends AbstractController implements FrameworkAwareInte
 		}
 		// Move all passed elements to the new position
 		else {
-			foreach (array_reverse(explode(',', $request->get('ids'))) as $id) {
+			foreach (array_reverse(explode(',', (string) $request->get('ids'))) as $id) {
 				$this->callDcaMethod($act, $table, $parent[0], $id);
 			}
 		}
@@ -144,18 +131,14 @@ class JsonApiController extends AbstractController implements FrameworkAwareInte
 	}
 
 	/**
-	 * @param Request $request
-	 *
-	 * @return Response
-	 *
-	 * @Route("/delete", name="rocksolid_frontend_helper_delete", methods={"POST"})
-	 */
-	public function deleteAction(Request $request)
+     * @Route("/delete", name="rocksolid_frontend_helper_delete", methods={"POST"})
+     */
+    public function deleteAction(Request $request): Response
 	{
 		$this->framework->initialize();
 
 		$table = $request->get('table');
-		$parent = explode(':', $request->get('parent'));
+		$parent = explode(':', (string) $request->get('parent'));
 		$ids = array_values(array_map('intval', (array) $request->get('ids', [])));
 
 		if (!is_string($table) || !$ids || !is_array($parent)) {
@@ -173,7 +156,7 @@ class JsonApiController extends AbstractController implements FrameworkAwareInte
 			'rt' => $request->get('REQUEST_TOKEN'),
 		];
 
-		if (substr($request->get('parent'), 0, 11) === 'tl_article:') {
+		if (str_starts_with((string) $request->get('parent'), 'tl_article:')) {
 			$params['do'] = 'article';
 		}
 
@@ -189,12 +172,11 @@ class JsonApiController extends AbstractController implements FrameworkAwareInte
 	}
 
 	/**
-	 * Mock get parameters for the data container
-	 *
-	 * @param Request  $request
-	 * @param int|null $previousId
-	 */
-	private function mockInsertGetParameters(Request $request, $previousId)
+     * Mock get parameters for the data container
+     *
+     * @param int|null $previousId
+     */
+    private function mockInsertGetParameters(Request $request, $previousId)
 	{
 		$params = [
 			'act' => $request->get('act'),
@@ -203,7 +185,7 @@ class JsonApiController extends AbstractController implements FrameworkAwareInte
 			'mode' => '1',
 		];
 
-		if (substr($request->get('parent'), 0, 11) === 'tl_article:') {
+		if (str_starts_with((string) $request->get('parent'), 'tl_article:')) {
 			$params['do'] = 'article';
 		}
 
@@ -212,7 +194,7 @@ class JsonApiController extends AbstractController implements FrameworkAwareInte
 				$params['pid'] = (string) $previousId;
 			}
 			else {
-				$params['pid'] = (string) explode(':', $request->get('parent'))[1];
+				$params['pid'] = explode(':', (string) $request->get('parent'))[1];
 				$params['mode'] = '2';
 			}
 		}
@@ -224,7 +206,7 @@ class JsonApiController extends AbstractController implements FrameworkAwareInte
 		}
 
 		if (!defined('CURRENT_ID')) {
-			define('CURRENT_ID', (string) explode(':', $request->get('parent'))[1]);
+			define('CURRENT_ID', explode(':', (string) $request->get('parent'))[1]);
 		}
 	}
 
@@ -262,7 +244,7 @@ class JsonApiController extends AbstractController implements FrameworkAwareInte
 			$dca->$act();
 		}
 		catch (RedirectResponseException $exception) {
-			parse_str(parse_url($exception->getResponse()->headers->get('Location'), PHP_URL_QUERY), $params);
+			parse_str(parse_url((string) $exception->getResponse()->headers->get('Location'), PHP_URL_QUERY), $params);
 			if (isset($params['id'])) {
 				$newElementId = (int) $params['id'];
 			}
@@ -272,15 +254,13 @@ class JsonApiController extends AbstractController implements FrameworkAwareInte
 	}
 
 	/**
-	 * Update the database record with the default values from the element providers
-	 *
-	 * @param ElementBuilder $elementBuilder
-	 * @param Connection     $connection
-	 * @param int            $id
-	 * @param string         $table
-	 * @param string         $type
-	 */
-	private function updateDefaultValues(ElementBuilder $elementBuilder, Connection $connection, $id, $table, $type)
+     * Update the database record with the default values from the element providers
+     *
+     * @param int            $id
+     * @param string         $table
+     * @param string         $type
+     */
+    private function updateDefaultValues(ElementBuilder $elementBuilder, Connection $connection, $id, $table, $type)
 	{
 		$values = $elementBuilder->getDefaultValues($table, $type);
 

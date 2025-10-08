@@ -21,8 +21,6 @@ class ElementProvider implements ElementProviderInterface, FrameworkAwareInterfa
 {
 	use FrameworkAwareTrait;
 
-	private array $validImageExtensions = [];
-
 	/**
 	 * @var array
 	 */
@@ -77,10 +75,9 @@ class ElementProvider implements ElementProviderInterface, FrameworkAwareInterfa
 		'downloads' => [],
 	];
 
-	public function __construct(array $validImageExtensions = [])
-	{
-		$this->validImageExtensions = $validImageExtensions;
-	}
+	public function __construct(private array $validImageExtensions = [])
+    {
+    }
 
 	/**
 	 * {@inheritdoc}
@@ -143,14 +140,13 @@ class ElementProvider implements ElementProviderInterface, FrameworkAwareInterfa
 	}
 
 	/**
-	 * Add dynamic default values for fields that reference other entities
-	 *
-	 * @param string $type
-	 * @param array  $values
-	 *
-	 * @return array Updated values
-	 */
-	private function addDynamicDefaultValues($type, array $values)
+     * Add dynamic default values for fields that reference other entities
+     *
+     * @param string $type
+     *
+     * @return array Updated values
+     */
+    private function addDynamicDefaultValues($type, array $values)
 	{
 		if ($type === 'image') {
 			$values['singleSRC'] = $this->getUuidByExtensions(
@@ -220,11 +216,7 @@ class ElementProvider implements ElementProviderInterface, FrameworkAwareInterfa
 	{
 		$this->framework->getAdapter(System::class)->loadLanguageFile('default');
 
-		if (isset($GLOBALS['TL_LANG']['CTE'][$key])) {
-			return $GLOBALS['TL_LANG']['CTE'][$key];
-		}
-
-		return [$key, ''];
+		return $GLOBALS['TL_LANG']['CTE'][$key] ?? [$key, ''];
 	}
 
 	private function typeCanBeReloadedLive(string $type): bool

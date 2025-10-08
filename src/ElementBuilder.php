@@ -18,9 +18,6 @@ class ElementBuilder
 	 */
 	private $providers = [];
 
-	/**
-	 * @param ElementProviderInterface $provider
-	 */
 	public function addProvider(ElementProviderInterface $provider)
 	{
 		$this->providers[] = $provider;

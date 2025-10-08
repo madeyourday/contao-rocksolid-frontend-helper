@@ -35,14 +35,9 @@ class RenderElementController extends AbstractController implements FrameworkAwa
 	use FrameworkAwareTrait;
 
 	/**
-	 * @param Request       $request
-	 * @param FrontendHooks $frontendHooks
-	 *
-	 * @return Response
-	 *
-	 * @Route("/render", name="rocksolid_frontend_helper_render", methods={"POST"})
-	 */
-	public function renderAction(Request $request, FrontendHooks $frontendHooks)
+     * @Route("/render", name="rocksolid_frontend_helper_render", methods={"POST"})
+     */
+    public function renderAction(Request $request, FrontendHooks $frontendHooks): Response
 	{
 		$this->framework->initialize();
 		$permissions = $frontendHooks->checkLogin();
@@ -63,9 +58,9 @@ class RenderElementController extends AbstractController implements FrameworkAwa
 		// Setup environment URL
 		try {
 			Environment::reset();
-			Environment::set('requestUri', preg_replace('(^https?://[^/]+)i', '', $request->headers->get('referer', '/')));
+			Environment::set('requestUri', preg_replace('(^https?://[^/]+)i', '', (string) $request->headers->get('referer', '/')));
 		}
-		catch (\Throwable $e) {
+		catch (\Throwable) {
 			// Ignore set URL errors
 		}
 
@@ -79,7 +74,7 @@ class RenderElementController extends AbstractController implements FrameworkAwa
 						$objHandler = new $GLOBALS['TL_PTY'][$GLOBALS['objPage']->type]();
 						$objHandler->getResponse($GLOBALS['objPage']);
 					}
-					catch (\Throwable $e) {
+					catch (\Throwable) {
 						// Ignore page errors
 					}
 				}

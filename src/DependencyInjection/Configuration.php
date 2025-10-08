@@ -30,7 +30,7 @@ class Configuration implements ConfigurationInterface
 		else {
 			// Backwards compatibility
 			$treeBuilder = new TreeBuilder();
-			$rootNode = $treeBuilder->root('rocksolid_frontend_helper');
+			$rootNode = $treeBuilder->getRootNode();
 		}
 
 		$rootNode

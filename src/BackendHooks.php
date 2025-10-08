@@ -32,8 +32,8 @@ class BackendHooks
 			return;
 		}
 
-		Environment::set('queryString', preg_replace('(([&?])rsfhr=1(&|$))', '$1', Environment::get('queryString')));
-		Environment::set('requestUri', preg_replace('(([&?])rsfhr=1(&|$))', '$1', Environment::get('requestUri')));
+		Environment::set('queryString', preg_replace('(([&?])rsfhr=1(&|$))', '$1', (string) Environment::get('queryString')));
+		Environment::set('requestUri', preg_replace('(([&?])rsfhr=1(&|$))', '$1', (string) Environment::get('requestUri')));
 
 		// Fix missing CURRENT_ID if rsfhr is set
 		if (Input::get('act') === 'create' && Input::get('id')) {
@@ -85,7 +85,7 @@ class BackendHooks
 
 		$referrerSession = $session->get('referer');
 		if (!empty($referrerSession[$ref]['current'])) {
-			$referrerSession[$ref]['current'] = preg_replace('(([&?])rsfhr=1(&|$))', '$1', $referrerSession[$ref]['current']);
+			$referrerSession[$ref]['current'] = preg_replace('(([&?])rsfhr=1(&|$))', '$1', (string) $referrerSession[$ref]['current']);
 			$session->set('referer', $referrerSession);
 		}
 	}
@@ -118,13 +118,13 @@ class BackendHooks
 		$base = Environment::get('path');
 		$base .= System::getContainer()->get('router')->generate('contao_backend');
 
-		$referrer = parse_url(Environment::get('httpReferer'));
+		$referrer = parse_url((string) Environment::get('httpReferer'));
 		$referrer = ($referrer['path'] ?? '') . (($referrer['query'] ?? null) ? '?' . $referrer['query'] : '');
 
 		// Stop if the referrer is a backend URL
 		if (
-			substr($referrer, 0, strlen($base)) === $base
-			&& in_array(substr($referrer, strlen($base), 1), array(false, '/', '?'), true)
+			str_starts_with($referrer, $base)
+			&& in_array(substr($referrer, strlen($base), 1), [false, '/', '?'], true)
 		) {
 			return;
 		}
@@ -148,12 +148,12 @@ class BackendHooks
 
 		if (System::getContainer()->get('request_stack')->getCurrentRequest()->get('_contao_referer_id') && !Input::get('ref')) {
 
-			$referrer = substr($referrer, strlen(System::getContainer()->get('request_stack')->getCurrentRequest()->getBasePath()) + 1);
+			$referrer = substr($referrer, strlen((string) System::getContainer()->get('request_stack')->getCurrentRequest()->getBasePath()) + 1);
 			$tlRefererId = System::getContainer()->get('request_stack')->getCurrentRequest()->attributes->get('_contao_referer_id');
 			$referrerSession[$tlRefererId]['current'] = $referrer;
 			Input::setGet('ref', $tlRefererId);
 			$requestUri = Environment::get('requestUri');
-			$requestUri .= (strpos($requestUri, '?') === false ? '?' : '&') . 'ref=' . $tlRefererId;
+			$requestUri .= (!str_contains((string) $requestUri, '?') ? '?' : '&') . 'ref=' . $tlRefererId;
 			Environment::set('requestUri', $requestUri);
 			System::getContainer()->get('request_stack')->getCurrentRequest()->query->set('ref', $tlRefererId);
 

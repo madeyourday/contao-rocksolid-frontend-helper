@@ -19,16 +19,17 @@
 	->applyToPalette('default', 'tl_user_group')
 ;
 
-$GLOBALS['TL_DCA']['tl_user_group']['fields']['rocksolidFrontendHelperOperations'] = array(
+$GLOBALS['TL_DCA']['tl_user_group']['fields']['rocksolidFrontendHelperOperations'] = [
 	'label' => &$GLOBALS['TL_LANG']['tl_user']['rocksolidFrontendHelperOperations'],
 	'exclude' => true,
 	'inputType' => 'checkbox',
-	'options' => array('feModules', 'beModules', 'pages', 'articles', 'contents', 'infos'),
+	'options' => ['feModules', 'beModules', 'pages', 'articles', 'contents', 'infos'],
 	'reference' => &$GLOBALS['TL_LANG']['tl_user']['rocksolidFrontendHelperOperationsValues'],
-	'eval' => array('multiple' => true),
+	'eval' => ['multiple' => true],
 	'sql' => "blob NULL",
-);
-$GLOBALS['TL_DCA']['tl_user_group']['fields']['rocksolidFrontendHelperContentElements'] = array(
+];
+
+$GLOBALS['TL_DCA']['tl_user_group']['fields']['rocksolidFrontendHelperContentElements'] = [
 	'label' => &$GLOBALS['TL_LANG']['tl_user']['rocksolidFrontendHelperContentElements'],
 	'exclude' => true,
 	'inputType' => 'checkbox',
@@ -42,6 +43,6 @@ $GLOBALS['TL_DCA']['tl_user_group']['fields']['rocksolidFrontendHelperContentEle
 		return $groups;
 	},
 	'reference' => &$GLOBALS['TL_LANG']['CTE'],
-	'eval' => array('multiple' => true),
+	'eval' => ['multiple' => true],
 	'sql' => "blob NULL",
-);
+];
