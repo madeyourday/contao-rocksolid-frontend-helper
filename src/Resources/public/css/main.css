@@ -305,8 +305,8 @@ a.rsfh-activate.rsfh-activate-active {
 .rsfh-lightbox.is-popup {
 	width: 420px;
 	min-width: 260px;
-	max-width: 1000px;
-	max-width: min(1000px, calc(100vw - 20px));
+	max-width: 1300px;
+	max-width: min(1300px, calc(100vw - 20px));
 	background: linear-gradient(to right, #fff 0%, #fff calc(100% - 10px), transparent calc(100% - 10px));
 }
 .rsfh-lightbox.is-popup.is-closed,
