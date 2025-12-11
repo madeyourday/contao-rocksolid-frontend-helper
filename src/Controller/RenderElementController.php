@@ -21,14 +21,11 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * RockSolid Frontend Helper render API
  *
  * @author Martin Auswöger <martin@madeyourday.net>
- *
- * @Route("/_rocksolid-frontend-helper", defaults={"_scope" = "frontend"})
  */
 class RenderElementController extends AbstractController implements FrameworkAwareInterface
 {
@@ -39,8 +36,6 @@ class RenderElementController extends AbstractController implements FrameworkAwa
 	 * @param FrontendHooks $frontendHooks
 	 *
 	 * @return Response
-	 *
-	 * @Route("/render", name="rocksolid_frontend_helper_render", methods={"POST"})
 	 */
 	public function renderAction(Request $request, FrontendHooks $frontendHooks)
 	{

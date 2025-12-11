@@ -22,14 +22,11 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * RockSolid Frontend Helper JSON API
  *
  * @author Martin Auswöger <martin@madeyourday.net>
- *
- * @Route("/contao/rocksolid-frontend-helper", defaults={"_scope" = "backend", "_token_check" = true})
  */
 class JsonApiController extends AbstractController implements FrameworkAwareInterface
 {
@@ -40,8 +37,6 @@ class JsonApiController extends AbstractController implements FrameworkAwareInte
 	 * @param ElementBuilder $elementBuilder
 	 *
 	 * @return Response
-	 *
-	 * @Route("/elements", name="rocksolid_frontend_helper_elements")
 	 */
 	public function elementsAction(Request $request, ElementBuilder $elementBuilder)
 	{
@@ -72,8 +67,6 @@ class JsonApiController extends AbstractController implements FrameworkAwareInte
 	 * @param  Connection     $connection
 	 *
 	 * @return Response
-	 *
-	 * @Route("/insert", name="rocksolid_frontend_helper_insert", methods={"POST"})
 	 */
 	public function insertAction(Request $request, ElementBuilder $elementBuilder, Connection $connection)
 	{
@@ -147,8 +140,6 @@ class JsonApiController extends AbstractController implements FrameworkAwareInte
 	 * @param Request $request
 	 *
 	 * @return Response
-	 *
-	 * @Route("/delete", name="rocksolid_frontend_helper_delete", methods={"POST"})
 	 */
 	public function deleteAction(Request $request)
 	{

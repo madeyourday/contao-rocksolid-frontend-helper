@@ -1,3 +1,29 @@
-contao:
-    resource: "@RockSolidFrontendHelperBundle/Controller"
-    type: annotation
+rocksolid_frontend_helper_render:
+    path: /_rocksolid-frontend-helper/render
+    methods: [POST]
+    controller: MadeYourDay\RockSolidFrontendHelper\Controller\RenderElementController::renderAction
+    defaults:
+        _scope: frontend
+
+rocksolid_frontend_helper_elements:
+    path: /contao/rocksolid-frontend-helper/elements
+    controller: MadeYourDay\RockSolidFrontendHelper\Controller\JsonApiController::elementsAction
+    defaults:
+        _scope: backend
+        _token_check: true
+
+rocksolid_frontend_helper_insert:
+    path: /contao/rocksolid-frontend-helper/insert
+    methods: [POST]
+    controller: MadeYourDay\RockSolidFrontendHelper\Controller\JsonApiController::insertAction
+    defaults:
+        _scope: backend
+        _token_check: true
+
+rocksolid_frontend_helper_delete:
+    path: /contao/rocksolid-frontend-helper/delete
+    methods: [POST]
+    controller: MadeYourDay\RockSolidFrontendHelper\Controller\JsonApiController::deleteAction
+    defaults:
+        _scope: backend
+        _token_check: true
