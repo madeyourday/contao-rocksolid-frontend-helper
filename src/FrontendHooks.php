@@ -451,7 +451,14 @@ class FrontendHooks
 			&& $widget->template !== 'form_rs_columns_plain'
 		) {
 			$data['template'] = $widget->template;
-			$data['templatePath'] = substr($widget->getTemplate($widget->template), strlen(System::getContainer()->getParameter('kernel.project_dir')) + 1);
+			try {
+				$data['templatePath'] = substr(
+					$widget->getTemplate($widget->template),
+					strlen(System::getContainer()->getParameter('kernel.project_dir')) + 1
+				);
+			} catch (\Exception) {
+				return $content;
+			}
 			if (in_array('tpl_editor', $permissions)) {
 				$data = static::addTemplateURL($data);
 			}
