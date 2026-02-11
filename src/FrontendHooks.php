@@ -916,9 +916,9 @@ class FrontendHooks
 	 */
 	protected static function insertData($content, $data)
 	{
-        if (empty($data)) {
-            return $content;
-        }
+		if (!$data) {
+			return $content;
+		}
 
 		if (
 			preg_match('(^.*?(?:<div class="rs-column(?:\\s[^"]*)?">)?.*?(?:<div class="rs-column-inner(?:\\s[^"]*)?">)?.*?<([a-z0-9]+)(?:\\s(?>"[^"]*"|\'[^\']*\'|[^>"\'])+|))is', $content, $matches)
