@@ -73,7 +73,7 @@ class FrontendHooks
 
 		$data = array();
 
-		if (in_array('infos', $permissions)) {
+		if (isset($GLOBALS['BE_MOD']['design']['tpl_editor']) && in_array('infos', $permissions)) {
 			try {
 				if (
 					($twig = System::getContainer()->get('twig', ContainerInterface::NULL_ON_INVALID_REFERENCE))
@@ -916,6 +916,10 @@ class FrontendHooks
 	 */
 	protected static function insertData($content, $data)
 	{
+		if (!$data) {
+			return $content;
+		}
+
 		if (
 			preg_match('(^.*?(?:<div class="rs-column(?:\\s[^"]*)?">)?.*?(?:<div class="rs-column-inner(?:\\s[^"]*)?">)?.*?<([a-z0-9]+)(?:\\s(?>"[^"]*"|\'[^\']*\'|[^>"\'])+|))is', $content, $matches)
 			&& $matches[1] !== 'esi'
