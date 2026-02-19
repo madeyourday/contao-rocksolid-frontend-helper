@@ -74,22 +74,9 @@ class FrontendHooks
 		$data = array();
 
 		if (isset($GLOBALS['BE_MOD']['design']['tpl_editor']) && in_array('infos', $permissions)) {
-			try {
-				if (
-					($twig = System::getContainer()->get('twig', ContainerInterface::NULL_ON_INVALID_REFERENCE))
-					&& $twig->getLoader()->exists($templateCandidate = "@Contao/$template.html.twig")
-				) {
-					$templatePath = StringUtil::stripRootDir($twig->getLoader()->getSourceContext($templateCandidate)->getPath());
-				}
-				else {
-					$templatePath = substr(Controller::getTemplate($template), strlen(System::getContainer()->getParameter('kernel.project_dir')) + 1);
-				}
-			} catch (\Throwable $exception) {
-				$templatePath = null;
-			}
 			$data = array(
 				'template' => $template,
-				'templatePath' => $templatePath,
+				'templatePath' => $this->getTemplatePath($template),
 			);
 			if (in_array('tpl_editor', $permissions)) {
 				$data = static::addTemplateURL($data);
@@ -451,7 +438,7 @@ class FrontendHooks
 			&& $widget->template !== 'form_rs_columns_plain'
 		) {
 			$data['template'] = $widget->template;
-			$data['templatePath'] = substr($widget->getTemplate($widget->template), strlen(System::getContainer()->getParameter('kernel.project_dir')) + 1);
+			$data['templatePath'] = $this->getTemplatePath($widget->template);
 			if (in_array('tpl_editor', $permissions)) {
 				$data = static::addTemplateURL($data);
 			}
@@ -976,5 +963,23 @@ class FrontendHooks
 		}
 
 		return $url;
+	}
+
+	private function getTemplatePath(string $template): ?string
+	{
+		try {
+			if (
+				($twig = System::getContainer()->get('twig', ContainerInterface::NULL_ON_INVALID_REFERENCE))
+				&& $twig->getLoader()->exists($templateCandidate = "@Contao/$template.html.twig")
+			) {
+				return StringUtil::stripRootDir($twig->getLoader()->getSourceContext($templateCandidate)->getPath());
+			}
+
+			return substr(Controller::getTemplate($template), strlen(System::getContainer()->getParameter('kernel.project_dir')) + 1);
+		} catch (\Throwable) {
+			// Ignore
+		}
+
+		return null;
 	}
 }
