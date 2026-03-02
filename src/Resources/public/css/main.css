@@ -85,6 +85,9 @@ a.rsfh-pastebottom {
 a.rsfh-delete {
 	background-image: url("../../../system/themes/flexible/icons/delete.svg");
 }
+a.rsfh-children {
+    background-image: url("../../../system/themes/flexible/icons/children.svg");
+}
 a.rsfh-elements {
 	background-image: url("../../../system/themes/flexible/icons/new.svg");
 }
