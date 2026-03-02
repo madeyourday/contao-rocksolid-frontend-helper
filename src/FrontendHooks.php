@@ -9,6 +9,8 @@
 namespace MadeYourDay\RockSolidFrontendHelper;
 
 use Contao\Controller;
+use Contao\CoreBundle\Fragment\FragmentCompositor;
+use Contao\CoreBundle\Fragment\Reference\ContentElementReference;
 use Contao\Database;
 use Contao\Environment;
 use Contao\Events;
@@ -39,6 +41,11 @@ class FrontendHooks
 	 */
 	private $elementBuilder;
 
+    /**
+     * @var FragmentCompositor
+     */
+    private $fragmentCompositor;
+
 	/**
 	 * @var array
 	 */
@@ -52,10 +59,11 @@ class FrontendHooks
 	/**
 	 * @param array $backendModules Backend modules configuration array
 	 */
-	public function __construct(ElementBuilder $elementBuilder, array $backendModules = [])
+	public function __construct(ElementBuilder $elementBuilder, array $backendModules = [], FragmentCompositor $fragmentCompositor)
 	{
-		$this->elementBuilder = $elementBuilder;
-		$this->backendModules = $backendModules;
+		$this->elementBuilder     = $elementBuilder;
+		$this->backendModules     = $backendModules;
+        $this->fragmentCompositor = $fragmentCompositor;
 	}
 
 	/**
@@ -653,6 +661,13 @@ class FrontendHooks
 					'confirm' => sprintf($GLOBALS['TL_LANG']['MSC']['deleteConfirm'], $row->id),
 				);
 			}
+
+            if ($this->fragmentCompositor->supportsNesting(ContentElementReference::TAG_NAME . '.' . $row->type)) {
+                $data['links']['children'] = array(
+                    'url' => static::getBackendURL($do, 'tl_content', $row->id, '', ['popup' => 1, 'ptable' => 'tl_content']),
+                    'label' => sprintf(is_array($GLOBALS['TL_LANG']['tl_content']['children']) ? $GLOBALS['TL_LANG']['tl_content']['children'][1] : $GLOBALS['TL_LANG']['tl_content']['children'], $row->id . ' (' . ($GLOBALS['TL_LANG']['CTE'][$row->type][0] ?? $row->type) . ')'),
+                );
+            }
 
 			$data['links']['pastenew'] = array(
 				'url' => static::getBackendURL($do, 'tl_content', $row->pid, 'create', array('mode' => 1, 'pid' => $row->id)),

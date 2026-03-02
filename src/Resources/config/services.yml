@@ -16,6 +16,7 @@ services:
         arguments:
             - "@rocksolid_frontend_helper.element_builder"
             - "%rocksolid_frontend_helper.backend_modules%"
+            - "@contao.fragment.compositor"
         public: true
 
     MadeYourDay\RockSolidFrontendHelper\BackendHooks:
