@@ -976,7 +976,7 @@ class FrontendHooks
 			}
 
 			return substr(Controller::getTemplate($template), strlen(System::getContainer()->getParameter('kernel.project_dir')) + 1);
-		} catch (\Throwable) {
+		} catch (\Throwable $e) {
 			// Ignore
 		}
 
