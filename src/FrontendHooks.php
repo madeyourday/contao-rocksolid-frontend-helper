@@ -8,6 +8,7 @@
 
 namespace MadeYourDay\RockSolidFrontendHelper;
 
+use Contao\BackendUser;
 use Contao\Controller;
 use Contao\Database;
 use Contao\Environment;
@@ -70,6 +71,8 @@ class FrontendHooks
 		if (!($permissions = static::checkLogin()) || !$template) {
 			return $content;
 		}
+
+        $GLOBALS['TL_LANGUAGE'] = BackendUser::getInstance()->language;
 
 		$data = array();
 
