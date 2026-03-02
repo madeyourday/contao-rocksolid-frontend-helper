@@ -665,7 +665,7 @@ class FrontendHooks
             if ($this->fragmentCompositor->supportsNesting(ContentElementReference::TAG_NAME . '.' . $row->type)) {
                 $data['links']['children'] = array(
                     'url' => static::getBackendURL($do, 'tl_content', $row->id, '', ['popup' => 1, 'ptable' => 'tl_content']),
-                    'label' => sprintf(is_array($GLOBALS['TL_LANG']['tl_content']['children']) ? $GLOBALS['TL_LANG']['tl_content']['children'][1] : $GLOBALS['TL_LANG']['tl_content']['children'], $row->id . ' (' . ($GLOBALS['TL_LANG']['CTE'][$row->type][0] ?? $row->type) . ')'),
+                    'label' => sprintf($GLOBALS['TL_LANG']['DCA']['children'], $row->id),
                 );
             }
 
