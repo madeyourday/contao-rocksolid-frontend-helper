@@ -6,7 +6,7 @@ services:
                 - ["setFramework", ["@contao.framework"]]
 
     MadeYourDay\RockSolidFrontendHelper\Controller\:
-        resource: '../../Controller'
+        resource: '../src/Controller'
         public: true
         tags: ['controller.service_arguments']
         calls:
