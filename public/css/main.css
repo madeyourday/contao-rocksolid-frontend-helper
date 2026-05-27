@@ -9,11 +9,18 @@
 	position: absolute;
 	z-index: 999998;
 	margin: -1px 1px 1px -1px;
-	padding: 0 3px;
-	border: 1px solid #ddd;
-	font: 12px/16px Verdana, Arial, sans-serif;
+	padding: 0 6px;
+	border: 1px solid #e0e0e2;
+	border-radius: 99em;
+	font: 400 14px/18px -apple-system, system-ui, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 	color: #000;
 	background: white;
+	translate: 12px 12px;
+}
+@media (min-resolution:2dppx) {
+	.rsfh-toolbar {
+		font-weight: 300;
+	}
 }
 .rsfh-toolbar:hover {
 	opacity: 1;
@@ -22,17 +29,17 @@
 	position: fixed;
 	top: 0;
 	left: 0;
-	background: #0f1c26;
+	background: #121416;
 	border-color: #3a454d;
 }
 .rsfh-overlay {
 	position: absolute;
 	z-index: 999997;
-	border-radius: 3px;
-	background: #26ade4;
-	opacity: .2;
-	box-shadow: 0 0 20px rgba(0, 0, 0, 0.75) inset;
+	border-radius: 10px;
 	pointer-events: none;
+	outline: 2px dashed #f47c00;
+	background: rgba(244, 124, 00, 0.05);
+	outline-offset: -1px;
 }
 .rsfh-drop-indicator {
 	position: absolute;
@@ -45,21 +52,32 @@
 }
 .rsfh-toolbar > a {
 	float: left;
-	width: 20px;
+	width: 22px;
 	height: 26px;
 	background: 50% 50% no-repeat;
+	position: relative;
 }
 .rsfh-toolbar > a > .rsfh-label {
 	display: none;
 	position: absolute;
-	top: 100%;
-	left: 0;
+	top: calc(100% + 6px);
+	left: -6px;
 	white-space: nowrap;
-	padding: 5px 10px;
-	margin: 0 -1px -1px;
-	border: 1px solid #ddd;
-	color: #000;
-	background: #f9f9fb;
+	color: #fff;
+	background: #333;
+	border-radius: calc(14px * 0.375);
+	padding: 6px 9px;
+}
+.rsfh-toolbar > a > .rsfh-label::before {
+	box-sizing: content-box;
+	content: "";
+	border-bottom: 7px solid #333;
+	border-left: 7px solid transparent;
+	border-right: 7px solid transparent;
+	height: 6px;
+	left: 9px;
+	position: absolute;
+	top: -13px;
 }
 .rsfh-toolbar > a:hover > .rsfh-label {
 	display: block;
@@ -69,9 +87,7 @@
 	height: 32px;
 }
 .rsfh-main-toolbar > a > .rsfh-label {
-	border-color: #3a454d;
-	color: #d3d5d7;
-	background: #0f1c26;
+	left: -3px;
 }
 a.rsfh-edit {
 	background-image: url("../../../system/themes/flexible/icons/edit.svg");
@@ -80,7 +96,8 @@ a.rsfh-pastenew {
 	background-image: url("../../../system/themes/flexible/icons/new.svg");
 }
 a.rsfh-pastebottom {
-	background-image: url("../img/newbottom.gif");
+	background-image: url("../../../system/themes/flexible/icons/new.svg");
+	filter: hue-rotate(120deg);
 }
 a.rsfh-delete {
 	background-image: url("../../../system/themes/flexible/icons/delete.svg");
@@ -89,19 +106,19 @@ a.rsfh-elements {
 	background-image: url("../../../system/themes/flexible/icons/new.svg");
 }
 a.rsfh-backend {
-	background-image: url("../../../system/themes/flexible/icons/exit.svg");
+	background-image: url("../../../system/themes/flexible/icons/exit--dark.svg");
 }
 a.rsfh-article {
-	background-image: url("../../../system/themes/flexible/icons/article.svg");
+	background-image: url("../../../system/themes/flexible/icons/article--dark.svg");
 }
 a.rsfh-fe-module {
 	background-image: url("../../../system/themes/flexible/icons/modules.svg");
 }
 a.rsfh-page {
-	background-image: url("../../../system/themes/flexible/icons/regular.svg");
+	background-image: url("../../../system/themes/flexible/icons/regular--dark.svg");
 }
 a.rsfh-layout {
-	background-image: url("../../../system/themes/flexible/icons/monitor.svg");
+	background-image: url("../../../system/themes/flexible/icons/layout.svg");
 }
 a.rsfh-image-size {
 	background-image: url("../../../system/themes/flexible/icons/sizes.svg");
@@ -113,10 +130,10 @@ a.rsfh-assistant {
 	background-image: url("../../../bundles/rocksolidthemeassistant/images/icon.png");
 }
 a.rsfh-preview {
-	background-image: url("../../../system/themes/flexible/icons/preview.svg");
+	background-image: url("../../../system/themes/flexible/icons/visible--dark.svg");
 }
 a.rsfh-preview.rsfh-preview-active {
-	opacity: 0.5;
+	background-image: url("../../../system/themes/flexible/icons/invisible--dark.svg");
 }
 a.rsfh-activate {
 	background-image: url("../../../system/themes/flexible/icons/ok.svg");
@@ -141,28 +158,20 @@ a.rsfh-activate.rsfh-activate-active {
 	height: 0;
 	margin: -4px 0 0 -5px;
 	border: 5px solid transparent;
-	border-top-color: #d3d5d7;
+	border-top-color: #ddd;
 	border-top-width: 10px;
 }
 .rsfh-main-nav > div {
 	display: none;
 	position: absolute;
 	top: 100%;
-	left: -1px;
+	left: -4px;
 	padding: 10px 20px 10px 12px;
 	border: 1px solid #3a454d;
+	border-radius: 10px;
 	white-space: nowrap;
-	background: #0f1c26;
-	color: #d3d5d7;
-}
-.rsfh-main-nav > div:before {
-	content: "";
-	position: absolute;
-	top: -1px;
-	left: 0;
-	width: 35px;
-	height: 1px;
-	background: #3a454d;
+	background: #121416;
+	color: #ddd;
 }
 .rsfh-main-nav > div > a {
 	display: block;
@@ -221,8 +230,9 @@ a.rsfh-activate.rsfh-activate-active {
 }
 .rsfh-main-toolbar .rsfh-info > div {
 	border: 1px solid #3a454d;
-	color: #d3d5d7;
-	background: #0f1c26;
+	border-radius: 10px;
+	color: #ddd;
+	background: #121416;
 }
 .rsfh-info-column {
 	margin-bottom: 5px;
@@ -330,24 +340,32 @@ a.rsfh-activate.rsfh-activate-active {
 	width: 100%;
 	height: 100%;
 	border: 20px solid transparent;
+	border-radius: 30px;
 	margin-bottom: -20px;
 }
 .rsfh-lightbox.is-popup iframe {
 	border-width: 51px 10px 0 0;
+	border-radius: 0;
 }
 .rsfh-lightbox-close,
 .rsfh-lightbox-cancel,
 .rsfh-element-list-close {
 	box-sizing: border-box;
-	height: 30px;
-	border: 2px solid #d3d5d7;
+	height: 28px;
+	border: 1px solid #3a454d;
 	border-radius: 99em;
-	font: 13px/26px Arial, sans-serif;
-	color: #d3d5d7;
+	font: 400 14px/25px -apple-system, system-ui, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+	color: #ddd;
 	text-align: center;
 	text-decoration: none !important;
-	background: #0f1c26;
-	box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+	background: #121416;
+}
+@media (min-resolution:2dppx) {
+	.rsfh-lightbox-close,
+	.rsfh-lightbox-cancel,
+	.rsfh-element-list-close {
+		font-weight: 300;
+	}
 }
 .rsfh-element-list-close {
 	position: absolute;
@@ -355,7 +373,7 @@ a.rsfh-activate.rsfh-activate-active {
 	right: 5px;
 	height: 26px;
 	border: 0;
-	border-radius: 0;
+	border-radius: 99em;
 	box-shadow: none;
 }
 .rsfh-lightbox-close:hover,
@@ -364,7 +382,7 @@ a.rsfh-activate.rsfh-activate-active {
 .rsfh-lightbox-cancel:focus,
 .rsfh-element-list-close:hover,
 .rsfh-element-list-close:focus {
-	background-color: #444;
+	background-color: #272a30;
 }
 .rsfh-element-list-close {
 	width: 30px;
@@ -406,19 +424,22 @@ a.rsfh-activate.rsfh-activate-active {
 	width: auto;
 	padding: 7px 12px;
 	margin: 0 0 0 4px;
-	border: 1px solid #aaa;
-	border-radius: 2px;
+	border: 1px solid #bbbbbd;
+	border-radius: 5px;
 	background: #fff;
 	transition: background .2s ease;
-	font-size: 14px;
-	font-family: -apple-system,system-ui,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;
-	line-height: 1;
-	font-weight: 400;
-	color: #444;
+	font: 400 14px/1 -apple-system, system-ui, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+	color: #222;
+}
+@media (min-resolution:2dppx) {
+	.is-popup > .rsfh-lightbox-toolbar > .rsfh-lightbox-close,
+	.is-popup > .rsfh-lightbox-toolbar > .rsfh-lightbox-cancel {
+		font-weight: 300
+	}
 }
 .is-popup > .rsfh-lightbox-toolbar > .rsfh-lightbox-close:hover,
 .is-popup > .rsfh-lightbox-toolbar > .rsfh-lightbox-cancel:hover {
-	background: #f6f6f6;
+	background: #f9f9fb;
 }
 .rsfh-lightbox-resize-handle {
 	position: absolute;
@@ -442,11 +463,15 @@ a.rsfh-activate.rsfh-activate-active {
 	border-width: 0 1px;
 }
 .rsfh-element-list {
-	font-size: 14px;
-	line-height: 1.5;
-	color: #d3d5d7;
-	background: #0f1c26;
+	font: 400 14px/1.5 -apple-system, system-ui, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+	color: #ddd;
+	background: #121416;
 	box-shadow: 10px 0 rgba(0, 0, 0, 0.25);
+}
+@media (min-resolution:2dppx) {
+	.rsfh-element-list {
+		font-weight: 300;
+	}
 }
 .rsfh-element-list > ul {
 	margin: 0;
@@ -457,10 +482,15 @@ a.rsfh-activate.rsfh-activate-active {
 	display: block;
 	margin: 0;
 	padding: 1.5em 2em 0.25em 1em;
-	font-size: 16px;
-	font-weight: bold;
+	font-size: 12px;
+	text-transform: uppercase;
+	font-weight: 500;
 	color: #91979c;
-	border-bottom: 1px solid #3a454d;
+}
+@media (min-resolution:2dppx) {
+	.rsfh-element-list > ul > li > span {
+		font-weight: 400;
+	}
 }
 .rsfh-element-list > ul > li > ul {
 	margin: 0;
@@ -468,9 +498,10 @@ a.rsfh-activate.rsfh-activate-active {
 	list-style: none;
 }
 .rsfh-element-list > ul > li > ul > li {
-	margin: 0;
-	padding: 0.25em 1em 0.25em 2em;
-	border-bottom: 1px solid #3a454d;
+	margin: 0 0.25em;
+	padding: 0.25em 1em 0.25em 1.5em;
+	border: 1px solid transparent;
+	border-radius: 99em;
 	cursor: move;
 	cursor: -webkit-grab;
 	cursor: -moz-grab;
@@ -484,4 +515,5 @@ a.rsfh-activate.rsfh-activate-active {
 .rsfh-element-list > ul > li > ul > li:hover {
 	color: #fff;
 	background: rgba(0, 0, 0, 0.5);
+	border-color: #3a454d;
 }
