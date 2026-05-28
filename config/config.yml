@@ -10,7 +10,7 @@ rocksolid_frontend_helper:
 #            column_type: plain          # serialized or plain
 #            ce_column: my_extensions    # the column of tl_content that holds the id of the record to edit
 #            ce_column_type: serialized  # serialized or plain
-#            icon: path/to/icon.gif      # path to edit icon (e.g. system/modules/dlh_googlemaps/assets/icon.gif)
+#            icon: /path/to/icon.svg     # path to edit icon (e.g. /system/modules/dlh_googlemaps/assets/icon.gif)
 #            fe_modules:                 # all frontend modules that should be editable
 #                - my_extension
 #            content_elements:           # all content elements that should be editable
@@ -20,7 +20,7 @@ rocksolid_frontend_helper:
             table: tl_news
             column: news_archives
             column_type: serialized
-            icon: bundles/contaonews/news.svg
+            icon: /bundles/contaonews/news.svg
             fe_modules:
                 - newslist
                 - newsreader
@@ -31,7 +31,7 @@ rocksolid_frontend_helper:
             table: tl_calendar_events
             column: cal_calendar
             column_type: serialized
-            icon: bundles/contaocalendar/calendar.svg
+            icon: /bundles/contaocalendar/calendar.svg
             fe_modules:
                 - calendar
                 - eventreader
@@ -42,7 +42,7 @@ rocksolid_frontend_helper:
             table: tl_newsletter
             column: nl_channels
             column_type: serialized
-            icon: bundles/contaonewsletter/send.svg
+            icon: /bundles/contaonewsletter/send.svg
             fe_modules:
                 - nl_list
                 - nl_reader
@@ -63,7 +63,7 @@ rocksolid_frontend_helper:
             table: tl_faq
             column: faq_categories
             column_type: serialized
-            icon: bundles/contaofaq/faq.svg
+            icon: /bundles/contaofaq/faq.svg
             fe_modules:
                 - faqlist
                 - faqreader
@@ -100,7 +100,7 @@ rocksolid_frontend_helper:
             column_type: plain
             ce_column: dlh_googlemap
             ce_column_type: plain
-            icon: system/modules/dlh_googlemaps/assets/icon.gif
+            icon: /system/modules/dlh_googlemaps/assets/icon.gif
             fe_modules:
                 - dlh_googlemaps
             content_elements:
@@ -110,7 +110,7 @@ rocksolid_frontend_helper:
             table: tl_gallery_creator_pictures
             ce_column: gc_publish_albums
             ce_column_type: serialized
-            icon: system/modules/gallery_creator/assets/images/photo.png
+            icon: /system/modules/gallery_creator/assets/images/photo.png
             fe_modules:
                 - gallery_creator
             content_elements:
@@ -120,7 +120,7 @@ rocksolid_frontend_helper:
             table: tl_ticker
             column: ticker_categories
             column_type: serialized
-            icon: system/modules/ticker/icon.gif
+            icon: /system/modules/ticker/icon.gif
             fe_modules:
                 - ticker
 
@@ -128,7 +128,7 @@ rocksolid_frontend_helper:
             table: tl_survey_page
             ce_column: survey
             ce_column_type: plain
-            icon: system/modules/survey_ce/assets/survey.png
+            icon: /system/modules/survey_ce/assets/survey.png
             content_elements:
                 - survey
 
@@ -138,7 +138,7 @@ rocksolid_frontend_helper:
             column_type: plain
             ce_column: rsts_id
             ce_column_type: plain
-            icon: bundles/rocksolidslider/img/icon.png
+            icon: /bundles/rocksolidslider/img/icon.png
             fe_modules:
                 - rocksolid_slider
             content_elements:

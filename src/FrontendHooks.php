@@ -155,7 +155,7 @@ class FrontendHooks
 					$data['links']['be-module'] = array(
 						'url' => static::getBackendURL('news', 'tl_content', $matches2[2], false),
 						'label' => sprintf(is_array($GLOBALS['TL_LANG']['tl_news']['edit']) ? $GLOBALS['TL_LANG']['tl_news']['edit'][1] : $GLOBALS['TL_LANG']['tl_news']['edit'], $matches2[2]),
-						'icon' => Image::getPath('bundles/contaonews/news.svg'),
+						'icon' => Image::getPath('/bundles/contaonews/news.svg'),
 					);
 				}
 
@@ -173,7 +173,7 @@ class FrontendHooks
 					$data['links']['be-module'] = array(
 						'url' => static::getBackendURL('calendar', 'tl_content', $matches2[2], false),
 						'label' => sprintf(is_array($GLOBALS['TL_LANG']['tl_calendar_events']['edit']) ? $GLOBALS['TL_LANG']['tl_calendar_events']['edit'][1] : $GLOBALS['TL_LANG']['tl_calendar_events']['edit'], $matches2[2]),
-						'icon' => Image::getPath('bundles/contaocalendar/calendar.svg'),
+						'icon' => Image::getPath('/bundles/contaocalendar/calendar.svg'),
 					);
 				}
 
@@ -209,7 +209,7 @@ class FrontendHooks
 					$data['links']['be-module'] = array(
 						'url' => static::getBackendURL('rocksolid_mega_menu', 'tl_rocksolid_mega_menu_column', $matches2[2], false),
 						'label' => sprintf($GLOBALS['TL_LANG']['tl_rocksolid_mega_menu']['edit'][1], $matches2[2]),
-						'icon' => $GLOBALS['BE_MOD']['design']['rocksolid_mega_menu']['icon'],
+						'icon' => '/' . ltrim($GLOBALS['BE_MOD']['design']['rocksolid_mega_menu']['icon'], '/'),
 					);
 				}
 
