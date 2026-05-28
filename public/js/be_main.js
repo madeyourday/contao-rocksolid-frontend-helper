@@ -19,5 +19,37 @@ document.addEventListener('DOMContentLoaded', function() {
 	if (template) {
 		document.querySelector(`#template-studio--tree [data-name="${template.replace(/([\\"])/g, '\\$1')}"] button`)?.click();
 	}
+
+	if (new URLSearchParams(document.location.search).get('rsfhr') === '1') {
+		handleCloseButtons();
+	}
+
+	function handleCloseButtons () {
+		document.querySelectorAll('#saveNclose').forEach(button => {
+			button.addEventListener('click', () => {
+				document.documentElement.addEventListener(
+					'turbo:submit-end',
+					event => {
+						if (event.detail.fetchResponse.response.ok) {
+							window.parent?.rsfhCloseLightbox?.();
+						} else {
+							document.documentElement.addEventListener('turbo:render', handleCloseButtons, { once: true });
+						}
+					},
+					{ once: true },
+				);
+			})
+		});
+		document.querySelectorAll('#tl_buttons .header_back').forEach(button => {
+			button.addEventListener('click', () => {
+				window.parent?.rsfhCloseLightbox?.();
+			})
+		});
+		document.querySelectorAll('#save, #showVersion').forEach(button => {
+			button.addEventListener('click', () => {
+				document.documentElement.addEventListener('turbo:render', handleCloseButtons, { once: true });
+			})
+		});
+	}
 }, false);
 })(window, document);
