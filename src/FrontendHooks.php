@@ -9,6 +9,7 @@
 namespace MadeYourDay\RockSolidFrontendHelper;
 
 use Contao\Controller;
+use Contao\CoreBundle\EventListener\DataContainer\TemplateOptionsListener;
 use Contao\Database;
 use Contao\Environment;
 use Contao\Events;
@@ -18,6 +19,7 @@ use Contao\Image;
 use Contao\Module;
 use Contao\ModuleModel;
 use Contao\ModuleNews;
+use Contao\ModuleProxy;
 use Contao\StringUtil;
 use Contao\System;
 use Contao\Template;
@@ -50,12 +52,19 @@ class FrontendHooks
 	private $backendModules = [];
 
 	/**
-	 * @param array $backendModules Backend modules configuration array
+	 * @var \Closure():TemplateOptionsListener
 	 */
-	public function __construct(ElementBuilder $elementBuilder, array $backendModules = [])
+	private $templateOptionsListener;
+
+	/**
+	 * @param array $backendModules Backend modules configuration array
+	 * @param \Closure():TemplateOptionsListener $templateOptionsListener
+	 */
+	public function __construct(ElementBuilder $elementBuilder, array $backendModules = [], \Closure $templateOptionsListener)
 	{
 		$this->elementBuilder = $elementBuilder;
 		$this->backendModules = $backendModules;
+		$this->templateOptionsListener = $templateOptionsListener;
 	}
 
 	/**
@@ -527,6 +536,18 @@ class FrontendHooks
 			'toolbar' => true,
 		);
 
+		if (empty(static::insertData($content, [], true)['template'])) {
+			$templateOptions = ($this->templateOptionsListener)();
+			$defaultIdentifiersByType = (new \ReflectionClass($templateOptions))->getProperty('defaultIdentifiersByType')->getValue($templateOptions);
+			$template = $defaultIdentifiersByType['tl_module'][$row->type] ?? "mod_$row->type";
+
+			$data['template'] = $row->customTpl ?: $template;
+			$data['templatePath'] = $this->getTemplatePath($row->customTpl ?: $template);
+			if (in_array('tpl_editor', $permissions)) {
+				$data = static::addTemplateURL($data);
+			}
+		}
+
 		if (
 			is_object($module) &&
 			isset($module->Template) &&
@@ -537,6 +558,17 @@ class FrontendHooks
 			System::loadLanguageFile('rocksolid_frontend_helper');
 			$data['columnLabel'] = $GLOBALS['TL_LANG']['rocksolid_frontend_helper']['column'];
 			$data['column'] = $module->Template->inColumn;
+			System::loadLanguageFile('tl_article');
+			if (isset($GLOBALS['TL_LANG']['COLS'][$data['column']])) {
+				$data['column'] = $GLOBALS['TL_LANG']['COLS'][$data['column']];
+			}
+		} elseif (
+			$module instanceof ModuleProxy &&
+			$inColumn = (new \ReflectionClass($module))->getProperty('strColumn')->getValue($module)
+		) {
+			System::loadLanguageFile('rocksolid_frontend_helper');
+			$data['columnLabel'] = $GLOBALS['TL_LANG']['rocksolid_frontend_helper']['column'];
+			$data['column'] = $inColumn;
 			System::loadLanguageFile('tl_article');
 			if (isset($GLOBALS['TL_LANG']['COLS'][$data['column']])) {
 				$data['column'] = $GLOBALS['TL_LANG']['COLS'][$data['column']];
@@ -611,6 +643,18 @@ class FrontendHooks
 			'parent' => ($row->ptable ?: 'tl_article') . ':' . $row->pid,
 			'liveReload' => !empty($this->getElementTypeSettings('tl_content', $row->type)['liveReload']),
 		);
+
+		if (empty(static::insertData($content, [], true)['template'])) {
+			$templateOptions = ($this->templateOptionsListener)();
+			$defaultIdentifiersByType = (new \ReflectionClass($templateOptions))->getProperty('defaultIdentifiersByType')->getValue($templateOptions);
+			$template = $defaultIdentifiersByType['tl_content'][$row->type] ?? "ce_$row->type";
+
+			$data['template'] = $row->customTpl ?: $template;
+			$data['templatePath'] = $this->getTemplatePath($row->customTpl ?: $template);
+			if (in_array('tpl_editor', $permissions)) {
+				$data = static::addTemplateURL($data);
+			}
+		}
 
 		if (in_array('contents', $permissions)) {
 
@@ -811,25 +855,35 @@ class FrontendHooks
 	 */
 	protected static function addTemplateURL($data)
 	{
-		if (substr($data['templatePath'], 0, 10) === 'templates/') {
+		if (str_ends_with($data['templatePath'], '.html5')) {
+			if (substr($data['templatePath'], 0, 10) === 'templates/') {
 
-			$data['templateURL'] = static::getBackendURL('tpl_editor', null, $data['templatePath'], 'source');
+				$data['templateURL'] = static::getBackendURL('tpl_editor', null, $data['templatePath'], 'source');
 
-			System::loadLanguageFile('tl_files');
-			$data['templateLabel'] = sprintf(is_array($GLOBALS['TL_LANG']['tl_files']['source']) ? $GLOBALS['TL_LANG']['tl_files']['source'][1] : $GLOBALS['TL_LANG']['tl_files']['source'], basename($data['templatePath']));
+				System::loadLanguageFile('tl_files');
+				$data['templateLabel'] = sprintf(is_array($GLOBALS['TL_LANG']['tl_files']['source']) ? $GLOBALS['TL_LANG']['tl_files']['source'][1] : $GLOBALS['TL_LANG']['tl_files']['source'], basename($data['templatePath']));
 
+			}
+			else {
+
+				$data['templateURL'] = static::getBackendURL('tpl_editor', null, null, null, array(
+					'key' => 'new_tpl',
+					'original' => $data['templatePath'],
+					'target' => ($GLOBALS['objPage']->templateGroup ?? null) ?: 'templates',
+				));
+
+				System::loadLanguageFile('tl_templates');
+				$data['templateLabel'] = $GLOBALS['TL_LANG']['tl_templates']['new_tpl'][1];
+
+			}
 		}
 		else {
+			$data['templateURL'] = self::route('contao_template_studio', [
+				'rsfh-template' => $data['template'],
+				'rsfh-theme' => System::getContainer()->get('contao.twig.filesystem_loader')->getCurrentThemeSlug(),
+			]);
 
-			$data['templateURL'] = static::getBackendURL('tpl_editor', null, null, null, array(
-				'key' => 'new_tpl',
-				'original' => $data['templatePath'],
-				'target' => ($GLOBALS['objPage']->templateGroup ?? null) ?: 'templates',
-			));
-
-			System::loadLanguageFile('tl_templates');
-			$data['templateLabel'] = $GLOBALS['TL_LANG']['tl_templates']['new_tpl'][1];
-
+			$data['templateLabel'] = System::getContainer()->get('translator')->trans('MOD.template_studio.0', [], 'contao_modules');
 		}
 
 		return $data;
@@ -901,9 +955,9 @@ class FrontendHooks
 	 * @param  array  $data
 	 * @return string
 	 */
-	protected static function insertData($content, $data)
+	protected static function insertData($content, $data, $returnExistingData = false)
 	{
-		if (!$data) {
+		if (!$data && !$returnExistingData) {
 			return $content;
 		}
 
@@ -914,6 +968,11 @@ class FrontendHooks
 
 			if ($matches[1] === 'html' && strpos($content, '<body') !== -1) {
 				$content = explode('<body', $content, 2);
+
+				if ($returnExistingData) {
+					return static::insertData('<body' . $content[1], $data, true);
+				}
+
 				return $content[0] . static::insertData('<body' . $content[1], $data);
 			}
 
@@ -924,6 +983,9 @@ class FrontendHooks
 				if (!is_array($oldData)) {
 					$oldData = array();
 				}
+				if ($returnExistingData) {
+					return $oldData;
+				}
 				if (isset($oldData['links']) && isset($data['links'])) {
 					$data['links'] = array_merge($oldData['links'], $data['links']);
 				}
@@ -931,7 +993,15 @@ class FrontendHooks
 				$matches[0] = preg_replace('(\\sdata-frontend-helper="([^"]*)")is', '', $matches[0]);
 			}
 
+			if ($returnExistingData) {
+				return [];
+			}
+
 			return $matches[0] . ' data-frontend-helper="' . str_replace(['{', '}'], ['&#123;', '&#125;'], htmlspecialchars(json_encode($data))) . '"' . $content;
+		}
+
+		if ($returnExistingData) {
+			return [];
 		}
 
 		return '<span class="rsfh-dummy" data-frontend-helper="' . str_replace(['{', '}'], ['&#123;', '&#125;'], htmlspecialchars(json_encode($data))) . '"></span>' . $content;
@@ -952,10 +1022,10 @@ class FrontendHooks
 		return $this->elementTypeSettings[$table][$type] ?? [];
 	}
 
-	private static function route(string $routeName): string
+	private static function route(string $routeName, array $parameters = []): string
 	{
 		$container = System::getContainer();
-		$url = $container->get('router')->generate($routeName);
+		$url = $container->get('router')->generate($routeName, $parameters);
 		$previewScript = $container->getParameter('contao.preview_script');
 
 		if ($previewScript && substr($url, 0, \strlen($previewScript) + 1) === "$previewScript/") {
@@ -969,10 +1039,11 @@ class FrontendHooks
 	{
 		try {
 			if (
-				($twig = System::getContainer()->get('twig', ContainerInterface::NULL_ON_INVALID_REFERENCE))
-				&& $twig->getLoader()->exists($templateCandidate = "@Contao/$template.html.twig")
+				($loader = System::getContainer()->get('contao.twig.filesystem_loader', ContainerInterface::NULL_ON_INVALID_REFERENCE))
+				&& $loader->exists($templateCandidate = "@Contao/$template.html.twig")
 			) {
-				return StringUtil::stripRootDir($twig->getLoader()->getSourceContext($templateCandidate)->getPath());
+				$identifier = $loader->getFirst($template, $loader->getCurrentThemeSlug());
+				return StringUtil::stripRootDir($loader->getSourceContext($identifier)->getPath());
 			}
 
 			return substr(Controller::getTemplate($template), strlen(System::getContainer()->getParameter('kernel.project_dir')) + 1);

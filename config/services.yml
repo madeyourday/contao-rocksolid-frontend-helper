@@ -16,6 +16,7 @@ services:
         arguments:
             - "@rocksolid_frontend_helper.element_builder"
             - "%rocksolid_frontend_helper.backend_modules%"
+            - !service_closure '@contao.listener.data_container.template_options'
         public: true
 
     MadeYourDay\RockSolidFrontendHelper\BackendHooks:
