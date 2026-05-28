@@ -41,3 +41,9 @@ services:
 
     rocksolid_frontend_helper.element_provider: '@MadeYourDay\RockSolidFrontendHelper\ElementProvider'
     rocksolid_frontend_helper.element_builder: '@MadeYourDay\RockSolidFrontendHelper\ElementBuilder'
+
+    MadeYourDay\RockSolidFrontendHelper\EventListener\AddAssetsListener:
+        arguments:
+            - '@contao.routing.scope_matcher'
+        tags:
+            - kernel.event_listener

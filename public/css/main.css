@@ -229,6 +229,14 @@ a.rsfh-activate.rsfh-activate-active {
 	font-size: 12px;
 	line-height: 16px;
 }
+.rsfh-info > div::before {
+	content: "";
+	position: absolute;
+	top: -3px;
+	right: 0;
+	left: 0;
+	height: 3px;
+}
 .rsfh-main-toolbar .rsfh-info > div {
 	border: 1px solid #3a454d;
 	border-radius: 10px;
