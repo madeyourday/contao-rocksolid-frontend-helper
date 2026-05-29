@@ -45,5 +45,14 @@ services:
     MadeYourDay\RockSolidFrontendHelper\EventListener\AddAssetsListener:
         arguments:
             - '@contao.routing.scope_matcher'
+            - '@contao.framework'
+        tags:
+            - kernel.event_listener
+
+    MadeYourDay\RockSolidFrontendHelper\EventListener\ModernLayoutResponseListener:
+        arguments:
+            - '@contao.routing.scope_matcher'
+            - '@contao.framework'
+            - '@MadeYourDay\RockSolidFrontendHelper\FrontendHooks'
         tags:
             - kernel.event_listener

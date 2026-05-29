@@ -232,7 +232,7 @@ class FrontendHooks
 		if (
 			!($permissions = static::checkLogin())
 			|| !$template
-			|| substr($template, 0, 3) !== 'fe_'
+			|| (substr($template, 0, 3) !== 'fe_' && !str_contains($template, '/'))
 		) {
 			return $content;
 		}
@@ -240,6 +240,14 @@ class FrontendHooks
 		$data = array(
 			'toolbar' => true,
 		);
+
+		if (empty(static::insertData($content, [], true)['template'])) {
+			$data['template'] = $template;
+			$data['templatePath'] = $this->getTemplatePath($template);
+			if (in_array('tpl_editor', $permissions)) {
+				$data = static::addTemplateURL($data);
+			}
+		}
 
 		System::loadLanguageFile('rocksolid_frontend_helper');
 
@@ -345,11 +353,6 @@ class FrontendHooks
 				// Ignore missing route contao_backend_switch
 			}
 		}
-
-		$assetsDir = 'bundles/rocksolidfrontendhelper';
-
-		$GLOBALS['TL_JAVASCRIPT'][] = $assetsDir . '/js/main.js';
-		$GLOBALS['TL_CSS'][] = $assetsDir . '/css/main.css';
 
 		// Remove dummy elements inside script tags and insert them before the script tags
 		$content = preg_replace_callback('(<script(?>"[^"]*"|\'[^\']*\'|[^>"\'])*>.*?</script>)is', function($matches) {
