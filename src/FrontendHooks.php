@@ -70,8 +70,8 @@ class FrontendHooks
 	 */
 	public function __construct(ElementBuilder $elementBuilder, array $backendModules = [], FragmentCompositor $fragmentCompositor, \Closure $templateOptionsListener)
 	{
-		$this->elementBuilder     = $elementBuilder;
-		$this->backendModules     = $backendModules;
+		$this->elementBuilder = $elementBuilder;
+		$this->backendModules = $backendModules;
 		$this->fragmentCompositor = $fragmentCompositor;
 		$this->templateOptionsListener = $templateOptionsListener;
 	}
