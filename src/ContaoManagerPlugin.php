@@ -9,13 +9,14 @@ use Contao\ManagerPlugin\Bundle\Config\BundleConfig;
 use Contao\ManagerPlugin\Routing\RoutingPluginInterface;
 use Symfony\Component\Config\Loader\LoaderResolverInterface;
 use Symfony\Component\HttpKernel\KernelInterface;
+use Symfony\Component\Routing\RouteCollection;
 
 class ContaoManagerPlugin implements BundlePluginInterface, RoutingPluginInterface
 {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function getBundles(ParserInterface $parser)
+	public function getBundles(ParserInterface $parser): array
 	{
 		return [
 			BundleConfig::create(RockSolidFrontendHelperBundle::class)
@@ -27,7 +28,7 @@ class ContaoManagerPlugin implements BundlePluginInterface, RoutingPluginInterfa
 	/**
 	 * {@inheritdoc}
 	 */
-	public function getRouteCollection(LoaderResolverInterface $resolver, KernelInterface $kernel)
+	public function getRouteCollection(LoaderResolverInterface $resolver, KernelInterface $kernel): ?RouteCollection
 	{
 		return $resolver
 			->resolve(__DIR__.'/../config/routing.yml')
