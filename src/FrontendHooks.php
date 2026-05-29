@@ -11,6 +11,8 @@ namespace MadeYourDay\RockSolidFrontendHelper;
 use Contao\Controller;
 use Contao\CoreBundle\ContaoCoreBundle;
 use Contao\CoreBundle\EventListener\DataContainer\TemplateOptionsListener;
+use Contao\CoreBundle\Fragment\FragmentCompositor;
+use Contao\CoreBundle\Fragment\Reference\ContentElementReference;
 use Contao\Database;
 use Contao\Environment;
 use Contao\Events;
@@ -43,6 +45,11 @@ class FrontendHooks
 	private $elementBuilder;
 
 	/**
+	 * @var FragmentCompositor
+	 */
+	private $fragmentCompositor;
+
+	/**
 	 * @var array
 	 */
 	private $elementTypeSettings = [];
@@ -61,10 +68,11 @@ class FrontendHooks
 	 * @param array $backendModules Backend modules configuration array
 	 * @param \Closure():TemplateOptionsListener $templateOptionsListener
 	 */
-	public function __construct(ElementBuilder $elementBuilder, array $backendModules = [], \Closure $templateOptionsListener)
+	public function __construct(ElementBuilder $elementBuilder, array $backendModules = [], FragmentCompositor $fragmentCompositor, \Closure $templateOptionsListener)
 	{
 		$this->elementBuilder = $elementBuilder;
 		$this->backendModules = $backendModules;
+		$this->fragmentCompositor = $fragmentCompositor;
 		$this->templateOptionsListener = $templateOptionsListener;
 	}
 
@@ -699,6 +707,13 @@ class FrontendHooks
 					'url' => static::getBackendURL($do, 'tl_content', $row->id, 'delete'),
 					'label' => sprintf(is_array($GLOBALS['TL_LANG']['tl_content']['delete']) ? $GLOBALS['TL_LANG']['tl_content']['delete'][1] : $GLOBALS['TL_LANG']['tl_content']['delete'], $row->id),
 					'confirm' => sprintf($GLOBALS['TL_LANG']['MSC']['deleteConfirm'], $row->id),
+				);
+			}
+
+			if ($this->fragmentCompositor->supportsNesting(ContentElementReference::TAG_NAME . '.' . $row->type)) {
+				$data['links']['children'] = array(
+					'url' => static::getBackendURL($do, 'tl_content', $row->id, '', ['popup' => 1, 'ptable' => 'tl_content']),
+					'label' => sprintf(is_array($GLOBALS['TL_LANG']['DCA']['children']) ? $GLOBALS['TL_LANG']['DCA']['children'][1] : $GLOBALS['TL_LANG']['DCA']['children'], $row->id),
 				);
 			}
 
