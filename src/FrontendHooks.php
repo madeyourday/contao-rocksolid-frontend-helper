@@ -9,6 +9,7 @@
 namespace MadeYourDay\RockSolidFrontendHelper;
 
 use Contao\Controller;
+use Contao\CoreBundle\ContaoCoreBundle;
 use Contao\CoreBundle\EventListener\DataContainer\TemplateOptionsListener;
 use Contao\Database;
 use Contao\Environment;
@@ -858,7 +859,7 @@ class FrontendHooks
 	 */
 	protected static function addTemplateURL($data)
 	{
-		if (str_ends_with($data['templatePath'], '.html5')) {
+		if (str_ends_with($data['templatePath'], '.html5') || version_compare(ContaoCoreBundle::getVersion(), '5.5', '<')) {
 			if (substr($data['templatePath'], 0, 10) === 'templates/') {
 
 				$data['templateURL'] = static::getBackendURL('tpl_editor', null, $data['templatePath'], 'source');
@@ -871,7 +872,7 @@ class FrontendHooks
 
 				$data['templateURL'] = static::getBackendURL('tpl_editor', null, null, null, array(
 					'key' => 'new_tpl',
-					'original' => $data['templatePath'],
+					'original' => str_ends_with($data['templatePath'], '.html5') ? $data['templatePath'] : "@Contao/{$data['template']}.html.twig",
 					'target' => ($GLOBALS['objPage']->templateGroup ?? null) ?: 'templates',
 				));
 
