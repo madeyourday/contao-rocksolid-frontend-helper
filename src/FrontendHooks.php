@@ -8,6 +8,7 @@
 
 namespace MadeYourDay\RockSolidFrontendHelper;
 
+use Contao\ContentModel;
 use Contao\Controller;
 use Contao\CoreBundle\ContaoCoreBundle;
 use Contao\CoreBundle\EventListener\DataContainer\TemplateOptionsListener;
@@ -671,12 +672,18 @@ class FrontendHooks
 		if (in_array('contents', $permissions)) {
 
 			$do = 'article';
-			if ($row->ptable) {
+
+			$rootRow = $row;
+			while ($rootRow->ptable === 'tl_content') {
+				$rootRow = ContentModel::findById($rootRow->pid);
+			}
+
+			if ($rootRow->ptable) {
 				foreach ($GLOBALS['BE_MOD'] as $category) {
 					foreach ($category as $moduleName => $module) {
 						if (
 							! empty($module['tables']) &&
-							in_array($row->ptable, $module['tables']) &&
+							in_array($rootRow->ptable, $module['tables']) &&
 							in_array('tl_content', $module['tables'])
 						) {
 							$do = $moduleName;
@@ -718,7 +725,7 @@ class FrontendHooks
 			}
 
 			$data['links']['pastenew'] = array(
-				'url' => static::getBackendURL($do, 'tl_content', $row->pid, 'create', array('mode' => 1, 'pid' => $row->id)),
+				'url' => static::getBackendURL($do, 'tl_content', $row->pid, 'create', array('mode' => 1, 'pid' => $row->id, 'ptable' => $row->ptable === 'tl_content' ? 'tl_content' : null)),
 				'label' => sprintf($GLOBALS['TL_LANG']['tl_content']['pastenewafter'][1] ?? $GLOBALS['TL_LANG']['DCA']['pastenewafter'][1] ?? $GLOBALS['TL_LANG']['tl_content']['pastenew'][1], $row->id),
 			);
 
