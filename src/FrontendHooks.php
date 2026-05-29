@@ -102,7 +102,7 @@ class FrontendHooks
 		}
 
 		// get the first tag
-		if (preg_match('(<[a-z0-9]+\\s(?>"[^"]*"|\'[^\']*\'|[^>"\'])+)is', $content, $matches)) {
+		if (preg_match('(<[a-z0-9][a-z0-9-]*\\s(?>"[^"]*"|\'[^\']*\'|[^>"\'])+)is', $content, $matches)) {
 
 			// search for an article id injected by getArticleHook
 			if (preg_match('(^(.*\\sclass="[^"]*)rsfh-article-([0-9]+)-([0-9a-f]*)(.*)$)is', $matches[0], $matches2)) {
@@ -981,7 +981,7 @@ class FrontendHooks
 		}
 
 		if (
-			preg_match('(^.*?(?:<div class="rs-column(?:\\s[^"]*)?">)?.*?(?:<div class="rs-column-inner(?:\\s[^"]*)?">)?.*?<([a-z0-9]+)(?:\\s(?>"[^"]*"|\'[^\']*\'|[^>"\'])+|))is', $content, $matches)
+			preg_match('(^.*?(?:<div class="rs-column(?:\\s[^"]*)?">)?.*?(?:<div class="rs-column-inner(?:\\s[^"]*)?">)?.*?<([a-z0-9][a-z0-9-]*)(?:\\s(?>"[^"]*"|\'[^\']*\'|[^>"\'])+|))is', $content, $matches)
 			&& $matches[1] !== 'esi'
 		) {
 
