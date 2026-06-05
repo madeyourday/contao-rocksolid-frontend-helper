@@ -794,6 +794,11 @@ class FrontendHooks
 			return false;
 		}
 
+		// Only enable the helper in the frontend preview
+		if (!(System::getContainer()->get('request_stack')->getCurrentRequest() ?? Request::create(''))->attributes->get('_preview', false)) {
+			return false;
+		}
+
 		if (!$User = FrontendHelperUser::getInstance()) {
 			return false;
 		}
