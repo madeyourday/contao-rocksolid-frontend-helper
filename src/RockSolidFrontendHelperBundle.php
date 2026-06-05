@@ -21,6 +21,11 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
  */
 class RockSolidFrontendHelperBundle extends Bundle
 {
+    public function getPath(): string
+    {
+        return \dirname(__DIR__);
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -32,7 +37,7 @@ class RockSolidFrontendHelperBundle extends Bundle
     /**
      * {@inheritdoc}
      */
-    public function build(ContainerBuilder $container)
+    public function build(ContainerBuilder $container): void
     {
         parent::build($container);
 

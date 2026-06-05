@@ -69,6 +69,7 @@ class RenderElementController extends AbstractController implements FrameworkAwa
 			$GLOBALS['objPage'] = PageModel::findPublishedById((int) $request->get('pageId'));
 			if ($GLOBALS['objPage'] !== null) {
 				$GLOBALS['objPage']->loadDetails();
+				$request->attributes->set('pageModel', $GLOBALS['objPage']);
 				if ($GLOBALS['objPage']->type === 'regular') {
 					try {
 						$objHandler = new $GLOBALS['TL_PTY'][$GLOBALS['objPage']->type]();

@@ -782,7 +782,6 @@ document.addEventListener('DOMContentLoaded', function() {
 					data.columnLabel.split('&').join('&amp;').split('<').join('&lt;') + ':</b> ' +
 					data.column.split('&').join('&amp;').split('<').join('&lt;') + '</div>';
 			}
-			infoHtml += '<div class="rsfh-templates-label">Templates:</div>';
 			infoHtml += '<div class="rsfh-templates-rows">';
 			for (var template in infoTemplates) {
 				infoHtml += '<div><b class="rsfh-templates-name">' + template + ':</b> ';
