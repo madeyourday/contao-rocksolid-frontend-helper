@@ -1058,8 +1058,10 @@ class FrontendHooks
 		$container = System::getContainer();
 		$url = $container->get('router')->generate($routeName, $parameters);
 		$previewScript = $container->getParameter('contao.preview_script');
+		$backendPrefix = $container->getParameter('contao.backend.route_prefix');
 
-		if ($previewScript && substr($url, 0, \strlen($previewScript) + 1) === "$previewScript/") {
+		// Strip preview entry point from backend URLs
+		if ($previewScript && $backendPrefix && preg_match('(^'.preg_quote("$previewScript$backendPrefix").'(\?|/|$))', $url)) {
 			$url = substr($url, \strlen($previewScript));
 		}
 

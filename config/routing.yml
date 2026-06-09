@@ -6,14 +6,14 @@ rocksolid_frontend_helper_render:
         _scope: frontend
 
 rocksolid_frontend_helper_elements:
-    path: /contao/rocksolid-frontend-helper/elements
+    path: '%contao.backend.route_prefix%/rocksolid-frontend-helper/elements'
     controller: MadeYourDay\RockSolidFrontendHelper\Controller\JsonApiController::elementsAction
     defaults:
         _scope: backend
         _token_check: true
 
 rocksolid_frontend_helper_insert:
-    path: /contao/rocksolid-frontend-helper/insert
+    path: '%contao.backend.route_prefix%/rocksolid-frontend-helper/insert'
     methods: [POST]
     controller: MadeYourDay\RockSolidFrontendHelper\Controller\JsonApiController::insertAction
     defaults:
@@ -21,7 +21,7 @@ rocksolid_frontend_helper_insert:
         _token_check: true
 
 rocksolid_frontend_helper_delete:
-    path: /contao/rocksolid-frontend-helper/delete
+    path: '%contao.backend.route_prefix%/rocksolid-frontend-helper/delete'
     methods: [POST]
     controller: MadeYourDay\RockSolidFrontendHelper\Controller\JsonApiController::deleteAction
     defaults:
