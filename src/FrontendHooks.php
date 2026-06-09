@@ -588,7 +588,7 @@ class FrontendHooks
 			}
 		}
 
-		if (in_array('feModules', $permissions)) {
+		if (in_array('feModules', $permissions) && is_numeric($row->id) && $row->id > 0) {
 			System::loadLanguageFile('tl_module');
 			$data['links']['fe-module'] = array(
 				'url' => static::getBackendURL('themes', 'tl_module', $row->id),
@@ -669,7 +669,7 @@ class FrontendHooks
 			}
 		}
 
-		if (in_array('contents', $permissions)) {
+		if (in_array('contents', $permissions) && is_numeric($row->id) && $row->id > 0) {
 
 			$do = 'article';
 
