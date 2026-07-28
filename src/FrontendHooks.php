@@ -69,7 +69,7 @@ class FrontendHooks
 	 * @param array $backendModules Backend modules configuration array
 	 * @param \Closure():TemplateOptionsListener $templateOptionsListener
 	 */
-	public function __construct(ElementBuilder $elementBuilder, array $backendModules = [], FragmentCompositor $fragmentCompositor, \Closure $templateOptionsListener)
+	public function __construct(ElementBuilder $elementBuilder, array $backendModules, FragmentCompositor $fragmentCompositor, \Closure $templateOptionsListener)
 	{
 		$this->elementBuilder = $elementBuilder;
 		$this->backendModules = $backendModules;
