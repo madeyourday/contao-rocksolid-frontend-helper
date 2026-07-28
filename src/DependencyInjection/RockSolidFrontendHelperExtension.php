@@ -46,6 +46,7 @@ class RockSolidFrontendHelperExtension extends Extension
 
 		$loader->load('services.yml');
 
+		$container->setParameter('rocksolid_frontend_helper.enable_outside_of_preview', $mergedConfig['enable_outside_of_preview']);
 		$container->setParameter('rocksolid_frontend_helper.backend_modules', $mergedConfig['backend_modules']);
 	}
 }

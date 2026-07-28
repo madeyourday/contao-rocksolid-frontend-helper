@@ -795,7 +795,10 @@ class FrontendHooks
 		}
 
 		// Only enable the helper in the frontend preview
-		if (!(System::getContainer()->get('request_stack')->getCurrentRequest() ?? Request::create(''))->attributes->get('_preview', false)) {
+		if (
+			!(System::getContainer()->get('request_stack')->getCurrentRequest() ?? Request::create(''))->attributes->get('_preview', false)
+			&& !System::getContainer()->getParameter('rocksolid_frontend_helper.enable_outside_of_preview')
+		) {
 			return false;
 		}
 

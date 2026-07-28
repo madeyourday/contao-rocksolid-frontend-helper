@@ -35,6 +35,10 @@ class Configuration implements ConfigurationInterface
 
 		$rootNode
 			->children()
+				->booleanNode('enable_outside_of_preview')
+					->info('Enable the frontend helper in the default entry point of the frontend, not only in the preview.')
+					->defaultValue(false)
+				->end()
 				->arrayNode('backend_modules')
 					->useAttributeAsKey('name')
 					->prototype('array')
