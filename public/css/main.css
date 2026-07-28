@@ -31,6 +31,7 @@
 	left: 0;
 	background: #121416;
 	border-color: #3a454d;
+	translate: 5px 5px;
 }
 .rsfh-overlay {
 	position: absolute;
@@ -84,7 +85,7 @@
 }
 .rsfh-main-toolbar > a {
 	width: 26px;
-	height: 32px;
+	height: 30px;
 }
 .rsfh-main-toolbar > a > .rsfh-label {
 	left: -3px;
@@ -103,7 +104,7 @@ a.rsfh-delete {
 	background-image: url("../../../system/themes/flexible/icons/delete.svg");
 }
 a.rsfh-children {
-    background-image: url("../../../system/themes/flexible/icons/children.svg");
+	background-image: url("../../../system/themes/flexible/icons/children.svg");
 }
 a.rsfh-elements {
 	background-image: url("../../../system/themes/flexible/icons/new.svg");
@@ -140,6 +141,7 @@ a.rsfh-preview.rsfh-preview-active {
 }
 a.rsfh-activate {
 	background-image: url("../../../system/themes/flexible/icons/ok.svg");
+	outline: none !important;
 }
 a.rsfh-activate.rsfh-activate-active {
 	background-image: url("../../../system/themes/flexible/icons/delete_.svg");
@@ -148,7 +150,7 @@ a.rsfh-activate.rsfh-activate-active {
 	position: relative;
 	float: left;
 	width: 36px;
-	height: 32px;
+	height: 30px;
 	margin: 0 5px 0 -3px;
 	border-right: 1px solid #3a454d;
 }
@@ -207,7 +209,7 @@ a.rsfh-activate.rsfh-activate-active {
 }
 .rsfh-main-toolbar .rsfh-info {
 	width: 26px;
-	height: 32px;
+	height: 30px;
 }
 .rsfh-info:hover {
 	width: 30px;
