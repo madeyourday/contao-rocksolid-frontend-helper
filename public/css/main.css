@@ -91,60 +91,60 @@
 	left: -3px;
 }
 a.rsfh-edit {
-	background-image: url("../../../system/themes/flexible/icons/edit.svg");
+	background-image: var(--rsfh-icon-edit, url("../../../system/themes/flexible/icons/edit.svg"));
 }
 a.rsfh-pastenew {
-	background-image: url("../../../system/themes/flexible/icons/new.svg");
+	background-image: var(--rsfh-icon-new, url("../../../system/themes/flexible/icons/new.svg"));
 }
 a.rsfh-pastebottom {
-	background-image: url("../../../system/themes/flexible/icons/new.svg");
+	background-image: var(--rsfh-icon-new, url("../../../system/themes/flexible/icons/new.svg"));
 	filter: hue-rotate(120deg);
 }
 a.rsfh-delete {
-	background-image: url("../../../system/themes/flexible/icons/delete.svg");
+	background-image: var(--rsfh-icon-delete, url("../../../system/themes/flexible/icons/delete.svg"));
 }
 a.rsfh-children {
-	background-image: url("../../../system/themes/flexible/icons/children.svg");
+	background-image: var(--rsfh-icon-children, url("../../../system/themes/flexible/icons/children.svg"));
 }
 a.rsfh-elements {
-	background-image: url("../../../system/themes/flexible/icons/new.svg");
+	background-image: var(--rsfh-icon-new, url("../../../system/themes/flexible/icons/new.svg"));
 }
 a.rsfh-backend {
-	background-image: url("../../../system/themes/flexible/icons/exit--dark.svg");
+	background-image: var(--rsfh-icon-exit-dark, url("../../../system/themes/flexible/icons/exit--dark.svg"));
 }
 a.rsfh-article {
-	background-image: url("../../../system/themes/flexible/icons/article--dark.svg");
+	background-image: var(--rsfh-icon-article-dark, url("../../../system/themes/flexible/icons/article--dark.svg"));
 }
 a.rsfh-fe-module {
-	background-image: url("../../../system/themes/flexible/icons/modules.svg");
+	background-image: var(--rsfh-icon-modules, url("../../../system/themes/flexible/icons/modules.svg"));
 }
 a.rsfh-page {
-	background-image: url("../../../system/themes/flexible/icons/regular--dark.svg");
+	background-image: var(--rsfh-icon-regular-dark, url("../../../system/themes/flexible/icons/regular--dark.svg"));
 }
 a.rsfh-layout {
-	background-image: url("../../../system/themes/flexible/icons/layout.svg");
+	background-image: var(--rsfh-icon-layout, url("../../../system/themes/flexible/icons/layout.svg"));
 }
 a.rsfh-image-size {
-	background-image: url("../../../system/themes/flexible/icons/sizes.svg");
+	background-image: var(--rsfh-icon-sizes, url("../../../system/themes/flexible/icons/sizes.svg"));
 }
 a.rsfh-stylesheet {
-	background-image: url("../../../system/themes/flexible/icons/css.svg");
+	background-image: var(--rsfh-icon-css, url("../../../system/themes/flexible/icons/css.svg"));
 }
 a.rsfh-assistant {
 	background-image: url("../../../bundles/rocksolidthemeassistant/images/icon.png");
 }
 a.rsfh-preview {
-	background-image: url("../../../system/themes/flexible/icons/visible--dark.svg");
+	background-image: var(--rsfh-icon-visible-dark, url("../../../system/themes/flexible/icons/visible--dark.svg"));
 }
 a.rsfh-preview.rsfh-preview-active {
-	background-image: url("../../../system/themes/flexible/icons/invisible--dark.svg");
+	background-image: var(--rsfh-icon-invisible-dark, url("../../../system/themes/flexible/icons/invisible--dark.svg"));
 }
 a.rsfh-activate {
-	background-image: url("../../../system/themes/flexible/icons/ok.svg");
+	background-image: var(--rsfh-icon-ok, url("../../../system/themes/flexible/icons/ok.svg"));
 	outline: none !important;
 }
 a.rsfh-activate.rsfh-activate-active {
-	background-image: url("../../../system/themes/flexible/icons/delete_.svg");
+	background-image: var(--rsfh-icon-close, url("../../../system/themes/flexible/icons/delete_.svg"));
 }
 .rsfh-main-nav {
 	position: relative;
@@ -205,7 +205,7 @@ a.rsfh-activate.rsfh-activate-active {
 	float: left;
 	width: 20px;
 	height: 26px;
-	background: url("../../../system/themes/flexible/icons/show.svg") 50% 50% no-repeat;
+	background: var(--rsfh-icon-show, url("../../../system/themes/flexible/icons/show.svg")) 50% 50% no-repeat;
 }
 .rsfh-main-toolbar .rsfh-info {
 	width: 26px;
@@ -299,7 +299,7 @@ a.rsfh-activate.rsfh-activate-active {
 	float: left;
 	width: 20px;
 	height: 26px;
-	background: url("../../../system/themes/flexible/icons/drag.svg") 50% 50% no-repeat;
+	background: var(--rsfh-icon-drag, url("../../../system/themes/flexible/icons/drag.svg")) 50% 50% no-repeat;
 	cursor: move;
 	cursor: -webkit-grab;
 	cursor: -moz-grab;
@@ -355,7 +355,7 @@ a.rsfh-activate.rsfh-activate-active {
 	height: 50px;
 	margin: -25px;
 	border-radius: 10px;
-	background: #fff url("../../../system/themes/flexible/icons/loading.svg") 50% 50% no-repeat;
+	background: #fff var(--rsfh-icon-loading, url("../../../system/themes/flexible/icons/loading.svg")) 50% 50% no-repeat;
 }
 .rsfh-lightbox iframe {
 	box-sizing: border-box;
