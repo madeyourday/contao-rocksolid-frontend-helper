@@ -60,7 +60,7 @@ class BackendHooks
 			return;
 		}
 
-		if (System::getContainer()->get('request_stack')->getCurrentRequest()->get('_contao_referer_id') && Input::get('ref')) {
+		if (System::getContainer()->get('request_stack')->getCurrentRequest()->attributes->get('_contao_referer_id') && Input::get('ref')) {
 			$this->removeRsfhrParam(Input::get('ref'));
 		}
 
@@ -151,7 +151,7 @@ class BackendHooks
 		$sessionKey = Input::get('popup') ? 'popupReferer' : 'referer';
 		$referrerSession = System::getContainer()->get('request_stack')->getSession()->get($sessionKey);
 
-		if (System::getContainer()->get('request_stack')->getCurrentRequest()->get('_contao_referer_id') && !Input::get('ref')) {
+		if (System::getContainer()->get('request_stack')->getCurrentRequest()->attributes->get('_contao_referer_id') && !Input::get('ref')) {
 
 			$referrer = substr($referrer, strlen(System::getContainer()->get('request_stack')->getCurrentRequest()->getBasePath()) + 1);
 			$tlRefererId = System::getContainer()->get('request_stack')->getCurrentRequest()->attributes->get('_contao_referer_id');
