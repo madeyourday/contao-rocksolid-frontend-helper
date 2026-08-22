@@ -40,12 +40,12 @@ class JsonApiController extends AbstractController implements FrameworkAwareInte
 	 */
 	public function elementsAction(Request $request, ElementBuilder $elementBuilder)
 	{
-		if (!is_string($request->request->get('table'))) {
+		if (!is_string($request->query->get('table'))) {
 			throw new NotFoundHttpException();
 		}
 
 		// Only tl_content is supported so far
-		if ($request->request->get('table') !== 'tl_content') {
+		if ($request->query->get('table') !== 'tl_content') {
 			throw new NotFoundHttpException();
 		}
 
@@ -53,7 +53,7 @@ class JsonApiController extends AbstractController implements FrameworkAwareInte
 
 		return $this->json(
 			array_filter(
-				$elementBuilder->getElements($request->request->get('table')),
+				$elementBuilder->getElements($request->query->get('table')),
 				function($element) {
 					return !empty($element['insert']);
 				}
@@ -147,7 +147,7 @@ class JsonApiController extends AbstractController implements FrameworkAwareInte
 
 		$table = $request->request->get('table');
 		$parent = explode(':', $request->request->get('parent'));
-		$ids = array_values(array_map('intval', (array) $request->request->get('ids', [])));
+		$ids = array_values(array_map('intval', $request->request->all('ids')));
 
 		if (!is_string($table) || !$ids || !is_array($parent)) {
 			throw new \InvalidArgumentException();
