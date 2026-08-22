@@ -33,7 +33,7 @@ class RockSolidFrontendHelperExtension extends Extension
 	/**
 	 * {@inheritdoc}
 	 */
-	public function load(array $configs, ContainerBuilder $container)
+	public function load(array $configs, ContainerBuilder $container): void
 	{
 		$baseConfig = Yaml::parse(file_get_contents(__DIR__.'/../../config/config.yml'), Yaml::PARSE_CONSTANT);
 		$configs = array_merge([$baseConfig['rocksolid_frontend_helper']], $configs);

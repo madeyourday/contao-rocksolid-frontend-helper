@@ -47,6 +47,7 @@ services:
         arguments:
             - '@contao.routing.scope_matcher'
             - '@contao.framework'
+            - '@parameter_bag'
         tags:
             - kernel.event_listener
 

@@ -46,12 +46,12 @@ class RenderElementController extends AbstractController implements FrameworkAwa
 			throw new AccessDeniedHttpException();
 		}
 
-		if (!is_string($request->get('table')) || !is_string($request->get('id'))) {
+		if (!is_string($request->request->get('table')) || !is_string($request->request->get('id'))) {
 			throw new NotFoundHttpException();
 		}
 
 		// Only tl_content is supported so far
-		if ($request->get('table') !== 'tl_content') {
+		if ($request->request->get('table') !== 'tl_content') {
 			throw new NotFoundHttpException();
 		}
 
@@ -65,8 +65,8 @@ class RenderElementController extends AbstractController implements FrameworkAwa
 		}
 
 		// Setup global page, theme and layout state
-		if ($request->get('pageId')) {
-			$GLOBALS['objPage'] = PageModel::findPublishedById((int) $request->get('pageId'));
+		if ($request->request->get('pageId')) {
+			$GLOBALS['objPage'] = PageModel::findPublishedById((int) $request->request->get('pageId'));
 			if ($GLOBALS['objPage'] !== null) {
 				$GLOBALS['objPage']->loadDetails();
 				$request->attributes->set('pageModel', $GLOBALS['objPage']);
@@ -82,7 +82,7 @@ class RenderElementController extends AbstractController implements FrameworkAwa
 			}
 		}
 
-		$html = $this->renderElement((int) $request->get('id'), $request->get('table'));
+		$html = $this->renderElement((int) $request->request->get('id'), $request->request->get('table'));
 		$html = $this->container->get('contao.insert_tag.parser')->replaceInline($html);
 
 		return new Response($html);

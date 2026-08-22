@@ -40,12 +40,12 @@ class JsonApiController extends AbstractController implements FrameworkAwareInte
 	 */
 	public function elementsAction(Request $request, ElementBuilder $elementBuilder)
 	{
-		if (!is_string($request->get('table'))) {
+		if (!is_string($request->request->get('table'))) {
 			throw new NotFoundHttpException();
 		}
 
 		// Only tl_content is supported so far
-		if ($request->get('table') !== 'tl_content') {
+		if ($request->request->get('table') !== 'tl_content') {
 			throw new NotFoundHttpException();
 		}
 
@@ -53,7 +53,7 @@ class JsonApiController extends AbstractController implements FrameworkAwareInte
 
 		return $this->json(
 			array_filter(
-				$elementBuilder->getElements($request->get('table')),
+				$elementBuilder->getElements($request->request->get('table')),
 				function($element) {
 					return !empty($element['insert']);
 				}
@@ -72,9 +72,9 @@ class JsonApiController extends AbstractController implements FrameworkAwareInte
 	{
 		$this->framework->initialize();
 
-		$table = $request->get('table');
-		$act = $request->get('act');
-		$parent = explode(':', $request->get('parent'));
+		$table = $request->request->get('table');
+		$act = $request->request->get('act');
+		$parent = explode(':', $request->request->get('parent'));
 
 		if (!is_string($table) || !is_string($act) || !is_array($parent)) {
 			throw new \InvalidArgumentException();
@@ -91,10 +91,10 @@ class JsonApiController extends AbstractController implements FrameworkAwareInte
 
 		$previousId = null;
 
-		if ($request->get('position') === 'before') {
+		if ($request->request->get('position') === 'before') {
 			$content = $this->framework
 				->getAdapter(ContentModel::class)
-				->findByPk($request->get('pid'))
+				->findByPk($request->request->get('pid'))
 			;
 			$previousId = $connection
 				->fetchOne('
@@ -122,13 +122,13 @@ class JsonApiController extends AbstractController implements FrameworkAwareInte
 			if (!$id) {
 				throw new \RuntimeException('Unable to create element.');
 			}
-			$this->updateDefaultValues($elementBuilder, $connection, $id, $table, $request->get('type'));
+			$this->updateDefaultValues($elementBuilder, $connection, $id, $table, $request->request->get('type'));
 			$result['table'] = $table;
 			$result['id'] = $id;
 		}
 		// Move all passed elements to the new position
 		else {
-			foreach (array_reverse(explode(',', $request->get('ids'))) as $id) {
+			foreach (array_reverse(explode(',', $request->request->get('ids'))) as $id) {
 				$this->callDcaMethod($act, $table, $parent[0], $id);
 			}
 		}
@@ -145,9 +145,9 @@ class JsonApiController extends AbstractController implements FrameworkAwareInte
 	{
 		$this->framework->initialize();
 
-		$table = $request->get('table');
-		$parent = explode(':', $request->get('parent'));
-		$ids = array_values(array_map('intval', (array) $request->get('ids', [])));
+		$table = $request->request->get('table');
+		$parent = explode(':', $request->request->get('parent'));
+		$ids = array_values(array_map('intval', (array) $request->request->get('ids', [])));
 
 		if (!is_string($table) || !$ids || !is_array($parent)) {
 			throw new \InvalidArgumentException();
@@ -161,10 +161,10 @@ class JsonApiController extends AbstractController implements FrameworkAwareInte
 		$input = $this->framework->getAdapter(Input::class);
 		$params = [
 			'act' => 'delete',
-			'rt' => $request->get('REQUEST_TOKEN'),
+			'rt' => $request->request->get('REQUEST_TOKEN'),
 		];
 
-		if (substr($request->get('parent'), 0, 11) === 'tl_article:') {
+		if (substr($request->request->get('parent'), 0, 11) === 'tl_article:') {
 			$params['do'] = 'article';
 		}
 
@@ -188,22 +188,22 @@ class JsonApiController extends AbstractController implements FrameworkAwareInte
 	private function mockInsertGetParameters(Request $request, $previousId)
 	{
 		$params = [
-			'act' => $request->get('act'),
-			'rt' => $request->get('REQUEST_TOKEN'),
-			'pid' => $request->get('pid'),
+			'act' => $request->request->get('act'),
+			'rt' => $request->request->get('REQUEST_TOKEN'),
+			'pid' => $request->request->get('pid'),
 			'mode' => '1',
 		];
 
-		if (substr($request->get('parent'), 0, 11) === 'tl_article:') {
+		if (substr($request->request->get('parent'), 0, 11) === 'tl_article:') {
 			$params['do'] = 'article';
 		}
 
-		if ($request->get('position') === 'before') {
+		if ($request->request->get('position') === 'before') {
 			if ($previousId) {
 				$params['pid'] = (string) $previousId;
 			}
 			else {
-				$params['pid'] = (string) explode(':', $request->get('parent'))[1];
+				$params['pid'] = (string) explode(':', $request->request->get('parent'))[1];
 				$params['mode'] = '2';
 			}
 		}
@@ -215,7 +215,7 @@ class JsonApiController extends AbstractController implements FrameworkAwareInte
 		}
 
 		if (!defined('CURRENT_ID')) {
-			define('CURRENT_ID', (string) explode(':', $request->get('parent'))[1]);
+			define('CURRENT_ID', (string) explode(':', $request->request->get('parent'))[1]);
 		}
 	}
 

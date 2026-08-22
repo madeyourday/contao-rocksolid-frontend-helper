@@ -24,7 +24,7 @@ class ElementProviderPass implements CompilerPassInterface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function process(ContainerBuilder $container)
+	public function process(ContainerBuilder $container): void
 	{
 		if (!$container->has('rocksolid_frontend_helper.element_builder')) {
 			return;
