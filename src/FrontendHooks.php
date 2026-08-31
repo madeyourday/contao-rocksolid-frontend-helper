@@ -8,7 +8,9 @@
 
 namespace MadeYourDay\RockSolidFrontendHelper;
 
+use Contao\ContentElement;
 use Contao\ContentModel;
+use Contao\ContentProxy;
 use Contao\Controller;
 use Contao\CoreBundle\ContaoCoreBundle;
 use Contao\CoreBundle\EventListener\DataContainer\TemplateOptionsListener;
@@ -552,8 +554,14 @@ class FrontendHooks
 		if (empty(static::insertData($content, [], true)['template'])) {
 			$templateOptions = ($this->templateOptionsListener)();
 			$defaultIdentifiersByType = (new \ReflectionClass($templateOptions))->getProperty('defaultIdentifiersByType')->getValue($templateOptions);
-			$template = $defaultIdentifiersByType['tl_module'][$row->type] ?? "mod_$row->type";
-
+			$template = $defaultIdentifiersByType['tl_module'][$row->type] ?? null;
+			if (!$template && ($class = Module::findClass($row->type)) && $class !== ModuleProxy::class) {
+				$template = (new \ReflectionClass($class))->getDefaultProperties()['strTemplate'] ?? null;
+			}
+			$template ??= "mod_$row->type";
+			if (str_starts_with($row->type, 'rsce_')) {
+				$template = $row->type;
+			}
 			$data['template'] = $row->customTpl ?: $template;
 			$data['templatePath'] = $this->getTemplatePath($row->customTpl ?: $template);
 			if (in_array('tpl_editor', $permissions)) {
@@ -660,8 +668,14 @@ class FrontendHooks
 		if (empty(static::insertData($content, [], true)['template'])) {
 			$templateOptions = ($this->templateOptionsListener)();
 			$defaultIdentifiersByType = (new \ReflectionClass($templateOptions))->getProperty('defaultIdentifiersByType')->getValue($templateOptions);
-			$template = $defaultIdentifiersByType['tl_content'][$row->type] ?? "ce_$row->type";
-
+			$template = $defaultIdentifiersByType['tl_content'][$row->type] ?? null;
+			if (!$template && ($class = ContentElement::findClass($row->type)) && $class !== ContentProxy::class) {
+				$template = (new \ReflectionClass($class))->getDefaultProperties()['strTemplate'] ?? null;
+			}
+			$template ??= "ce_$row->type";
+			if (str_starts_with($row->type, 'rsce_')) {
+				$template = $row->type;
+			}
 			$data['template'] = $row->customTpl ?: $template;
 			$data['templatePath'] = $this->getTemplatePath($row->customTpl ?: $template);
 			if (in_array('tpl_editor', $permissions)) {
