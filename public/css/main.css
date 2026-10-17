@@ -6,6 +6,7 @@
  */
 
 .rsfh-toolbar {
+	all: unset;
 	position: absolute;
 	z-index: 999998;
 	margin: -1px 1px 1px -1px;
@@ -16,6 +17,9 @@
 	color: #000;
 	background: white;
 	translate: 12px 12px;
+}
+.rsfh-toolbar * {
+	all: unset;
 }
 @media (min-resolution:2dppx) {
 	.rsfh-toolbar {
@@ -186,6 +190,7 @@ a.rsfh-activate.rsfh-activate-active {
 	white-space: nowrap;
 	background-position: 0 50%;
 	background-repeat: no-repeat;
+	cursor: pointer;
 }
 .rsfh-main-nav > div > a:hover,
 .rsfh-main-nav > div > a:focus {
