@@ -266,8 +266,8 @@ class FrontendHooks
 		if (in_array('pages', $permissions)) {
 			System::loadLanguageFile('tl_page');
 			$data['links']['page'] = array(
-				'url' => static::getBackendURL('page', null, $GLOBALS['objPage']->id),
-				'label' => sprintf(is_array($GLOBALS['TL_LANG']['tl_page']['edit']) ? $GLOBALS['TL_LANG']['tl_page']['edit'][1] : $GLOBALS['TL_LANG']['tl_page']['edit'], $GLOBALS['objPage']->id),
+				'url' => static::getBackendURL('page', null, $GLOBALS['objPage']?->id),
+				'label' => sprintf(is_array($GLOBALS['TL_LANG']['tl_page']['edit']) ? $GLOBALS['TL_LANG']['tl_page']['edit'][1] : $GLOBALS['TL_LANG']['tl_page']['edit'], $GLOBALS['objPage']?->id),
 			);
 		}
 
@@ -275,39 +275,39 @@ class FrontendHooks
 			System::loadLanguageFile('tl_page');
 			$data['links']['article'] = array(
 				'url' => static::getBackendURL('article', null, null, null, array(
-					'pn' => $GLOBALS['objPage']->id,
+					'pn' => $GLOBALS['objPage']?->id,
 				)),
-				'label' => sprintf(is_array($GLOBALS['TL_LANG']['tl_page']['articles']) ? $GLOBALS['TL_LANG']['tl_page']['articles'][1] : $GLOBALS['TL_LANG']['tl_page']['articles'], $GLOBALS['objPage']->id),
+				'label' => sprintf(is_array($GLOBALS['TL_LANG']['tl_page']['articles']) ? $GLOBALS['TL_LANG']['tl_page']['articles'][1] : $GLOBALS['TL_LANG']['tl_page']['articles'], $GLOBALS['objPage']?->id),
 			);
 		}
 
 		if (in_array('feModules', $permissions)) {
 			System::loadLanguageFile('tl_layout');
 			$data['links']['layout'] = array(
-				'url' => static::getBackendURL('themes', 'tl_layout', $GLOBALS['objPage']->layout),
-				'label' => sprintf(is_array($GLOBALS['TL_LANG']['tl_layout']['edit']) ? $GLOBALS['TL_LANG']['tl_layout']['edit'][1] : $GLOBALS['TL_LANG']['tl_layout']['edit'], $GLOBALS['objPage']->layout),
+				'url' => static::getBackendURL('themes', 'tl_layout', $GLOBALS['objPage']?->layout),
+				'label' => sprintf(is_array($GLOBALS['TL_LANG']['tl_layout']['edit']) ? $GLOBALS['TL_LANG']['tl_layout']['edit'][1] : $GLOBALS['TL_LANG']['tl_layout']['edit'], $GLOBALS['objPage']?->layout),
 			);
-			if ($GLOBALS['objPage']->getRelated('layout') && $GLOBALS['objPage']->getRelated('layout')->pid) {
-				if ($GLOBALS['objPage']->getRelated('layout')->name) {
-					$data['links']['layout']['label'] .= ' (' . $GLOBALS['objPage']->getRelated('layout')->name . ')';
+			if ($GLOBALS['objPage']?->getRelated('layout') && $GLOBALS['objPage']?->getRelated('layout')->pid) {
+				if ($GLOBALS['objPage']?->getRelated('layout')->name) {
+					$data['links']['layout']['label'] .= ' (' . $GLOBALS['objPage']?->getRelated('layout')->name . ')';
 				}
 				System::loadLanguageFile('tl_theme');
 				$data['links']['fe-module'] = array(
-					'url' => static::getBackendURL('themes', 'tl_module', $GLOBALS['objPage']->getRelated('layout')->pid, null),
-					'label' => sprintf(is_array($GLOBALS['TL_LANG']['tl_theme']['modules']) ? $GLOBALS['TL_LANG']['tl_theme']['modules'][1] : $GLOBALS['TL_LANG']['tl_theme']['modules'], $GLOBALS['objPage']->getRelated('layout')->pid),
+					'url' => static::getBackendURL('themes', 'tl_module', $GLOBALS['objPage']?->getRelated('layout')->pid, null),
+					'label' => sprintf(is_array($GLOBALS['TL_LANG']['tl_theme']['modules']) ? $GLOBALS['TL_LANG']['tl_theme']['modules'][1] : $GLOBALS['TL_LANG']['tl_theme']['modules'], $GLOBALS['objPage']?->getRelated('layout')->pid),
 				);
 				$data['links']['image-size'] = array(
-					'url' => static::getBackendURL('themes', 'tl_image_size', $GLOBALS['objPage']->getRelated('layout')->pid, null),
-					'label' => sprintf(is_array($GLOBALS['TL_LANG']['tl_theme']['imageSizes']) ? $GLOBALS['TL_LANG']['tl_theme']['imageSizes'][1] : $GLOBALS['TL_LANG']['tl_theme']['imageSizes'], $GLOBALS['objPage']->getRelated('layout')->pid),
+					'url' => static::getBackendURL('themes', 'tl_image_size', $GLOBALS['objPage']?->getRelated('layout')->pid, null),
+					'label' => sprintf(is_array($GLOBALS['TL_LANG']['tl_theme']['imageSizes']) ? $GLOBALS['TL_LANG']['tl_theme']['imageSizes'][1] : $GLOBALS['TL_LANG']['tl_theme']['imageSizes'], $GLOBALS['objPage']?->getRelated('layout')->pid),
 				);
 				if (
-					$GLOBALS['objPage']->getRelated('layout')->stylesheet &&
-					count(StringUtil::deserialize($GLOBALS['objPage']->getRelated('layout')->stylesheet))
+					$GLOBALS['objPage']?->getRelated('layout')->stylesheet &&
+					count(StringUtil::deserialize($GLOBALS['objPage']?->getRelated('layout')->stylesheet))
 				) {
 					// Only show a stylesheets link if stylesheets are used
 					$data['links']['stylesheet'] = array(
-						'url' => static::getBackendURL('themes', 'tl_style_sheet', $GLOBALS['objPage']->getRelated('layout')->pid, null),
-						'label' => sprintf(is_array($GLOBALS['TL_LANG']['tl_theme']['css']) ? $GLOBALS['TL_LANG']['tl_theme']['css'][1] : $GLOBALS['TL_LANG']['tl_theme']['css'], $GLOBALS['objPage']->getRelated('layout')->pid),
+						'url' => static::getBackendURL('themes', 'tl_style_sheet', $GLOBALS['objPage']?->getRelated('layout')->pid, null),
+						'label' => sprintf(is_array($GLOBALS['TL_LANG']['tl_theme']['css']) ? $GLOBALS['TL_LANG']['tl_theme']['css'][1] : $GLOBALS['TL_LANG']['tl_theme']['css'], $GLOBALS['objPage']?->getRelated('layout')->pid),
 					);
 				}
 			}
@@ -336,7 +336,7 @@ class FrontendHooks
 		$data['config'] = array(
 			'lightbox' => (bool)FrontendHelperUser::getInstance()->rocksolidFrontendHelperLightbox,
 			'REQUEST_TOKEN' => System::getContainer()->get('contao.csrf.token_manager')->getDefaultTokenValue(),
-			'pageId' => $GLOBALS['objPage']->id ?? null,
+			'pageId' => $GLOBALS['objPage']?->id ?? null,
 			'routes' => [
 				'elements' => self::route('rocksolid_frontend_helper_elements'),
 				'insert' => self::route('rocksolid_frontend_helper_insert'),
@@ -917,7 +917,7 @@ class FrontendHooks
 				$data['templateURL'] = static::getBackendURL('tpl_editor', null, null, null, array(
 					'key' => 'new_tpl',
 					'original' => str_ends_with($data['templatePath'], '.html5') ? $data['templatePath'] : "@Contao/{$data['template']}.html.twig",
-					'target' => ($GLOBALS['objPage']->templateGroup ?? null) ?: 'templates',
+					'target' => ($GLOBALS['objPage']?->templateGroup ?? null) ?: 'templates',
 				));
 
 				System::loadLanguageFile('tl_templates');
