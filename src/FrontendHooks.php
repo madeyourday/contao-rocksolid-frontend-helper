@@ -1052,6 +1052,12 @@ class FrontendHooks
 			return [];
 		}
 
+		// Plain text without any HTML tag might be used inside an attribute,
+		// e.g. via {{insert_content::*}}, so it must not be changed
+		if (strpos($content, '<') === false) {
+			return $content;
+		}
+
 		return '<span class="rsfh-dummy" data-frontend-helper="' . str_replace(['{', '}'], ['&#123;', '&#125;'], htmlspecialchars(json_encode($data))) . '"></span>' . $content;
 	}
 
